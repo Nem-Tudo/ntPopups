@@ -59,7 +59,7 @@ Esta biblioteca requer as seguintes peer dependencies:
 
 ```javascript
 // src/app/layout.js ou src/index.js
-import 'ntpopups/styles.css';
+import 'ntpopups/dist/styles.css';
 ```
 
 #### 2️⃣ Criar Componente Provider
