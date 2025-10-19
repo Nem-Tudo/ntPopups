@@ -7,6 +7,9 @@
 
 /* ==================== CSS VARIABLES (TEMA CLARO) ==================== */
 .popups {
+    /* general */
+    --ntpopups-opposite: black;
+
     /* === TYPOGRAPHY === */
     --ntpopups-font-family: "Segoe UI", Arial, sans-serif;
     --ntpopups-font-size-base: 18px;
@@ -14,6 +17,7 @@
     --ntpopups-font-size-button: 14px;
     --ntpopups-font-weight-title: 400;
     --ntpopups-font-weight-normal: 400;
+    --ntpopups-font-weight-semibold: 500;
     --ntpopups-font-weight-bold: 700;
     --ntpopups-line-height-base: 1.5;
     --ntpopups-line-height-title: 1.3;
@@ -26,7 +30,7 @@
     --ntpopups-color-primary-light: #e8e6fc;
 
     /* === COLORS - Secondary === */
-    --ntpopups-color-secondary: #6c757d;
+    --ntpopups-color-secondary: #2a2a2a;
     --ntpopups-color-secondary-hover: #5a6268;
     --ntpopups-color-secondary-active: #4e555b;
     --ntpopups-color-secondary-disabled: #b8bfc6;
@@ -43,14 +47,15 @@
     --ntpopups-color-info-hover: #138496;
 
     /* === COLORS - Text === */
-    --ntpopups-color-text: rgba(64, 64, 64, .85); /* Aumentei um pouco a opacidade para legibilidade */
+    --ntpopups-color-text: rgba(64, 64, 64, .85);
+    /* Aumentei um pouco a opacidade para legibilidade */
     --ntpopups-color-text-secondary: rgba(14, 14, 14, 0.6);
     --ntpopups-color-text-muted: rgba(14, 14, 14, 0.4);
     --ntpopups-color-text-light: #f8f9fa;
     --ntpopups-color-text-on-primary: #ffffff;
 
     /* === BACKGROUNDS === */
-    --ntpopups-bg-default: #ffffff;
+    --ntpopups-bg-default: var(--ntpopups-frosted-glass);
     --ntpopups-bg-overlay: rgba(0, 0, 0, 0.459);
     --ntpopups-bg-footer: #f0f0f0;
     --ntpopups-bg-header: #ffffff;
@@ -146,12 +151,17 @@
 
 /* ==================== TEMA ESCURO (DARK THEME) ==================== */
 .popups.nt-popups-dark-theme {
+    /* general */
+    --ntpopups-opposite: rgb(255, 255, 255);
+    --ntpopups-frosted-glass: linear-gradient(45deg, rgba(40, 40, 40, .97), rgba(35, 35, 35, .91));
+
     /* === COLORS - Primary (Ligeiramente mais brilhante para contraste) === */
     --ntpopups-color-primary: #7a70ff;
     --ntpopups-color-primary-hover: #8e87ff;
     --ntpopups-color-primary-active: #645afe;
     --ntpopups-color-primary-disabled: #4e489c;
-    --ntpopups-color-primary-light: #35307a; /* Cor de fundo escuro para elementos primários */
+    --ntpopups-color-primary-light: #35307a;
+    /* Cor de fundo escuro para elementos primários */
 
     /* === COLORS - Secondary (Ajustado para fundo escuro) === */
     --ntpopups-color-secondary: #a0a8ae;
@@ -164,12 +174,15 @@
     --ntpopups-color-text: rgba(255, 255, 255, 0.9);
     --ntpopups-color-text-secondary: rgba(255, 255, 255, 0.7);
     --ntpopups-color-text-muted: rgba(255, 255, 255, 0.5);
-    --ntpopups-color-text-light: #222222; /* Agora é muito escuro */
-    --ntpopups-color-text-on-primary: #ffffff; /* Mantido */
+    --ntpopups-color-text-light: #222222;
+    /* Agora é muito escuro */
+    --ntpopups-color-text-on-primary: #ffffff;
+    /* Mantido */
 
     /* === BACKGROUNDS (Invertido) === */
-    --ntpopups-bg-default: #1a1a1a;
-    --ntpopups-bg-overlay: rgba(0, 0, 0, 0.85); /* Mais escuro para focar no popup */
+    --ntpopups-bg-default: var(--ntpopups-frosted-glass);
+    --ntpopups-bg-overlay: rgba(0, 0, 0, 0.85);
+    /* Mais escuro para focar no popup */
     --ntpopups-bg-footer: #222222;
     --ntpopups-bg-header: #1a1a1a;
     --ntpopups-bg-body: #1a1a1a;
@@ -216,7 +229,8 @@
     font-family: var(--ntpopups-font-family);
     font-size: var(--ntpopups-font-size-base);
     line-height: var(--ntpopups-line-height-base);
-    transition: background-color var(--ntpopups-transition-duration-slow) ease; /* Adicionando transição */
+    transition: background-color var(--ntpopups-transition-duration-slow) ease;
+    /* Adicionando transição */
 }
 
 /* ==================== POPUP CONTAINER ==================== */
@@ -345,26 +359,29 @@
     opacity: 0.6;
 }
 
-/* ==================== CLOSE BUTTON ==================== */
-.closeButton {
-    /* Usando !important para sobrescrever o estilo baseButton */
+.baseButtonNoFlex {
+    flex: 0;
+    padding: var(--ntpopups-spacing-sm);
+}
+
+/* ==================== TEXT BUTTON ==================== */
+.textButton {
+    border: none;
+    cursor: pointer;
+    flex: 0;
     background-color: var(--ntpopups-close-bg) !important;
-    color: var(--ntpopups-close-color);
+    color: var(--ntpopups-color-text);
     box-shadow: none;
-    margin-left: auto;
     width: var(--ntpopups-close-size);
     height: var(--ntpopups-close-size);
     min-width: var(--ntpopups-close-size);
     padding: 0;
-    border-radius: 50%;
     /* Transição para cores */
     transition: color var(--ntpopups-transition-duration-slow) ease, background-color var(--ntpopups-transition-duration-slow) ease;
 }
 
-.closeButton:hover {
-    color: var(--ntpopups-close-color-hover);
-    background-color: var(--ntpopups-close-bg-hover) !important;
-    text-decoration: none; /* Removido underline padrão de hover, pois o design é um botão circular */
+.textButton:hover {
+    text-decoration: underline;
 }
 
 .cancelButton {

@@ -8,7 +8,9 @@ export default {
         cancelLabel: "Cancel",
         confirmLabel: "Confirm",
         closeLabel: "Close",
-        ok: "Ok"
+        ok: "Ok",
+        resetLabel: "Reset",
+        applyLabel: "Apply"
     },
     confirm: {
         title: "Confirmation",
@@ -17,5 +19,8 @@ export default {
     internalError: {
         title: "Error: Invalid Popup Type",
         message: "Type not recognized:",
+    },
+    cropImage: {
+        title: "Edit Image"
     },
 };

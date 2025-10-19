@@ -1,0 +1,195 @@
+/* CropImage.module.css - FINAL RESPONSIVO */
+
+.container {
+    position: relative;
+    /* Mantido para desktops, mas será sobrescrito em mobile */
+    width: 500px;
+    height: 500px;
+    margin: 0 auto var(--ntpopups-spacing-xl);
+    background-color: var(--ntpopups-bg-overlay);
+    border-radius: var(--ntpopups-border-radius);
+    overflow: hidden;
+}
+
+.containerGrab {
+    cursor: grab;
+}
+
+.containerGrabbing {
+    cursor: grabbing;
+}
+
+.fullCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.cropCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Mantido para desktops, mas será sobrescrito em mobile */
+    width: 300px;
+    height: 300px;
+    pointer-events: none;
+    border-radius: var(--ntpopups-border-radius-sm);
+    box-shadow: 0 0 0 3px #fff, 0 0 0 4px rgba(255, 255, 255, 0.3);
+    border: 3px solid #fff;
+}
+
+.cropCanvasCircle {
+    border-radius: 50%;
+    border: none;
+}
+
+.hiddenImage {
+    display: none;
+}
+
+.zoomSection {
+    margin-bottom: var(--ntpopups-spacing-md);
+    padding: 0 var(--ntpopups-spacing-lg);
+}
+
+.zoomControls {
+    display: flex;
+    align-items: center;
+    gap: var(--ntpopups-spacing-md);
+    max-width: 500px;
+    /* Mantém a largura máxima no desktop */
+    margin: 0 auto;
+}
+
+.zoomIcon {
+    color: var(--ntpopups-color-text-secondary);
+    flex-shrink: 0;
+}
+
+.zoomIconSmall {
+    width: 20px;
+    height: 20px;
+}
+
+.zoomIconLarge {
+    width: 24px;
+    height: 24px;
+}
+
+.zoomSlider {
+    width: 100%;
+    cursor: pointer;
+    accent-color: var(--ntpopups-color-primary);
+    height: 4px;
+}
+
+.hiddenCanvas {
+    display: none;
+}
+
+/* Estilos de layout e cores */
+.main {
+    /* Ajustado para usar variáveis globais de padding do corpo do popup, mas mantendo a estrutura original */
+    padding: var(--ntpopups-spacing-lg) var(--ntpopups-spacing-xl) 0;
+    /* 20px 35px 0 */
+}
+
+.header {
+    /* O estilo base para header vem de .title global. Aqui sobrescrevemos cores e padding. */
+    color: var(--ntpopups-opposite);
+    /* Assumindo que esta variável existe e define a cor */
+    padding: var(--ntpopups-spacing-lg) 0 0 var(--ntpopups-spacing-xl);
+    /* 20px 0 0 35px */
+    border-bottom: none;
+    font-weight: var(--ntpopups-font-weight-bold);
+    /* Usando bold no lugar de semibold (se não existir) */
+    font-size: var(--ntpopups-font-size-title);
+    /* Usando a var de título global */
+}
+
+.resetButton {
+    /* Este botão faz parte do FOOTER, não é a mesma classe do footerResetButton global */
+    margin-right: auto;
+    /* Garante que ele fique à esquerda */
+    margin-left: var(--ntpopups-spacing-lg);
+    /* 20px */
+}
+
+/*
+---
+## Responsividade para Telas Pequenas (Mobile)
+---
+*/
+
+/*
+---
+## Responsividade para Telas Pequenas (Mobile)
+---
+*/
+
+@media (max-width: 768px) {
+
+    /* 1. Ajuste do MAIN/HEADER para usar padding de mobile */
+    .main {
+        /* Usa o padding lateral menor para mobile */
+        padding: var(--ntpopups-spacing-md) var(--ntpopups-mobile-padding) 0;
+    }
+
+    .header {
+        /* Usa o padding lateral menor para mobile */
+        padding: var(--ntpopups-spacing-md) 0 0 var(--ntpopups-mobile-padding);
+        font-size: calc(var(--ntpopups-font-size-title) * 0.9);
+    }
+
+    /* 2. Tornar o container de crop fluido e sempre QUADRADO */
+    .container {
+        /* Ocupa a largura total (menos padding) */
+        width: calc(100% - var(--ntpopups-mobile-padding) * 2);
+        /* Ajusta a largura para o padding do body */
+        height: auto;
+        aspect-ratio: 1 / 1;
+        max-width: 450px;
+        /* Limita o tamanho em tablets */
+        /* Centraliza o container quando a largura máxima é atingida */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* 3. Tornar o canvas de crop fluido em relação ao container */
+    .cropCanvas {
+        /* Ocupa 80% da largura/altura do .container (Ex: 80% de 450px) */
+        width: 80%;
+        height: 80%;
+        /* Mantém as outras propriedades... */
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
+    /* 4. Ajustar controles de zoom */
+    .zoomControls {
+        /* Ocupa a largura total */
+        width: 100%;
+        max-width: none;
+        padding: 0;
+    }
+
+    .zoomSection {
+        /* Usa o padding lateral menor */
+        padding: 0 var(--ntpopups-mobile-padding);
+    }
+}
+
+/* Garante que a largura MÁXIMA (500px) seja usada APENAS em telas maiores */
+@media (min-width: 769px) {
+    .container {
+        /* Garante que o container use a largura fixa original para desktop */
+        width: 500px;
+        height: 500px;
+        aspect-ratio: unset;
+        /* Remove o aspect-ratio em desktop */
+    }
+}

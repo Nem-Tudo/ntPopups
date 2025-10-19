@@ -8,7 +8,9 @@ export default {
         cancelLabel: "Cancelar",
         confirmLabel: "Confirmar",
         closeLabel: "Fechar",
-        ok: "Ok"
+        ok: "Ok",
+        resetLabel: "Resetar",
+        applyLabel: "Aplicar",
     },
     confirm: {
         title: "Confirmação",
@@ -17,5 +19,8 @@ export default {
     internalError: {
         title: "Erro: Tipo de Popup Inválido",
         message: "Tipo não reconhecido:",
+    },
+    cropImage: {
+        title: "Editar Imagem",
     },
 };
