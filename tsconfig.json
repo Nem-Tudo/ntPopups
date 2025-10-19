@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2020",
+    "jsx": "react",
+    
+    /* Configurações de Leitura */
+    "allowJs": true,
+    "checkJs": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    
+    /* REMOVIDO: "noEmit": true, -- Conflita com a geração de tipos */
+    
+    /* Configurações de Geração de Tipos */
+    "declaration": true,
+    "emitDeclarationOnly": true, /* Gera APENAS os arquivos .d.ts */
+    
+    "rootDir": "src",
+    "outDir": "dist/types", /* O TSC colocará os .d.ts aqui */
+    
+    /* Tipagem e Ambiente */
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": [
+        "react",
+        "react-dom"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
