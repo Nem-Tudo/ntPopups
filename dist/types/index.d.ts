@@ -1,1 +1,1 @@
-export { NtPopupProvider, usePopup } from "./contexts/PopupContext.jsx";
+export { NtPopupProvider, useNtPopups as default } from "./contexts/PopupContext.jsx";

@@ -1,11 +1,13 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 var _toConsumableArray = require('@babel/runtime/helpers/toConsumableArray');
 var _defineProperty = require('@babel/runtime/helpers/defineProperty');
 var _slicedToArray = require('@babel/runtime/helpers/slicedToArray');
 var React = require('react');
 
-var styles = {"popups":"DisplayPopup-module_popups__I0GYe","popup":"DisplayPopup-module_popup__CPKwW","openPopup":"DisplayPopup-module_openPopup__D6bL1","title":"DisplayPopup-module_title__QZoYi","scrollable":"DisplayPopup-module_scrollable__vSKNW","footer":"DisplayPopup-module_footer__-jSvA","baseButton":"DisplayPopup-module_baseButton__VwdjL","closeButton":"DisplayPopup-module_closeButton__katlY"};
+var styles = {"popups":"DisplayPopup-module_popups__I0GYe","nt-popups-dark-theme":"DisplayPopup-module_nt-popups-dark-theme__66X2I","popup":"DisplayPopup-module_popup__CPKwW","openPopup":"DisplayPopup-module_openPopup__D6bL1","title":"DisplayPopup-module_title__QZoYi","scrollable":"DisplayPopup-module_scrollable__vSKNW","footer":"DisplayPopup-module_footer__-jSvA","baseButton":"DisplayPopup-module_baseButton__VwdjL","closeButton":"DisplayPopup-module_closeButton__katlY","cancelButton":"DisplayPopup-module_cancelButton__AqkPf"};
 
 var cropImageStyles = {};
 
@@ -25,13 +27,17 @@ var defaultCssModules = {
  * @param {import('../utils/types').PopupData[]} properties.popups - Array of active (visible) popups.
  * @param {Function} properties.closePopup - Function to close a specific popup.
  * @param {Object.<string, import("react").ComponentType<any>>} properties.popupComponents - Map of all registered components.
- * @param {boolean} properties.useDefaultCss - Flag to use default CSS.
+ * @param {(key: string) => string} properties.translate - Function to translate strings (passada do Provider). <-- NOVA PROP
+ * @param {String} properties.theme - Theme
  */
 function DisplayPopup(_ref) {
   var popups = _ref.popups,
     _closePopup = _ref.closePopup,
     popupComponents = _ref.popupComponents,
-    useDefaultCss = _ref.useDefaultCss;
+    translate = _ref.translate,
+    theme = _ref.theme;
+  // <-- RECEBE NOVA PROP
+
   /**
    * Maps the popup type string to its corresponding React component.
    * @param {import('../utils/types').PopupData} popup - Popup object from context state.
@@ -51,26 +57,25 @@ function DisplayPopup(_ref) {
           padding: '20px',
           color: 'red'
         }
-      }, /*#__PURE__*/React.createElement("h3", null, "Error: Invalid popup type"), /*#__PURE__*/React.createElement("p", null, "Type: ", popupType), /*#__PURE__*/React.createElement("button", {
+      }, /*#__PURE__*/React.createElement("h3", null, translate('internalError.title')), /*#__PURE__*/React.createElement("p", null, translate('internalError.message'), " ", popupType), /*#__PURE__*/React.createElement("button", {
         onClick: function onClick() {
           return _closePopup(id, false);
         }
-      }, "Close"));
+      }, translate('util.closeLabel')));
     }
 
     // Prepare base props
-    var componentProps = _objectSpread$1({
+    var componentProps = _objectSpread$1(_objectSpread$1({
       closePopup: function closePopup() {
-        var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-        return _closePopup(id, status);
+        var hasAction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        return _closePopup(id, hasAction);
       }
-    }, settings);
+    }, settings), {}, {
+      translate: translate // <-- INJETA A FUNÇÃO DE TRADUÇÃO NO COMPONENTE
+    });
 
-    // Conditional CSS injection
-    if (useDefaultCss) {
-      // Inject the main styles for common elements (title, scrollable, footer)
-      componentProps.popupstyles = _objectSpread$1(_objectSpread$1({}, styles), defaultCssModules[popupType] || {});
-    }
+    // Inject the main styles for common elements (title, scrollable, footer)
+    componentProps.popupstyles = _objectSpread$1(_objectSpread$1({}, styles), defaultCssModules[popupType] || {});
 
     // Return the component with prepared props
     return /*#__PURE__*/React.createElement(Component, componentProps);
@@ -83,7 +88,7 @@ function DisplayPopup(_ref) {
         key: popup.id
         // Apply default CSS class or custom fallback class
         ,
-        className: useDefaultCss ? styles.popups : "nt-popups-overlay",
+        className: "".concat(styles.popups).concat(theme != "white" ? " ".concat(styles["nt-popups-".concat(theme, "-theme")], " ") : " ", "ntpopups-overlay"),
         style: {
           zIndex: popup.zIndex
         }
@@ -91,126 +96,66 @@ function DisplayPopup(_ref) {
         "data-popup-id": popup.id
         // Apply default CSS class or custom fallback class
         ,
-        className: useDefaultCss ? styles.popup : "nt-popup-container"
+        className: "".concat(styles.popup, " ntpopups-container")
       }, getPopupComponent(popup)))
     );
   }));
 }
 
-var DefaultContext = {
-  color: undefined,
-  size: undefined,
-  className: undefined,
-  style: undefined,
-  attr: undefined
-};
-var IconContext = React.createContext && React.createContext(DefaultContext);
+// /src/components/popups/Confirm.jsx
 
-var __assign = undefined && undefined.__assign || function () {
-  __assign = Object.assign || function (t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-      s = arguments[i];
-      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-    return t;
-  };
-  return __assign.apply(this, arguments);
-};
-var __rest = undefined && undefined.__rest || function (s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
-function Tree2Element(tree) {
-  return tree && tree.map(function (node, i) {
-    return React.createElement(node.tag, __assign({
-      key: i
-    }, node.attr), Tree2Element(node.child));
-  });
-}
-function GenIcon(data) {
-  // eslint-disable-next-line react/display-name
-  return function (props) {
-    return React.createElement(IconBase, __assign({
-      attr: __assign({}, data.attr)
-    }, props), Tree2Element(data.child));
-  };
-}
-function IconBase(props) {
-  var elem = function (conf) {
-    var attr = props.attr,
-      size = props.size,
-      title = props.title,
-      svgProps = __rest(props, ["attr", "size", "title"]);
-    var computedSize = size || conf.size || "1em";
-    var className;
-    if (conf.className) className = conf.className;
-    if (props.className) className = (className ? className + " " : "") + props.className;
-    return React.createElement("svg", __assign({
-      stroke: "currentColor",
-      fill: "currentColor",
-      strokeWidth: "0"
-    }, conf.attr, attr, svgProps, {
-      className: className,
-      style: __assign(__assign({
-        color: props.color || conf.color
-      }, conf.style), props.style),
-      height: computedSize,
-      width: computedSize,
-      xmlns: "http://www.w3.org/2000/svg"
-    }), title && React.createElement("title", null, title), props.children);
-  };
-  return IconContext !== undefined ? React.createElement(IconContext.Consumer, null, function (conf) {
-    return elem(conf);
-  }) : elem(DefaultContext);
-}
-
-// THIS FILE IS AUTO GENERATED
-function CiCircleAlert (props) {
-  return GenIcon({"attr":{"viewBox":"0 0 24 24"},"child":[{"tag":"g","attr":{"id":"Circle_Alert"},"child":[{"tag":"g","attr":{},"child":[{"tag":"g","attr":{},"child":[{"tag":"path","attr":{"d":"M12.5,9a.5.5,0,0,0-1,0h0V13.02a.5.5,0,0,0,1,0Z"}},{"tag":"circle","attr":{"cx":"12","cy":"15.001","r":"0.5"}}]},{"tag":"path","attr":{"d":"M12,21.935A9.933,9.933,0,1,1,21.934,12,9.945,9.945,0,0,1,12,21.935ZM12,3.069A8.933,8.933,0,1,0,20.934,12,8.944,8.944,0,0,0,12,3.069Z"}}]}]}]})(props);
-}
 
 /**
  * Default Confirmation Popup Component.
  * @param {Object} properties
- * @param {(status: boolean) => void} properties.closePopup
- * @param {string} properties.message
- * @param {string} [properties.title="Message"]
- * @param {string} [properties.cancelLabel="Cancel"]
- * @param {string} [properties.confirmLabel="Confirm"]
- * @param {(choice: boolean) => void} [properties.onChoose=() => {}]
+ * @param {(hasAction: boolean) => void} properties.closePopup
+ * @param {(key: string) => string} properties.translate
+ * @param {Object} [properties.data]
+ * @param {string} [properties.data.message] // Remove default string here
+ * @param {string} [properties.data.title] // Remove default string here
+ * @param {string} [properties.data.cancelLabel] // Remove default string here
+ * @param {string} [properties.data.confirmLabel] // Remove default string here
+ * @param {string|React.ReactElement} [properties.data.icon="ⓘ"]
+ * @param {(choice: boolean) => void} [properties.data.onChoose=() => {}]
  * @param {Object} [properties.popupstyles]
  */
 function Confirm(_ref) {
   var closePopup = _ref.closePopup,
-    _ref$message = _ref.message,
-    message = _ref$message === void 0 ? "Message" : _ref$message,
-    _ref$title = _ref.title,
-    title = _ref$title === void 0 ? "Title" : _ref$title,
-    _ref$cancelLabel = _ref.cancelLabel,
-    cancelLabel = _ref$cancelLabel === void 0 ? "Cancel" : _ref$cancelLabel,
-    _ref$confirmLabel = _ref.confirmLabel,
-    confirmLabel = _ref$confirmLabel === void 0 ? "Confirm" : _ref$confirmLabel,
-    _ref$onChoose = _ref.onChoose,
-    onChoose = _ref$onChoose === void 0 ? function () {} : _ref$onChoose,
     _ref$popupstyles = _ref.popupstyles,
-    popupstyles = _ref$popupstyles === void 0 ? {} : _ref$popupstyles;
+    popupstyles = _ref$popupstyles === void 0 ? {} : _ref$popupstyles,
+    translate = _ref.translate,
+    _ref$data = _ref.data,
+    _ref$data2 = _ref$data === void 0 ? {} : _ref$data,
+    message = _ref$data2.message,
+    title = _ref$data2.title,
+    cancelLabel = _ref$data2.cancelLabel,
+    confirmLabel = _ref$data2.confirmLabel,
+    _ref$data2$icon = _ref$data2.icon,
+    icon = _ref$data2$icon === void 0 ? "ⓘ" : _ref$data2$icon,
+    _ref$data2$onChoose = _ref$data2.onChoose,
+    onChoose = _ref$data2$onChoose === void 0 ? function () {} : _ref$data2$onChoose;
+  var finalTitle = title !== null && title !== void 0 ? title : translate('confirm.title');
+  var finalMessage = message !== null && message !== void 0 ? message : translate('confirm.message');
+  var finalCancelLabel = cancelLabel !== null && cancelLabel !== void 0 ? cancelLabel : translate('util.cancelLabel');
+  var finalConfirmLabel = confirmLabel !== null && confirmLabel !== void 0 ? confirmLabel : translate('util.confirmLabel');
+
   // Use generic or injected classes
   var classes = {
-    title: popupstyles.title || "nt-popup-title",
-    scrollable: popupstyles.scrollable || "nt-popup-scrollable",
-    footer: popupstyles.footer || "nt-popup-footer",
-    cancelButton: popupstyles.cancelButton || "nt-cancel-button",
-    confirmButton: popupstyles.confirmButton || "nt-confirm-button"
+    // ... (classes permanecem as mesmas)
+    title: "".concat(popupstyles.title, " ntpopups-title"),
+    icon: "".concat(popupstyles.icon, " ntpopups-icon"),
+    scrollable: "".concat(popupstyles.scrollable, " ntpopups-scrollable"),
+    footer: "".concat(popupstyles.footer, " ntpopups-footer"),
+    cancelButton: "".concat(popupstyles.baseButton, " ").concat(popupstyles.cancelButton, " ntpopups-basebutton ntpopups-cancel-button"),
+    confirmButton: "".concat(popupstyles.baseButton, " ").concat(popupstyles.confirmButton, " ntpopups-basebutton ntpopups-confirm-button")
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: classes.title
-  }, /*#__PURE__*/React.createElement(CiCircleAlert, null), title), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: classes.icon
+  }, icon), finalTitle, " "), /*#__PURE__*/React.createElement("div", {
     className: classes.scrollable
-  }, /*#__PURE__*/React.createElement("p", null, message)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("p", null, finalMessage), " "), /*#__PURE__*/React.createElement("div", {
     className: classes.footer
   }, /*#__PURE__*/React.createElement("button", {
     className: classes.cancelButton,
@@ -218,52 +163,63 @@ function Confirm(_ref) {
       closePopup(true); // Intentional close
       onChoose(false); // User chose Cancel
     }
-  }, cancelLabel), /*#__PURE__*/React.createElement("button", {
+  }, finalCancelLabel, " "), /*#__PURE__*/React.createElement("button", {
     className: classes.confirmButton,
     onClick: function onClick() {
       closePopup(true); // Intentional close
       onChoose(true); // User chose Confirm
     }
-  }, confirmLabel)));
+  }, finalConfirmLabel, " ")));
 }
 
 /**
  * Default Generic Message Popup Component.
  * @param {Object} properties
- * @param {(status: boolean) => void} properties.closePopup
- * @param {string} properties.message
- * @param {string} [properties.title="Message"]
- * @param {string} [properties.closeLabel="Cancel"]
+ * @param {(hasAction: boolean) => void} properties.closePopup
  * @param {Object} [properties.popupstyles]
+ * @param {(key: string) => string} properties.translate
+ * @param {Object} [properties.data]
+ * @param {string} [properties.data.message="Message"]
+ * @param {string} [properties.data.title="Title"]
+ * @param {string} [properties.data.closeLabel="Close"]
+ * @param {string|React.ReactElement} [properties.data.icon="ⓘ"]
  */
 function Generic(_ref) {
   var closePopup = _ref.closePopup,
-    _ref$message = _ref.message,
-    message = _ref$message === void 0 ? "Message" : _ref$message,
-    _ref$title = _ref.title,
-    title = _ref$title === void 0 ? "Title" : _ref$title,
-    _ref$closeLabel = _ref.closeLabel,
-    closeLabel = _ref$closeLabel === void 0 ? "Close" : _ref$closeLabel,
     _ref$popupstyles = _ref.popupstyles,
-    popupstyles = _ref$popupstyles === void 0 ? {} : _ref$popupstyles;
+    popupstyles = _ref$popupstyles === void 0 ? {} : _ref$popupstyles,
+    translate = _ref.translate,
+    _ref$data = _ref.data,
+    _ref$data2 = _ref$data === void 0 ? {} : _ref$data,
+    message = _ref$data2.message,
+    title = _ref$data2.title,
+    closeLabel = _ref$data2.closeLabel,
+    _ref$data2$icon = _ref$data2.icon,
+    icon = _ref$data2$icon === void 0 ? "ⓘ" : _ref$data2$icon;
+  var finalTitle = title !== null && title !== void 0 ? title : translate('generic.title');
+  var finalMessage = message !== null && message !== void 0 ? message : translate('generic.message');
+  var finalCloseLabel = closeLabel !== null && closeLabel !== void 0 ? closeLabel : translate('util.ok');
   var classes = {
-    title: popupstyles.title || "nt-popup-title",
-    scrollable: popupstyles.scrollable || "nt-popup-scrollable",
-    footer: popupstyles.footer || "nt-popup-footer",
-    closeButton: popupstyles.closeButton || "nt-close-button"
+    title: "".concat(popupstyles.title, " ntpopups-title"),
+    icon: "".concat(popupstyles.icon, " ntpopups-icon"),
+    scrollable: "".concat(popupstyles.scrollable, " ntpopups-scrollable"),
+    footer: "".concat(popupstyles.footer, " ntpopups-footer"),
+    closeButton: "".concat(popupstyles.baseButton, " ntpopups-basebutton")
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: classes.title
-  }, title), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: classes.icon
+  }, icon), finalTitle), /*#__PURE__*/React.createElement("div", {
     className: classes.scrollable
-  }, /*#__PURE__*/React.createElement("p", null, message)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("p", null, finalMessage)), /*#__PURE__*/React.createElement("div", {
     className: classes.footer
   }, /*#__PURE__*/React.createElement("button", {
     className: classes.closeButton,
     onClick: function onClick() {
       return closePopup(true);
     }
-  }, closeLabel)));
+  }, finalCloseLabel)));
 }
 
 // This component would contain image cropping logic and UI
@@ -271,7 +227,7 @@ function Generic(_ref) {
 /**
  * Placeholder for Crop Image Popup Component.
  * @param {Object} properties
- * @param {(status: boolean) => void} properties.closePopup
+ * @param {(hasAction: boolean) => void} properties.closePopup
  * @param {string} properties.title
  * @param {Object} [properties.popupstyles]
  */
@@ -282,8 +238,8 @@ function CropImage(_ref) {
     _ref$popupstyles = _ref.popupstyles,
     popupstyles = _ref$popupstyles === void 0 ? {} : _ref$popupstyles;
   var classes = {
-    title: popupstyles.title || "nt-popup-title",
-    scrollable: popupstyles.scrollable || "nt-popup-scrollable"
+    title: popupstyles.title || "ntpopups-title",
+    scrollable: popupstyles.scrollable || "ntpopups-scrollable"
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: classes.title
@@ -309,19 +265,107 @@ var internalPopupTypes = {
   "crop_image": CropImage
 };
 
+// /src/i18n/en.js
+
+/**
+ * Strings de tradução para Inglês (en).
+ */
+var en = {
+  util: {
+    cancelLabel: "Cancel",
+    confirmLabel: "Confirm",
+    closeLabel: "Close",
+    ok: "Ok"
+  },
+  confirm: {
+    title: "Confirmation",
+    message: "Are you sure you want to proceed?"
+  },
+  internalError: {
+    title: "Error: Invalid Popup Type",
+    message: "Type not recognized:"
+  }
+};
+
+// /src/i18n/pt.js
+
+/**
+ * Strings de tradução para Português (pt).
+ */
+var ptbr = {
+  util: {
+    cancelLabel: "Cancelar",
+    confirmLabel: "Confirmar",
+    closeLabel: "Fechar",
+    ok: "Ok"
+  },
+  confirm: {
+    title: "Confirmação",
+    message: "Tem certeza que deseja prosseguir?"
+  },
+  internalError: {
+    title: "Erro: Tipo de Popup Inválido",
+    message: "Tipo não reconhecido:"
+  }
+};
+
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: true } : { done: false, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = true, u = false; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = true, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+// Importe novos idiomas aqui:
+// import es from './es'; 
+
+// Mapeamento de todos os idiomas disponíveis
+var languageMap = {
+  en: en,
+  ptbr: ptbr
+  // es,
+};
+var defaultLanguage = 'en';
+
+/**
+ * Função utilitária para obter a tradução para uma chave e idioma.
+ * Suporta chaves aninhadas usando notação de ponto (ex: 'confirm.title').
+ * * @param {string} key - A chave da string (ex: 'confirm.title').
+ * @param {string} lang - O idioma desejado (ex: 'pt').
+ * @returns {string} A string traduzida ou uma mensagem de erro.
+ */
+function getTranslation(key) {
+  var lang = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultLanguage;
+  var language = languageMap[lang] || languageMap[defaultLanguage];
+  var keys = key.split('.');
+  var result = language;
+  var _iterator = _createForOfIteratorHelper(keys),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var k = _step.value;
+      if (result && result[k] !== undefined) {
+        result = result[k];
+      } else {
+        // Fallback: Retorna a chave se a tradução não for encontrada
+        return "[Missing translation for ".concat(key, " in ").concat(lang, "]");
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return result;
+}
+
+// /src/contexts/PopupContext.jsx
+
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), true).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 
-/**
- * @typedef {import("../utils/types").PopupContextValue} PopupContextValue 
- * @typedef {import("../utils/types").NtPopupConfig} NtPopupConfig
- */
-
 // ==================== CONTEXT CREATION ====================
 
-// O JSDoc usa o typedef acima
-/** @type {React.Context<PopupContextValue>} */
+// O JSDoc AGORA USA O TIPO EXTENDIDO CORRETO
+/** @type {React.Context<ExtendedPopupContextValue>} */
 var PopupContext = /*#__PURE__*/React.createContext({
+  // Definir todos os valores padrão, incluindo os novos (language e translate)
   popups: [],
   openPopup: function openPopup() {
     return null;
@@ -333,6 +377,10 @@ var PopupContext = /*#__PURE__*/React.createContext({
   },
   getPopup: function getPopup() {
     return null;
+  },
+  language: defaultLanguage,
+  translate: function translate(key) {
+    return "[Missing translation for ".concat(key, "]");
   }
 });
 PopupContext.displayName = "NtPopupContext";
@@ -345,17 +393,31 @@ PopupContext.displayName = "NtPopupContext";
  * @param {React.ReactNode} props.children
  * @param {NtPopupConfig} [props.config={}] - Global configuration for the popups.
  * @param {Object.<string, React.ComponentType>} [props.customPopups={}] - Map of user-defined React components { type: Component }.
+ * @param {'en'|'ptbr'|string} [props.language="en"] - The current language for internal popups (e.g., "en", "pt").
+ * @param {'white'|'dark'} [props.theme="white"] - The current language for internal popups (e.g., "en", "pt").
  */
 function NtPopupProvider(_ref) {
   var children = _ref.children,
     _ref$config = _ref.config,
     config = _ref$config === void 0 ? {} : _ref$config,
     _ref$customPopups = _ref.customPopups,
-    customPopups = _ref$customPopups === void 0 ? {} : _ref$customPopups;
+    customPopups = _ref$customPopups === void 0 ? {} : _ref$customPopups,
+    _ref$language = _ref.language,
+    propLanguage = _ref$language === void 0 ? defaultLanguage : _ref$language,
+    _ref$theme = _ref.theme,
+    theme = _ref$theme === void 0 ? "white" : _ref$theme;
   var _useState = React.useState([]),
     _useState2 = _slicedToArray(_useState, 2),
     popups = _useState2[0],
     setPopups = _useState2[1];
+
+  // Idioma Ativo (Garante fallback para o defaultLanguage)
+  var activeLanguage = propLanguage || defaultLanguage;
+
+  // Função de tradução (Memoizada)
+  var translate = React.useCallback(function (key) {
+    return getTranslation(key, activeLanguage);
+  }, [activeLanguage]);
 
   // Refs for persistence
   var callbacksRef = React.useRef(new Map()); // popupId -> { onClose, onOpen }
@@ -371,9 +433,7 @@ function NtPopupProvider(_ref) {
   var allPopupTypes = _objectSpread(_objectSpread({}, internalPopupTypes), customPopups);
 
   // Configuration parsing
-  var _config$useDefaultCss = config.useDefaultCss,
-    useDefaultCss = _config$useDefaultCss === void 0 ? true : _config$useDefaultCss,
-    _config$defaultSettin = config.defaultSettings,
+  var _config$defaultSettin = config.defaultSettings,
     defaultSettings = _config$defaultSettin === void 0 ? {} : _config$defaultSettin;
   var globalDefaults = defaultSettings.all || {};
 
@@ -405,32 +465,33 @@ function NtPopupProvider(_ref) {
   };
 
   // ========== CLOSE POPUP FUNCTION ==========
-  var closePopup = React.useCallback(function (popupIdOrStatus, statusParam) {
+  var closePopup = React.useCallback(function (popupIdOrHasAction, hasActionParam) {
     setPopups(function (prev) {
       var popupId;
-      var status;
+      var hasAction;
 
       // Parameter flexibility logic
-      if (typeof popupIdOrStatus === 'boolean') {
+      if (typeof popupIdOrHasAction === 'boolean') {
         var _prev;
         popupId = (_prev = prev[prev.length - 1]) === null || _prev === void 0 ? void 0 : _prev.id;
-        status = popupIdOrStatus;
-      } else if (typeof popupIdOrStatus === 'string' && typeof statusParam === 'boolean') {
-        popupId = popupIdOrStatus;
-        status = statusParam;
-      } else if (typeof popupIdOrStatus === 'string') {
-        popupId = popupIdOrStatus;
-        status = false;
+        hasAction = popupIdOrHasAction;
+      } else if (typeof popupIdOrHasAction === 'string' && typeof hasActionParam === 'boolean') {
+        popupId = popupIdOrHasAction;
+        hasAction = hasActionParam;
+      } else if (typeof popupIdOrHasAction === 'string') {
+        popupId = popupIdOrHasAction;
+        hasAction = false;
       } else {
         var _prev2;
         popupId = (_prev2 = prev[prev.length - 1]) === null || _prev2 === void 0 ? void 0 : _prev2.id;
-        status = false;
+        hasAction = false;
       }
       if (!popupId) return prev;
       var closingPopup = prev.find(function (p) {
         return p.id === popupId;
       });
       if (!closingPopup) return prev;
+      if (closingPopup.settings.requireAction && !hasAction) return prev;
 
       // Clear timeout
       var timeoutId = timeoutsRef.current.get(popupId);
@@ -443,8 +504,7 @@ function NtPopupProvider(_ref) {
       var callbacks = callbacksRef.current.get(popupId);
       if (callbacks !== null && callbacks !== void 0 && callbacks.onClose) {
         try {
-          // status is passed to the onClose/onChoose handler
-          callbacks.onClose(status, popupId);
+          callbacks.onClose(hasAction, popupId);
         } catch (error) {
           console.error("Error in onClose callback for popup ".concat(popupId, ":"), error);
         }
@@ -503,8 +563,7 @@ function NtPopupProvider(_ref) {
       return null;
     }
     callbacksRef.current.set(popupId, {
-      onClose: settings.onClose || settings.onChoose,
-      // onChoose is an alias for onClose for Confirm type
+      onClose: settings.onClose,
       onOpen: settings.onOpen
     });
     var typeDefaults = defaultSettings[popupType] || {};
@@ -519,7 +578,8 @@ function NtPopupProvider(_ref) {
           // Default library settings (lowest priority)
           closeOnEscape: true,
           closeOnClickOutside: true,
-          keepLast: false
+          keepLast: false,
+          requireAction: false
         }, globalDefaults), typeDefaults), settings), {}, {
           id: popupId
         }),
@@ -553,7 +613,7 @@ function NtPopupProvider(_ref) {
     // Setup timeout
     if (settings.timeout && settings.timeout > 0) {
       var timeoutId = setTimeout(function () {
-        closePopup(popupId, false); // Status false for timeout close
+        closePopup(popupId, false); // HasAction false for timeout close
       }, settings.timeout);
       timeoutsRef.current.set(popupId, timeoutId);
     }
@@ -668,35 +728,39 @@ function NtPopupProvider(_ref) {
       popups: popups.filter(function (p) {
         return !p.hidden;
       }),
+      // <-- ESTA LINHA AGORA DEVE ESTAR CORRETA DEVIDO AO TYPEDEF
       openPopup: openPopup,
       closePopup: closePopup,
       closeAllPopups: closeAllPopups,
       isPopupOpen: isPopupOpen,
-      getPopup: getPopup
+      getPopup: getPopup,
+      language: activeLanguage,
+      translate: translate
     }
   }, /*#__PURE__*/React.createElement(DisplayPopup, {
+    theme: theme,
     popups: popups.filter(function (p) {
       return !p.hidden;
     }),
     closePopup: closePopup,
-    popupComponents: allPopupTypes // Pass all registered components
-    ,
-    useDefaultCss: useDefaultCss // Pass CSS configuration
+    popupComponents: allPopupTypes,
+    translate: translate
   }), children);
 }
 
 // ==================== CUSTOM HOOK ====================
 /**
- * Hook to easily access the NtPopup context for opening and closing popups.
- * @returns {PopupContextValue}
+ * Hook to easily access the NtPopup context for opening and closing popups, 
+* and accessing language/translation features.
+ * @returns {ExtendedPopupContextValue}
  */
-var usePopup = function usePopup() {
+var useNtPopups = function useNtPopups() {
   var context = React.useContext(PopupContext);
   if (!context) {
-    throw new Error("usePopup must be used within an NtPopupProvider");
+    throw new Error("useNtPopups must be used within an NtPopupProvider");
   }
   return context;
 };
 
 exports.NtPopupProvider = NtPopupProvider;
-exports.usePopup = usePopup;
+exports.default = useNtPopups;

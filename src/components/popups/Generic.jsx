@@ -3,29 +3,50 @@ import React from "react";
 /**
  * Default Generic Message Popup Component.
  * @param {Object} properties
- * @param {(status: boolean) => void} properties.closePopup
- * @param {string} properties.message
- * @param {string} [properties.title="Message"]
- * @param {string} [properties.closeLabel="Cancel"]
+ * @param {(hasAction: boolean) => void} properties.closePopup
  * @param {Object} [properties.popupstyles]
+ * @param {(key: string) => string} properties.translate
+ * @param {Object} [properties.data]
+ * @param {string} [properties.data.message="Message"]
+ * @param {string} [properties.data.title="Title"]
+ * @param {string} [properties.data.closeLabel="Close"]
+ * @param {string|React.ReactElement} [properties.data.icon="ⓘ"]
  */
-export default function Generic({ closePopup, message = "Message", title = "Title", closeLabel = "Close", popupstyles = {} }) {
+export default function Generic({
+    closePopup,
+    popupstyles = {},
+    translate,
+    data: {
+        message,
+        title,
+        closeLabel,
+        icon = "ⓘ"
+    } = {}
+}) {
+
+    const finalTitle = title ?? translate('generic.title');
+    const finalMessage = message ?? translate('generic.message');
+    const finalCloseLabel = closeLabel ?? translate('util.ok');
 
     const classes = {
-        title: popupstyles.title || "nt-popup-title",
-        scrollable: popupstyles.scrollable || "nt-popup-scrollable",
-        footer: popupstyles.footer || "nt-popup-footer",
-        closeButton: popupstyles.closeButton || "nt-close-button",
+        title: `${popupstyles.title} ntpopups-title`,
+        icon: `${popupstyles.icon} ntpopups-icon`,
+        scrollable: `${popupstyles.scrollable} ntpopups-scrollable`,
+        footer: `${popupstyles.footer} ntpopups-footer`,
+        closeButton: `${popupstyles.baseButton} ntpopups-basebutton`,
     };
 
     return (
         <>
             <div className={classes.title}>
-                {title}
+                <div className={classes.icon}>
+                    {icon}
+                </div>
+                {finalTitle}
             </div>
 
             <div className={classes.scrollable}>
-                <p>{message}</p>
+                <p>{finalMessage}</p>
             </div>
 
             <div className={classes.footer}>
@@ -33,7 +54,7 @@ export default function Generic({ closePopup, message = "Message", title = "Titl
                     className={classes.closeButton}
                     onClick={() => closePopup(true)}
                 >
-                    {closeLabel}
+                    {finalCloseLabel}
                 </button>
             </div>
         </>

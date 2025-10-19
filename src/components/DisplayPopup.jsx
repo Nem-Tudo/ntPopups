@@ -17,9 +17,10 @@ const defaultCssModules = {
  * @param {import('../utils/types').PopupData[]} properties.popups - Array of active (visible) popups.
  * @param {Function} properties.closePopup - Function to close a specific popup.
  * @param {Object.<string, import("react").ComponentType<any>>} properties.popupComponents - Map of all registered components.
- * @param {boolean} properties.useDefaultCss - Flag to use default CSS.
+ * @param {(key: string) => string} properties.translate - Function to translate strings (passada do Provider). <-- NOVA PROP
+ * @param {String} properties.theme - Theme
  */
-export default function DisplayPopup({ popups, closePopup, popupComponents, useDefaultCss }) {
+export default function DisplayPopup({ popups, closePopup, popupComponents, translate, theme }) { // <-- RECEBE NOVA PROP
 
     /**
      * Maps the popup type string to its corresponding React component.
@@ -36,27 +37,27 @@ export default function DisplayPopup({ popups, closePopup, popupComponents, useD
             console.error(`ntPopups Error: Unknown popup type: ${popupType}`);
             return (
                 <div style={{ padding: '20px', color: 'red' }}>
-                    <h3>Error: Invalid popup type</h3>
-                    <p>Type: {popupType}</p>
-                    <button onClick={() => closePopup(id, false)}>Close</button>
+                    <h3>{translate('internalError.title')}</h3>
+                    <p>{translate('internalError.message')} {popupType}</p>
+                    <button onClick={() => closePopup(id, false)}>
+                        {translate('util.closeLabel')}
+                    </button>
                 </div>
             );
         }
 
         // Prepare base props
         const componentProps = {
-            closePopup: (status = false) => closePopup(id, status),
+            closePopup: (hasAction = false) => closePopup(id, hasAction),
             ...settings,
+            translate, // <-- INJETA A FUNÇÃO DE TRADUÇÃO NO COMPONENTE
         };
 
-        // Conditional CSS injection
-        if (useDefaultCss) {
-            // Inject the main styles for common elements (title, scrollable, footer)
-            componentProps.popupstyles = {
-                ...styles, // Global styles for title/scrollable
-                ...(defaultCssModules[popupType] || {}), // Specific styles (e.g., confirm buttons)
-            };
-        }
+        // Inject the main styles for common elements (title, scrollable, footer)
+        componentProps.popupstyles = {
+            ...styles, // Global styles for title/scrollable
+            ...(defaultCssModules[popupType] || {}), // Specific styles (e.g., confirm buttons)
+        };
 
         // Return the component with prepared props
         return <Component {...componentProps} />;
@@ -69,14 +70,14 @@ export default function DisplayPopup({ popups, closePopup, popupComponents, useD
                 <section
                     key={popup.id}
                     // Apply default CSS class or custom fallback class
-                    className={useDefaultCss ? styles.popups : "nt-popups-overlay"}
+                    className={`${styles.popups}${theme != "white" ? ` ${styles[`nt-popups-${theme}-theme`]} ` : " "}ntpopups-overlay`}
                     style={{ zIndex: popup.zIndex }}
                 >
                     {/* POPUP CONTAINER */}
                     <div
                         data-popup-id={popup.id}
                         // Apply default CSS class or custom fallback class
-                        className={useDefaultCss ? styles.popup : "nt-popup-container"}
+                        className={`${styles.popup} ntpopups-container`}
                     >
                         {/* SPECIFIC POPUP CONTENT */}
                         {getPopupComponent(popup)}

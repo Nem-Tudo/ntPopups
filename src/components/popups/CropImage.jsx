@@ -5,15 +5,15 @@ import React from 'react';
 /**
  * Placeholder for Crop Image Popup Component.
  * @param {Object} properties
- * @param {(status: boolean) => void} properties.closePopup
+ * @param {(hasAction: boolean) => void} properties.closePopup
  * @param {string} properties.title
  * @param {Object} [properties.popupstyles]
  */
 export default function CropImage({ closePopup, title = "Crop Image", popupstyles = {} }) {
 
     const classes = {
-        title: popupstyles.title || "nt-popup-title",
-        scrollable: popupstyles.scrollable || "nt-popup-scrollable",
+        title: popupstyles.title || "ntpopups-title",
+        scrollable: popupstyles.scrollable || "ntpopups-scrollable",
     };
 
     return (

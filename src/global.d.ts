@@ -9,8 +9,3 @@ declare module '*.module.css' {
 declare namespace React {
     interface ComponentType<P = any> {}
 }
-
-declare module 'react-icons/*' {
-  const content: any;
-  export default content;
-}

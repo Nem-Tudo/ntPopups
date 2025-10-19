@@ -1,25 +1,35 @@
+// /src/contexts/PopupContext.jsx
+
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import DisplayPopup from "../components/DisplayPopup.jsx";
 import { internalPopupTypes } from "./popupTypes";
 
+// IMPORTANTE: Certifique-se de que este caminho está correto.
+// O arquivo '../utils/types' deve conter o typedef ExtendedPopupContextValue.
 /**
  * @typedef {import("../utils/types").PopupContextValue} PopupContextValue 
+ * @typedef {import("../utils/types").ExtendedPopupContextValue} ExtendedPopupContextValue // <-- NOVO: Usa o tipo completo e estendido
  * @typedef {import("../utils/types").NtPopupConfig} NtPopupConfig
  */
 
+import { getTranslation, defaultLanguage } from "../i18n/index";
+
 // ==================== CONTEXT CREATION ====================
 
-// O JSDoc usa o typedef acima
-/** @type {React.Context<PopupContextValue>} */
+// O JSDoc AGORA USA O TIPO EXTENDIDO CORRETO
+/** @type {React.Context<ExtendedPopupContextValue>} */
 const PopupContext = createContext({
+    // Definir todos os valores padrão, incluindo os novos (language e translate)
     popups: [],
     openPopup: () => null,
     closePopup: () => { },
     closeAllPopups: () => { },
     isPopupOpen: () => false,
     getPopup: () => null,
+    language: defaultLanguage,
+    translate: (key) => `[Missing translation for ${key}]`,
 });
 
 PopupContext.displayName = "NtPopupContext";
@@ -32,13 +42,22 @@ PopupContext.displayName = "NtPopupContext";
  * @param {React.ReactNode} props.children
  * @param {NtPopupConfig} [props.config={}] - Global configuration for the popups.
  * @param {Object.<string, React.ComponentType>} [props.customPopups={}] - Map of user-defined React components { type: Component }.
+ * @param {'en'|'ptbr'|string} [props.language="en"] - The current language for internal popups (e.g., "en", "pt").
+ * @param {'white'|'dark'} [props.theme="white"] - The current language for internal popups (e.g., "en", "pt").
  */
-export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
+export function NtPopupProvider({ children, config = {}, customPopups = {}, language: propLanguage = defaultLanguage, theme = "white" }) {
     const [popups, setPopups] = useState([]);
+
+    // Idioma Ativo (Garante fallback para o defaultLanguage)
+    const activeLanguage = propLanguage || defaultLanguage;
+
+    // Função de tradução (Memoizada)
+    const translate = useCallback((key) => getTranslation(key, activeLanguage), [activeLanguage]);
+
 
     // Refs for persistence
     const callbacksRef = useRef(new Map()); // popupId -> { onClose, onOpen }
-    const timeoutsRef = useRef(new Map());   // popupId -> timeoutId
+    const timeoutsRef = useRef(new Map());   // popupId -> timeoutId
     const originalOverflowRef = useRef(null);
     const currentPopupsRef = useRef([]);
 
@@ -50,7 +69,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
     const allPopupTypes = { ...internalPopupTypes, ...customPopups };
 
     // Configuration parsing
-    const { useDefaultCss = true, defaultSettings = {} } = config;
+    const { defaultSettings = {} } = config;
     const globalDefaults = defaultSettings.all || {};
 
     // ========== STATE SYNCHRONIZATION AND QUEUE PROCESSING ==========
@@ -86,30 +105,32 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
     };
 
     // ========== CLOSE POPUP FUNCTION ==========
-    const closePopup = useCallback((popupIdOrStatus, statusParam) => {
+    const closePopup = useCallback((popupIdOrHasAction, hasActionParam) => {
         setPopups(prev => {
             let popupId;
-            let status;
+            let hasAction;
 
             // Parameter flexibility logic
-            if (typeof popupIdOrStatus === 'boolean') {
+            if (typeof popupIdOrHasAction === 'boolean') {
                 popupId = prev[prev.length - 1]?.id;
-                status = popupIdOrStatus;
-            } else if (typeof popupIdOrStatus === 'string' && typeof statusParam === 'boolean') {
-                popupId = popupIdOrStatus;
-                status = statusParam;
-            } else if (typeof popupIdOrStatus === 'string') {
-                popupId = popupIdOrStatus;
-                status = false;
+                hasAction = popupIdOrHasAction;
+            } else if (typeof popupIdOrHasAction === 'string' && typeof hasActionParam === 'boolean') {
+                popupId = popupIdOrHasAction;
+                hasAction = hasActionParam;
+            } else if (typeof popupIdOrHasAction === 'string') {
+                popupId = popupIdOrHasAction;
+                hasAction = false;
             } else {
                 popupId = prev[prev.length - 1]?.id;
-                status = false;
+                hasAction = false;
             }
 
             if (!popupId) return prev;
 
             const closingPopup = prev.find(p => p.id === popupId);
             if (!closingPopup) return prev;
+
+            if (closingPopup.settings.requireAction && !hasAction) return prev;
 
             // Clear timeout
             const timeoutId = timeoutsRef.current.get(popupId);
@@ -122,8 +143,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
             const callbacks = callbacksRef.current.get(popupId);
             if (callbacks?.onClose) {
                 try {
-                    // status is passed to the onClose/onChoose handler
-                    callbacks.onClose(status, popupId);
+                    callbacks.onClose(hasAction, popupId);
                 } catch (error) {
                     console.error(`Error in onClose callback for popup ${popupId}:`, error);
                 }
@@ -179,7 +199,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
         }
 
         callbacksRef.current.set(popupId, {
-            onClose: settings.onClose || settings.onChoose, // onChoose is an alias for onClose for Confirm type
+            onClose: settings.onClose,
             onOpen: settings.onOpen
         });
 
@@ -196,6 +216,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
                     closeOnEscape: true,
                     closeOnClickOutside: true,
                     keepLast: false,
+                    requireAction: false,
                     // 1. Global defaults from config
                     ...globalDefaults,
                     // 2. Type-specific defaults from config
@@ -239,7 +260,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
         // Setup timeout
         if (settings.timeout && settings.timeout > 0) {
             const timeoutId = setTimeout(() => {
-                closePopup(popupId, false); // Status false for timeout close
+                closePopup(popupId, false); // HasAction false for timeout close
             }, settings.timeout);
             timeoutsRef.current.set(popupId, timeoutId);
         }
@@ -349,18 +370,21 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
     // ========== PROVIDER RENDERING ==========
     return (
         <PopupContext.Provider value={{
-            popups: popups.filter(p => !p.hidden),
+            popups: popups.filter(p => !p.hidden), // <-- ESTA LINHA AGORA DEVE ESTAR CORRETA DEVIDO AO TYPEDEF
             openPopup,
             closePopup,
             closeAllPopups,
             isPopupOpen,
             getPopup,
+            language: activeLanguage,
+            translate,
         }}>
             <DisplayPopup
+                theme={theme}
                 popups={popups.filter(p => !p.hidden)}
                 closePopup={closePopup}
-                popupComponents={allPopupTypes} // Pass all registered components
-                useDefaultCss={useDefaultCss}  // Pass CSS configuration
+                popupComponents={allPopupTypes}
+                translate={translate}
             />
             {children}
         </PopupContext.Provider>
@@ -369,14 +393,15 @@ export function NtPopupProvider({ children, config = {}, customPopups = {} }) {
 
 // ==================== CUSTOM HOOK ====================
 /**
- * Hook to easily access the NtPopup context for opening and closing popups.
- * @returns {PopupContextValue}
+ * Hook to easily access the NtPopup context for opening and closing popups, 
+* and accessing language/translation features.
+ * @returns {ExtendedPopupContextValue}
  */
-export const usePopup = () => {
+export const useNtPopups = () => {
     const context = useContext(PopupContext);
 
     if (!context) {
-        throw new Error("usePopup must be used within an NtPopupProvider");
+        throw new Error("useNtPopups must be used within an NtPopupProvider");
     }
 
     return context;

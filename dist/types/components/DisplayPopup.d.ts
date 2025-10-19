@@ -4,14 +4,16 @@
  * @param {import('../utils/types').PopupData[]} properties.popups - Array of active (visible) popups.
  * @param {Function} properties.closePopup - Function to close a specific popup.
  * @param {Object.<string, import("react").ComponentType<any>>} properties.popupComponents - Map of all registered components.
- * @param {boolean} properties.useDefaultCss - Flag to use default CSS.
+ * @param {(key: string) => string} properties.translate - Function to translate strings (passada do Provider). <-- NOVA PROP
+ * @param {String} properties.theme - Theme
  */
-export default function DisplayPopup({ popups, closePopup, popupComponents, useDefaultCss }: {
+export default function DisplayPopup({ popups, closePopup, popupComponents, translate, theme }: {
     popups: import("../utils/types").PopupData[];
     closePopup: Function;
     popupComponents: {
         [x: string]: import("react").ComponentType<any>;
     };
-    useDefaultCss: boolean;
+    translate: (key: string) => string;
+    theme: string;
 }): React.JSX.Element;
 import React from "react";
