@@ -125,37 +125,6 @@ function MyComponent() {
 
 ---
 
-## 📚 API Reference
-
-### NtPopupProvider Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | - | Your application components |
-| `config` | `Object` | `{}` | Global configuration for popups |
-| `customPopups` | `Object` | `{}` | Map of custom popup components |
-| `language` | `'en' \| 'ptbr'` | `'en'` | Language for built-in popups |
-| `theme` | `'white' \| 'dark'` | `'white'` | Visual theme |
-
-### useNtPopups Hook
-
-Returns an object with the following methods and properties:
-
-```javascript
-{
-  openPopup: (popupType, settings) => popupId,
-  closePopup: (popupId, hasAction) => void,
-  closeAllPopups: () => void,
-  isPopupOpen: (popupId) => boolean,
-  getPopup: (popupId) => PopupData | null,
-  popups: PopupData[],
-  language: string,
-  translate: (key) => string
-}
-```
-
----
-
 ## 🎯 Built-in Popup Types
 
 ### 1. Generic Popup
@@ -1449,6 +1418,37 @@ const handleMultiStep = () => {
     }
   });
 };
+```
+
+---
+
+## 📚 API Reference
+
+### NtPopupProvider Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | - | Your application components |
+| `config` | `Object` | `{}` | Global configuration for popups |
+| `customPopups` | `Object` | `{}` | Map of custom popup components |
+| `language` | `'en' \| 'ptbr'` | `'en'` | Language for built-in popups |
+| `theme` | `'white' \| 'dark'` | `'white'` | Visual theme |
+
+### useNtPopups Hook
+
+Returns an object with the following methods and properties:
+
+```javascript
+{
+  openPopup: (popupType, settings) => popupId,
+  closePopup: (popupId, hasAction) => void,
+  closeAllPopups: () => void,
+  isPopupOpen: (popupId) => boolean,
+  getPopup: (popupId) => PopupData | null,
+  popups: PopupData[],
+  language: string,
+  translate: (key) => string
+}
 ```
 
 ---
