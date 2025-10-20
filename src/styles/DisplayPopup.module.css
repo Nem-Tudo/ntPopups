@@ -301,7 +301,7 @@
     transition: background var(--ntpopups-transition-duration-slow) ease, border-color var(--ntpopups-transition-duration-slow) ease, color var(--ntpopups-transition-duration-slow) ease;
 }
 
-.hiddenTitle .title {
+.hiddenHeader .title {
     display: none !important;
 }
 

@@ -383,7 +383,7 @@ openPopup('generic', {
   },
   
   // Visual customization
-  hiddenTitle: false,        // Hide title bar (default: false)
+  hiddenHeader: false,        // Hide title bar (default: false)
   hiddenFooter: false,       // Hide footer (default: false)
   disableOpenAnimation: false, // Disable entrance animation (default: false)
   

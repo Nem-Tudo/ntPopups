@@ -33,7 +33,7 @@
  * @property {boolean} [requireAction=false] - If true, the popup can only be closed via an internal component action (i.e., calling `closePopup(true)`).
  * @property {number} [timeout=0] - Time in milliseconds before the popup auto-closes. Disabled if 0 or undefined.
  * @property {boolean} [keepLast=false] - If true, the previously visible popup remains visible (underneath) when this new one opens.
- * @property {boolean} [hiddenTitle=false] - CSS utility: Hides the default popup title/header area.
+ * @property {boolean} [hiddenHeader=false] - CSS utility: Hides the default popup title/header area.
  * @property {boolean} [hiddenFooter=false] - CSS utility: Hides the default popup footer area.
  * @property {boolean} [disableOpenAnimation=false] - CSS utility: Disables the opening transition.
  */
