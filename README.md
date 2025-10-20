@@ -276,7 +276,8 @@ openPopup('form', {
   disabled: false,
   required: false,
   minLength: 10,
-  maxLength: 500
+  maxLength: 500,
+  matchRegex: '^[a-z]+$'
 }
 ```
 
