@@ -11,6 +11,7 @@ export default {
         ok: "Ok",
         resetLabel: "Resetar",
         applyLabel: "Aplicar",
+        done: "Pronto",
     },
     confirm: {
         title: "Confirmação",
@@ -23,4 +24,11 @@ export default {
     cropImage: {
         title: "Editar Imagem",
     },
+    generic: {
+        title: "Aviso",
+        message: "Mensagem"
+    },
+    form: {
+        title: "Preencha"
+    }
 };

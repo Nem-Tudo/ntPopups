@@ -17,7 +17,7 @@
 /**
  * @typedef {Object} PopupContextValue
  * @property {PopupData[]} popups - Array of currently active (visible) popups.
- * @property {(popupType: 'generic'|'confirm'|'crop_image'|string, settings?: {
+ * @property {(popupType: 'generic'|'confirm'|'crop_image'|'form'|string, settings?: {
  * id?: string,
  * keepLast?: boolean,
  * onClose?: Function,
@@ -25,30 +25,9 @@
  * closeOnEscape?: boolean,
  * closeOnClickOutside?: boolean,
  * requireAction?: boolean,
- * timeout?: number,
- * data?: Object
- * }) => Promise<string | null> | string | null} openPopup - Function to open a new popup. Returns the popup ID.
- * @property {(popupIdOrHasAction?: string | boolean, hasActionParam?: boolean) => void} closePopup - Function to close a specific or the topmost popup.
- * @property {() => void} closeAllPopups - Function to close all popups.
- * @property {(popupId: string) => boolean} isPopupOpen - Checks if a specific popup is open and visible.
- * @property {(popupId: string) => PopupData | null} getPopup - Retrieves data for an active popup.
- */
-
-// ------------------------------------------------------------------
-// NOVO TIPO: Inclui o tipo base + i18n
-// ------------------------------------------------------------------
-
-/**
- * @typedef {Object} ExtendedPopupContextValue
- * @property {PopupData[]} popups - Array of currently active (visible) popups.
- * @property {(popupType: 'generic'|'confirm'|'crop_image'|string, settings?: {
- * id?: string,
- * keepLast?: boolean,
- * onClose?: Function,
- * onOpen?: Function,
- * closeOnEscape?: boolean,
- * closeOnClickOutside?: boolean,
- * requireAction?: boolean,
+ * hiddenTitle?: boolean,
+ * hiddenFooter?: boolean,
+ * disableOpenAnimation?: boolean,
  * timeout?: number,
  * data?: Object
  * }) => Promise<string | null> | string | null} openPopup - Function to open a new popup. Returns the popup ID.

@@ -10,7 +10,8 @@ export default {
         closeLabel: "Close",
         ok: "Ok",
         resetLabel: "Reset",
-        applyLabel: "Apply"
+        applyLabel: "Apply",
+        done: "Done",
     },
     confirm: {
         title: "Confirmation",
@@ -23,4 +24,11 @@ export default {
     cropImage: {
         title: "Edit Image"
     },
+    generic: {
+        title: "Warn",
+        message: "Message"
+    },
+    form: {
+        title: "Form"
+    }
 };

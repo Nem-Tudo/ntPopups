@@ -1,6 +1,7 @@
 import Confirm from "../components/popups/Confirm.jsx";
 import Generic from "../components/popups/Generic.jsx";
 import CropImage from "../components/popups/CropImage.jsx";
+import Form from "../components/popups/Form.jsx";
 
 /**
  * Internal map of default popups provided by the library.
@@ -10,4 +11,5 @@ export const internalPopupTypes = {
     "confirm": Confirm,
     "generic": Generic,
     "crop_image": CropImage,
+    "form": Form,
 };

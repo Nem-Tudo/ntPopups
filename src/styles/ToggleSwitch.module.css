@@ -1,0 +1,83 @@
+.toggleSwitch {
+    visibility: hidden;
+    height: 24px;
+    /* Altura do switch */
+    width: 48px;
+    /* Largura do switch */
+    min-width: 48px;
+    max-width: 48px;
+    margin: 0;
+    position: relative;
+    /* Adicionando transição de estilo de visibilidade para que não desapareça imediatamente */
+    transition: visibility 0s linear var(--ntpopups-transition-duration-fast);
+    margin: 0 10px;
+}
+
+/*  */
+.toggleSwitch::before {
+    /* Transição para o fundo (pista) */
+    transition: background-color var(--ntpopups-transition-duration) var(--ntpopups-transition-easing);
+    content: "";
+    /* Cor de fundo padrão (desligado) - usei a cor de borda para um cinza neutro */
+    background-color: var(--ntpopups-border-color-dark);
+    visibility: visible;
+    width: 100%;
+    display: flex;
+    height: 100%;
+    /* Border-radius de 24px para a altura de 24px cria uma forma de pílula */
+    border-radius: 24px;
+    cursor: pointer;
+    /* Sombra mais suave */
+    box-shadow: var(--ntpopups-shadow-sm);
+}
+
+.toggleSwitch::after {
+    /* Transição para a bolinha (thumb) */
+    transition: transform var(--ntpopups-transition-duration) var(--ntpopups-transition-easing);
+    visibility: visible;
+    content: "";
+    display: flex;
+    /* Cor da bolinha - branco */
+    background-color: var(--ntpopups-color-text-on-primary);
+    aspect-ratio: 1;
+    /* Altura da bolinha: (24px - 4px) = 20px */
+    height: calc(100% - 4px);
+    position: absolute;
+    /* Margem de 2px no topo */
+    top: 2px;
+    /* Posição inicial: 2px da esquerda */
+    left: 2px;
+    border-radius: 100%;
+    cursor: pointer;
+    /* Sombra para a bolinha */
+    box-shadow: var(--ntpopups-shadow-sm);
+}
+
+.toggleSwitch:checked::before {
+    /* Cor de fundo ligado - Cor Primária */
+    background-color: var(--ntpopups-color-primary);
+}
+
+.toggleSwitch:checked::after {
+    /* Mover a bolinha para a direita */
+    /* A distância total é (48px - 2px - 2px - 20px) = 24px */
+    /* Para mover com 'translateX(100%)' a partir da posição inicial (left: 2px), 
+       precisamos ajustar a lógica.
+       A distância de movimento é a largura do switch menos a largura da bolinha menos o preenchimento total.
+       48px (switch) - 20px (bolinha) - 2px (left) - 2px (right padding simulado) = 24px.
+       
+       A propriedade 'transform: translateX(100%)' é relativa ao tamanho do elemento, 
+       ou seja, 100% de 20px (largura da bolinha).
+       
+       Em vez de 'translateX(100%)', vamos usar 'translateX(calc(100% - 4px))' ou, 
+       melhor, uma distância fixa para maior precisão:
+       
+       Mover de 'left: 2px' para 'left: 26px' (48px - 20px - 2px)
+    */
+    transform: translateX(calc(48px - 4px - 20px));
+    /* Mover 24px */
+    /* Mantém a cor da bolinha */
+    background-color: var(--ntpopups-color-text-on-primary);
+    /* left e right não são mais necessários se usarmos apenas transform */
+    left: 2px;
+}

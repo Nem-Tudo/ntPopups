@@ -3,12 +3,13 @@ import React from "react";
 // Import all default CSS modules internally
 import styles from "../styles/DisplayPopup.module.css";
 import cropImageStyles from "../styles/CropImage.module.css";
+import formStyles from "../styles/Form.module.css";
 // ... other specific styles (e.g., genericStyles, cropImageStyles)
 
 // Internal map to link popup types to their specific CSS modules
 const defaultCssModules = {
     "crop_image": cropImageStyles,
-    // Add other specific popups here
+    "form": formStyles,
 };
 
 /**
@@ -20,7 +21,13 @@ const defaultCssModules = {
  * @param {(key: string) => string} properties.translate - Function to translate strings (passada do Provider). <-- NOVA PROP
  * @param {String} properties.theme - Theme
  */
-export default function DisplayPopup({ popups, closePopup, popupComponents, translate, theme }) { // <-- RECEBE NOVA PROP
+export default function DisplayPopup({
+    popups,
+    closePopup,
+    popupComponents,
+    translate,
+    theme
+}) {
 
     /**
      * Maps the popup type string to its corresponding React component.
@@ -34,7 +41,7 @@ export default function DisplayPopup({ popups, closePopup, popupComponents, tran
         const Component = popupComponents[popupType];
 
         if (!Component) {
-            console.error(`ntPopups Error: Unknown popup type: ${popupType}`);
+            console.log(`ntPopups Error: Unknown popup type: ${popupType}`);
             return (
                 <div style={{ padding: '20px', color: 'red' }}>
                     <h3>{translate('internalError.title')}</h3>
@@ -77,7 +84,7 @@ export default function DisplayPopup({ popups, closePopup, popupComponents, tran
                     <div
                         data-popup-id={popup.id}
                         // Apply default CSS class or custom fallback class
-                        className={`${styles.popup} ntpopups-container`}
+                        className={`${styles.popup} ntpopups-container${popup.settings.hiddenTitle ? ` ${styles.hiddenTitle} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
                     >
                         {/* SPECIFIC POPUP CONTENT */}
                         {getPopupComponent(popup)}

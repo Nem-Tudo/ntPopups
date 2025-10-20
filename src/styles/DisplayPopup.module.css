@@ -31,7 +31,7 @@
 
     /* === COLORS - Secondary === */
     --ntpopups-color-secondary: #2a2a2a;
-    --ntpopups-color-secondary-hover: #5a6268;
+    --ntpopups-color-secondary-hover: #363636;
     --ntpopups-color-secondary-active: #4e555b;
     --ntpopups-color-secondary-disabled: #b8bfc6;
     --ntpopups-color-secondary-light: #e9ecef;
@@ -46,8 +46,11 @@
     --ntpopups-color-info: #17a2b8;
     --ntpopups-color-info-hover: #138496;
 
+    /* === COLORS - Input === */
+    --ntpopups-color-input-invalid: var(--ntpopups-color-danger);
+
     /* === COLORS - Text === */
-    --ntpopups-color-text: rgba(64, 64, 64, .85);
+    --ntpopups-color-text: rgba(64, 64, 64, .95);
     /* Aumentei um pouco a opacidade para legibilidade */
     --ntpopups-color-text-secondary: rgba(14, 14, 14, 0.6);
     --ntpopups-color-text-muted: rgba(14, 14, 14, 0.4);
@@ -102,6 +105,15 @@
 
     --ntpopups-gap-buttons: var(--ntpopups-spacing-sm);
     --ntpopups-gap-title-icon: 8px;
+
+    /* === FORM INPUTS === */
+    --ntpopups-input-bg: #ffffff;
+    --ntpopups-input-border: var(--ntpopups-border-color);
+    --ntpopups-input-border-focus: var(--ntpopups-color-primary);
+    --ntpopups-input-text-color: var(--ntpopups-color-text);
+    --ntpopups-input-placeholder-color: var(--ntpopups-color-text-muted);
+    --ntpopups-input-padding: var(--ntpopups-spacing-sm) var(--ntpopups-spacing-md);
+    --ntpopups-input-border-radius: var(--ntpopups-border-radius-sm);
 
     /* === SIZING === */
     --ntpopups-width-min: 300px;
@@ -170,6 +182,10 @@
     --ntpopups-color-secondary-disabled: #5a6268;
     --ntpopups-color-secondary-light: #333333;
 
+    /* === COLORS - Input (Dark Theme) === */
+    --ntpopups-color-input-invalid: var(--ntpopups-color-danger);
+    /* Mantém o perigo */
+
     /* === COLORS - Text (Invertido) === */
     --ntpopups-color-text: rgba(255, 255, 255, 0.9);
     --ntpopups-color-text-secondary: rgba(255, 255, 255, 0.7);
@@ -200,6 +216,13 @@
     --ntpopups-shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.7);
     --ntpopups-shadow-button: 0 2px 4px rgba(0, 0, 0, 0.2);
     --ntpopups-shadow-button-hover: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+    /* === FORM INPUTS (Dark Theme) === */
+    --ntpopups-input-bg: #2a2a2a;
+    --ntpopups-input-border: var(--ntpopups-border-color);
+    --ntpopups-input-border-focus: var(--ntpopups-color-primary);
+    --ntpopups-input-text-color: var(--ntpopups-color-text);
+    --ntpopups-input-placeholder-color: var(--ntpopups-color-text-muted);
 
     /* === SCROLLBAR (Ajustado para fundo escuro) === */
     --ntpopups-scrollbar-bg: #222222;
@@ -249,6 +272,17 @@
     /* Transição para cores de fundo e sombra */
     transition: background var(--ntpopups-transition-duration-slow) ease, box-shadow var(--ntpopups-transition-duration-slow) ease;
 }
+.popup.disableOpenAnimation{
+    animation: none !important;
+}
+
+
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--ntpopups-spacing-md);
+}
 
 /* ==================== TITLE SECTION ==================== */
 .title {
@@ -267,8 +301,14 @@
     transition: background var(--ntpopups-transition-duration-slow) ease, border-color var(--ntpopups-transition-duration-slow) ease, color var(--ntpopups-transition-duration-slow) ease;
 }
 
+.hiddenTitle .title {
+    display: none !important;
+}
+
 /* ==================== SCROLLABLE BODY ==================== */
 .scrollable {
+    display: flex;
+    flex-direction: column;
     padding: var(--ntpopups-padding-body);
     overflow-y: auto;
     overflow-x: hidden;
@@ -315,6 +355,10 @@
     gap: var(--ntpopups-gap-buttons);
     /* Transição para cores */
     transition: background var(--ntpopups-transition-duration-slow) ease, border-color var(--ntpopups-transition-duration-slow) ease;
+}
+
+.hiddenFooter .footer {
+    display: none !important;
 }
 
 /* ==================== BUTTONS ==================== */
@@ -390,6 +434,68 @@
 
 .cancelButton:hover {
     background-color: var(--ntpopups-color-secondary-hover) !important;
+}
+
+/* ==================== FORM INPUTS ==================== */
+.popups input[type="text"],
+.popups textarea {
+    width: 100%;
+    font-family: var(--ntpopups-font-family);
+    font-size: var(--ntpopups-font-size-base);
+    font-weight: var(--ntpopups-font-weight-normal);
+    line-height: var(--ntpopups-line-height-base);
+    color: var(--ntpopups-input-text-color);
+    background-color: var(--ntpopups-input-bg);
+    border: var(--ntpopups-border-width) var(--ntpopups-border-style) var(--ntpopups-input-border);
+    border-radius: var(--ntpopups-input-border-radius);
+    padding: var(--ntpopups-input-padding);
+    outline: none;
+    transition:
+        color var(--ntpopups-transition-duration) var(--ntpopups-transition-easing),
+        background-color var(--ntpopups-transition-duration) var(--ntpopups-transition-easing),
+        border-color var(--ntpopups-transition-duration) var(--ntpopups-transition-easing);
+    box-sizing: border-box;
+}
+
+/* --- Input Inválido (valid="false") --- */
+.popups input[valid="false"],
+.popups textarea[valid="false"] {
+    border-color: var(--ntpopups-color-input-invalid);
+}
+
+.popups textarea[noresize="true"] {
+    resize: none;
+}
+
+/* ------------------------------------- */
+
+.popups input[type="text"]::placeholder,
+.popups textarea::placeholder {
+    color: var(--ntpopups-input-placeholder-color);
+    opacity: 1;
+}
+
+.popups input[type="text"]:focus,
+.popups textarea:focus {
+    border-color: var(--ntpopups-input-border-focus);
+    box-shadow: 0 0 0 3px rgba(95, 84, 240, 0.1);
+}
+
+.popups.nt-popups-dark-theme input[type="text"]:focus,
+.popups.nt-popups-dark-theme textarea:focus {
+    box-shadow: 0 0 0 3px rgba(122, 112, 255, 0.2);
+}
+
+.popups input[type="text"]:disabled,
+.popups textarea:disabled {
+    background-color: var(--ntpopups-color-secondary-light);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.popups textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
 /* ==================== ANIMATIONS ==================== */

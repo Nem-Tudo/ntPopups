@@ -1,0 +1,14 @@
+.formScrollable{
+    gap: 8px;
+}
+
+.componentContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.componentContainer[component-type="checkbox"]{
+    flex-direction: row;
+    align-items: center;
+}

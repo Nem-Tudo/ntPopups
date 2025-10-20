@@ -9,10 +9,10 @@ import { useNtPopups } from "../../contexts/PopupContext.jsx"; // <-- NOVO IMPOR
  * @param {(hasAction: boolean) => void} properties.closePopup
  * @param {(key: string) => string} properties.translate
  * @param {Object} [properties.data]
- * @param {string} [properties.data.message] // Remove default string here
- * @param {string} [properties.data.title] // Remove default string here
- * @param {string} [properties.data.cancelLabel] // Remove default string here
- * @param {string} [properties.data.confirmLabel] // Remove default string here
+ * @param {string} [properties.data.message]
+ * @param {string} [properties.data.title]
+ * @param {string} [properties.data.cancelLabel]
+ * @param {string} [properties.data.confirmLabel]
  * @param {string|React.ReactElement} [properties.data.icon="ⓘ"]
  * @param {(choice: boolean) => void} [properties.data.onChoose=() => {}]
  * @param {Object} [properties.popupstyles]
@@ -49,15 +49,16 @@ export default function Confirm({
 
     return (
         <>
+
             <div className={classes.title}>
                 <div className={classes.icon}>
                     {icon}
                 </div>
-                {finalTitle} {/* <-- USAR VALOR FINAL */}
+                {finalTitle}
             </div>
 
             <div className={classes.scrollable}>
-                <p>{finalMessage}</p> {/* <-- USAR VALOR FINAL */}
+                <p>{finalMessage}</p>
             </div>
 
             <div className={classes.footer}>
@@ -68,7 +69,7 @@ export default function Confirm({
                         onChoose(false); // User chose Cancel
                     }}
                 >
-                    {finalCancelLabel} {/* <-- USAR VALOR FINAL */}
+                    {finalCancelLabel}
                 </button>
                 <button
                     className={classes.confirmButton}
@@ -77,7 +78,7 @@ export default function Confirm({
                         onChoose(true); // User chose Confirm
                     }}
                 >
-                    {finalConfirmLabel} {/* <-- USAR VALOR FINAL */}
+                    {finalConfirmLabel}
                 </button>
             </div>
         </>

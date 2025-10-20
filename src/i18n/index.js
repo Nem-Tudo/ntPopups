@@ -32,7 +32,7 @@ export function getTranslation(key, lang = defaultLanguage) {
             result = result[k];
         } else {
             // Fallback: Retorna a chave se a tradução não for encontrada
-            return `[Missing translation for ${key} in ${lang}]`;
+            return `[${key} in ${lang}]`;
         }
     }
 

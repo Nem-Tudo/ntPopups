@@ -7,10 +7,9 @@ import DisplayPopup from "../components/DisplayPopup.jsx";
 import { internalPopupTypes } from "./popupTypes";
 
 // IMPORTANTE: Certifique-se de que este caminho está correto.
-// O arquivo '../utils/types' deve conter o typedef ExtendedPopupContextValue.
+// O arquivo '../utils/types' deve conter o typedef PopupContextValue.
 /**
- * @typedef {import("../utils/types").PopupContextValue} PopupContextValue 
- * @typedef {import("../utils/types").ExtendedPopupContextValue} ExtendedPopupContextValue // <-- NOVO: Usa o tipo completo e estendido
+ * @typedef {import("../utils/types").PopupContextValue} PopupContextValue // <-- NOVO: Usa o tipo completo e estendido
  * @typedef {import("../utils/types").NtPopupConfig} NtPopupConfig
  */
 
@@ -19,7 +18,7 @@ import { getTranslation, defaultLanguage } from "../i18n/index";
 // ==================== CONTEXT CREATION ====================
 
 // O JSDoc AGORA USA O TIPO EXTENDIDO CORRETO
-/** @type {React.Context<ExtendedPopupContextValue>} */
+/** @type {React.Context<PopupContextValue>} */
 const PopupContext = createContext({
     // Definir todos os valores padrão, incluindo os novos (language e translate)
     popups: [],
@@ -29,7 +28,7 @@ const PopupContext = createContext({
     isPopupOpen: () => false,
     getPopup: () => null,
     language: defaultLanguage,
-    translate: (key) => `[Missing translation for ${key}]`,
+    translate: (key) => `[${key}]`,
 });
 
 PopupContext.displayName = "NtPopupContext";
@@ -47,6 +46,10 @@ PopupContext.displayName = "NtPopupContext";
  */
 export function NtPopupProvider({ children, config = {}, customPopups = {}, language: propLanguage = defaultLanguage, theme = "white" }) {
     const [popups, setPopups] = useState([]);
+
+    useEffect(() => {
+        console.log(`Loaded ntPopups https://www.npmjs.com/package/ntpopups`)
+    }, [])
 
     // Idioma Ativo (Garante fallback para o defaultLanguage)
     const activeLanguage = propLanguage || defaultLanguage;
@@ -193,10 +196,10 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             return null;
         }
 
-        if (!allPopupTypes[popupType]) {
-            console.error(`ntPopups Error: Unknown popup type "${popupType}"`);
-            return null;
-        }
+        // if (!allPopupTypes[popupType]) {
+        //     console.error(`ntPopups Error: Unknown popup type "${popupType}"`);
+        //     return null;
+        // }
 
         callbacksRef.current.set(popupId, {
             onClose: settings.onClose,
@@ -395,7 +398,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 /**
  * Hook to easily access the NtPopup context for opening and closing popups, 
 * and accessing language/translation features.
- * @returns {ExtendedPopupContextValue}
+ * @returns {PopupContextValue}
  */
 export const useNtPopups = () => {
     const context = useContext(PopupContext);
