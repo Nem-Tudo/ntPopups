@@ -34,7 +34,7 @@ yarn add ntpopups
 
 ## 🎯 Initial Setup
 
-### Pure React
+### React
 
 Wrap your application with `NtPopupProvider`:
 
