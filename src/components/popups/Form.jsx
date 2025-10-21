@@ -199,7 +199,7 @@ export default function Form({
     const finalDoneLabel = doneLabel ?? translate('util.done');
 
     const classes = {
-        title: `${popupstyles.title} ntpopups-title`,
+        header: `${popupstyles.header} ntpopups-header`,
         row: `${popupstyles.row} ntpopups-row`,
         icon: `${popupstyles.icon} ntpopups-icon`,
         body: `${popupstyles.body} ${popupstyles.formScrollable} ntpopups-body ntpopups-formbody`,
@@ -211,7 +211,7 @@ export default function Form({
 
     return (
         <>
-            <div className={classes.title}>
+            <div className={classes.header}>
                 <div className={classes.icon}>
                     {icon}
                 </div>

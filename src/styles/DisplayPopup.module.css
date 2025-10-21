@@ -14,14 +14,14 @@
     /* === TYPOGRAPHY === */
     --ntpopups-font-family: "Segoe UI", Arial, sans-serif;
     --ntpopups-font-size-base: 18px;
-    --ntpopups-font-size-title: 24px;
+    --ntpopups-font-size-header: 24px;
     --ntpopups-font-size-button: 14px;
-    --ntpopups-font-weight-title: 400;
+    --ntpopups-font-weight-header: 400;
     --ntpopups-font-weight-normal: 400;
     --ntpopups-font-weight-semibold: 500;
     --ntpopups-font-weight-bold: 700;
     --ntpopups-line-height-base: 1.5;
-    --ntpopups-line-height-title: 1.3;
+    --ntpopups-line-height-header: 1.3;
 
     /* === COLORS - Primary === */
     --ntpopups-color-primary: #5f54f0;
@@ -73,7 +73,7 @@
     --ntpopups-border-color: rgba(0, 0, 0, 0.07);
     --ntpopups-border-color-dark: rgba(0, 0, 0, 0.15);
     --ntpopups-border-color-light: rgba(0, 0, 0, 0.03);
-    --ntpopups-title-border: var(--ntpopups-border-width) var(--ntpopups-border-style) var(--ntpopups-border-color);
+    --ntpopups-header-border: var(--ntpopups-border-width) var(--ntpopups-border-style) var(--ntpopups-border-color);
     --ntpopups-footer-border: var(--ntpopups-border-width) var(--ntpopups-border-style) var(--ntpopups-border-color);
 
     /* === BORDER RADIUS === */
@@ -98,13 +98,13 @@
     --ntpopups-spacing-xl: 30px;
     --ntpopups-spacing-2xl: 40px;
 
-    --ntpopups-padding-title: var(--ntpopups-spacing-lg);
+    --ntpopups-padding-header: var(--ntpopups-spacing-lg);
     --ntpopups-padding-body: var(--ntpopups-spacing-lg);
     --ntpopups-padding-footer: var(--ntpopups-spacing-sm);
     --ntpopups-padding-button: var(--ntpopups-spacing-md) var(--ntpopups-spacing-lg);
 
     --ntpopups-gap-buttons: var(--ntpopups-spacing-sm);
-    --ntpopups-gap-title-icon: 8px;
+    --ntpopups-gap-header-icon: 8px;
 
     /* === FORM INPUTS === */
     --ntpopups-input-bg: #ffffff;
@@ -286,24 +286,24 @@
     gap: var(--ntpopups-spacing-md);
 }
 
-/* ==================== TITLE SECTION ==================== */
-.title {
-    font-size: var(--ntpopups-font-size-title);
-    font-weight: var(--ntpopups-font-weight-title);
-    line-height: var(--ntpopups-line-height-title);
+/* ==================== HEADER SECTION ==================== */
+.header {
+    font-size: var(--ntpopups-font-size-header);
+    font-weight: var(--ntpopups-font-weight-header);
+    line-height: var(--ntpopups-line-height-header);
     color: var(--ntpopups-color-primary);
     background: var(--ntpopups-bg-header);
-    padding: var(--ntpopups-padding-title);
-    border-bottom: var(--ntpopups-title-border);
+    padding: var(--ntpopups-padding-header);
+    border-bottom: var(--ntpopups-header-border);
     display: flex;
     align-items: center;
-    gap: var(--ntpopups-gap-title-icon);
+    gap: var(--ntpopups-gap-header-icon);
     flex-shrink: 0;
     /* Transição para cores */
     transition: background var(--ntpopups-transition-duration-slow) ease, border-color var(--ntpopups-transition-duration-slow) ease, color var(--ntpopups-transition-duration-slow) ease;
 }
 
-.hiddenHeader .title {
+.hiddenHeader .header {
     display: none !important;
 }
 
@@ -524,8 +524,8 @@
         max-height: 95dvh;
     }
 
-    .title {
-        font-size: calc(var(--ntpopups-font-size-title) * 0.85);
+    .header {
+        font-size: calc(var(--ntpopups-font-size-header) * 0.85);
         padding: var(--ntpopups-mobile-padding);
     }
 

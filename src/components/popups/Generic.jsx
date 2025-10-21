@@ -29,7 +29,7 @@ export default function Generic({
     const finalCloseLabel = closeLabel ?? translate('util.ok');
 
     const classes = {
-        title: `${popupstyles.title} ntpopups-title`,
+        header: `${popupstyles.header} ntpopups-header`,
         icon: `${popupstyles.icon} ntpopups-icon`,
         body: `${popupstyles.body} ntpopups-body`,
         footer: `${popupstyles.footer} ntpopups-footer`,
@@ -38,7 +38,7 @@ export default function Generic({
 
     return (
         <>
-            <div className={classes.title}>
+            <div className={classes.header}>
                 <div className={classes.icon}>
                     {icon}
                 </div>

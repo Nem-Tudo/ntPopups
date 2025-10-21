@@ -38,7 +38,7 @@ export default function Confirm({
     // Use generic or injected classes
     const classes = {
         // ... (classes permanecem as mesmas)
-        title: `${popupstyles.title} ntpopups-title`,
+        header: `${popupstyles.header} ntpopups-header`,
         icon: `${popupstyles.icon} ntpopups-icon`,
         body: `${popupstyles.body} ntpopups-body`,
         footer: `${popupstyles.footer} ntpopups-footer`,
@@ -49,7 +49,7 @@ export default function Confirm({
     return (
         <>
 
-            <div className={classes.title}>
+            <div className={classes.header}>
                 <div className={classes.icon}>
                     {icon}
                 </div>

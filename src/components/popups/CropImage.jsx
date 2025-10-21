@@ -42,7 +42,7 @@ export default function CropImage({
 
     // 1. Mapeamento de Classes
     const classes = {
-        title: `${popupstyles.title} ${popupstyles.header} ntpopups-title ntpopups-cropimage-header`,
+        header: `${popupstyles.header} ${popupstyles.header} ntpopups-header ntpopups-cropimage-header`,
         body: `${popupstyles.body} ${popupstyles.cropmain} ntpopups-body ntpopups-cropimage-cropmain`,
         container: `${popupstyles.container} ntpopups-cropimage-container`,
         containerGrab: `${popupstyles.containerGrab} ntpopups-cropimage-container-grab`,
@@ -289,7 +289,7 @@ export default function CropImage({
     // 7. Renderização com Traduções e Classes da Lib
     return (
         <>
-            <div className={classes.title}>
+            <div className={classes.header}>
                 {translate('cropImage.title')} {/* <== Tradução */}
             </div>
 

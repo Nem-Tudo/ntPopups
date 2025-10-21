@@ -60,9 +60,9 @@ export default function DisplayPopup({
             translate, // <-- INJETA A FUNÇÃO DE TRADUÇÃO NO COMPONENTE
         };
 
-        // Inject the main styles for common elements (title, body, footer)
+        // Inject the main styles for common elements (header, body, footer)
         componentProps.popupstyles = {
-            ...styles, // Global styles for title/body
+            ...styles, // Global styles for header/body
             ...(defaultCssModules[popupType] || {}), // Specific styles (e.g., confirm buttons)
         };
 
