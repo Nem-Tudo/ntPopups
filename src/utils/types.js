@@ -61,6 +61,7 @@ import React from "react";
  * @property {React.ReactNode} [title] - [confirm] The header title. Defaults to i18n key 'confirm.title'.
  * @property {React.ReactNode} [cancelLabel] - [confirm] Text for the cancel button. Defaults to i18n key 'util.cancelLabel'.
  * @property {React.ReactNode} [confirmLabel] - [confirm] Text for the confirmation button. Defaults to i18n key 'util.confirmLabel'.
+ * @property {'default'|'Secondary'|'Success'|'Danger'} [confirmStyle] - [confirm] The confirm button css style.
  * @property {React.ReactNode} [icon="ⓘ"] - [confirm] Icon displayed next to the title.
  * @property {(choice: boolean) => void} [onChoose] - [confirm] Callback executed when the user clicks Confirm (true) or Cancel (false).
  */

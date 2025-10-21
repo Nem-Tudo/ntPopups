@@ -12,6 +12,7 @@ import React from "react";
  * @param {React.ReactNode} [properties.data.title]
  * @param {React.ReactNode} [properties.data.cancelLabel]
  * @param {React.ReactNode} [properties.data.confirmLabel]
+ * @param {'default'|'Secondary'|'Success'|'Danger'} [properties.data.confirmStyle='default']
  * @param {React.ReactNode} [properties.data.icon="ⓘ"]
  * @param {(choice: boolean) => void} [properties.data.onChoose=() => {}]
  * @param {Object} [properties.popupstyles]
@@ -25,6 +26,7 @@ export default function Confirm({
         title,
         cancelLabel,
         confirmLabel,
+        confirmStyle,
         icon = "ⓘ",
         onChoose = () => { }
     } = {},
@@ -45,6 +47,13 @@ export default function Confirm({
         baseButton: `${popupstyles.baseButton} ntpopups-basebutton`,
         confirmButton: `${popupstyles.baseButton} ${popupstyles.confirmButton} ntpopups-basebutton ntpopups-confirm-button`,
     };
+
+    const nameToStyle = {
+        "default": "0",
+        "Secondary": "1",
+        "Success": "3",
+        "Danger": "4",
+    }
 
     return (
         <>
@@ -73,6 +82,7 @@ export default function Confirm({
                 </button>
                 <button
                     className={classes.confirmButton}
+                    base-button-style={nameToStyle[confirmStyle]}
                     onClick={() => {
                         closePopup(true); // Intentional close
                         onChoose(true); // User chose Confirm

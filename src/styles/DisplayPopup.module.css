@@ -410,17 +410,32 @@
     padding: var(--ntpopups-spacing-sm);
 }
 
-/*  CANCEL BUTTON  */
+/* === STYLE 1: SECONDARY === */
 
 .baseButton[base-button-style="1"] {
     background-color: var(--ntpopups-color-secondary);
+    color: var(--ntpopups-color-text-on-primary);
+    box-shadow: var(--ntpopups-shadow-button);
 }
 
-.baseButton[base-button-style="1"]:hover {
+.baseButton[base-button-style="1"]:enabled:hover {
     background-color: var(--ntpopups-color-secondary-hover) !important;
+    box-shadow: var(--ntpopups-shadow-button-hover);
+    transform: translateY(-1px);
 }
 
-/*  TEXT BUTTON  */
+.baseButton[base-button-style="1"]:enabled:active {
+    background-color: var(--ntpopups-color-secondary-active);
+    transform: translateY(0);
+}
+
+.baseButton[base-button-style="1"]:disabled {
+    background-color: var(--ntpopups-color-secondary-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* === STYLE 2: TEXT  === */
 .baseButton[base-button-style="2"] {
     border: none;
     cursor: pointer;
@@ -440,6 +455,54 @@
     text-decoration: underline;
     box-shadow: none;
     transform: unset;
+}
+
+/* === STYLE 3: SUCCESS (GREEN) === */
+.baseButton[base-button-style="3"] {
+    background-color: var(--ntpopups-color-success);
+    color: var(--ntpopups-color-text-on-primary);
+    box-shadow: var(--ntpopups-shadow-button);
+}
+
+.baseButton[base-button-style="3"]:enabled:hover {
+    background-color: var(--ntpopups-color-success-hover) !important;
+    box-shadow: var(--ntpopups-shadow-button-hover);
+    transform: translateY(-1px);
+}
+
+.baseButton[base-button-style="3"]:enabled:active {
+    background-color: var(--ntpopups-color-success-hover);
+    transform: translateY(0);
+}
+
+.baseButton[base-button-style="3"]:disabled {
+    background-color: var(--ntpopups-color-success);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* === STYLE 4: DANGER (RED) === */
+.baseButton[base-button-style="4"] {
+    background-color: var(--ntpopups-color-danger);
+    color: var(--ntpopups-color-text-on-primary);
+    box-shadow: var(--ntpopups-shadow-button);
+}
+
+.baseButton[base-button-style="4"]:enabled:hover {
+    background-color: var(--ntpopups-color-danger-hover) !important;
+    box-shadow: var(--ntpopups-shadow-button-hover);
+    transform: translateY(-1px);
+}
+
+.baseButton[base-button-style="4"]:enabled:active {
+    background-color: var(--ntpopups-color-danger-hover);
+    transform: translateY(0);
+}
+
+.baseButton[base-button-style="4"]:disabled {
+    background-color: var(--ntpopups-color-danger);
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* ==================== FORM INPUTS ==================== */
