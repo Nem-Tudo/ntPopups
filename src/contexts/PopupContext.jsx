@@ -1,5 +1,3 @@
-// /src/contexts/PopupContext.jsx
-
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
@@ -15,56 +13,28 @@ import { internalPopupTypes } from "./popupTypes";
 
 import { getTranslation, defaultLanguage } from "../i18n/index";
 
-// ==================== SSR CHECK UTILITY ====================
-/**
- * Checks if code is running on server-side
- * @returns {boolean}
- */
-const isServerSide = () => typeof window === 'undefined';
-
-/**
- * Throws an error if trying to use popup functions on server-side
- */
-const assertClientSide = (functionName) => {
-    if (isServerSide()) {
-        throw new Error(
-            `ntPopups Error: ${functionName} cannot be called on the server.\n` +
-            `Make sure you're using it inside a Client Component (with "use client" directive).\n` +
-            `If you're in the App Router, ensure the component calling this function has "use client" at the top.`
-        );
-    }
-};
-
 // ==================== CONTEXT CREATION ====================
+
+if(typeof createContext != "function") throw new Error(
+        `ntPopups Error: NtPopupProvider and useNtPopups cannot be called on the server.\n` +
+        `If you're in the App Router, ensure the component calling this function has "use client" at the top.`
+    )
 
 // O JSDoc AGORA USA O TIPO EXTENDIDO CORRETO
 /** @type {React.Context<PopupContextValue>} */
 const PopupContext = createContext({
     // Definir todos os valores padrão, incluindo os novos (language e translate)
     popups: [],
-    openPopup: () => {
-        assertClientSide('openPopup');
-        return null;
-    },
-    closePopup: () => {
-        assertClientSide('closePopup');
-    },
-    closeAllPopups: () => {
-        assertClientSide('closeAllPopups');
-    },
-    isPopupOpen: () => {
-        assertClientSide('isPopupOpen');
-        return false;
-    },
-    getPopup: () => {
-        assertClientSide('getPopup');
-        return null;
-    },
+    openPopup: () => null,
+    closePopup: () => { },
+    closeAllPopups: () => { },
+    isPopupOpen: () => false,
+    getPopup: () => null,
     language: defaultLanguage,
     translate: (key) => `[${key}]`,
 });
 
-PopupContext.displayName = "NtPopupContext";
+PopupContext.displayName = "NtPopupsContext";
 
 // ==================== PROVIDER COMPONENT ====================
 
@@ -78,14 +48,6 @@ PopupContext.displayName = "NtPopupContext";
  * @param {'white'|'dark'} [props.theme="white"] - The current language for internal popups (e.g., "en", "pt").
  */
 export function NtPopupProvider({ children, config = {}, customPopups = {}, language: propLanguage = defaultLanguage, theme = "white" }) {
-    // SSR Check for Provider
-    if (isServerSide()) {
-        console.warn(
-            'ntPopups Warning: NtPopupProvider is being rendered on the server. ' +
-            'Popups will only work after hydration on the client.'
-        );
-    }
-
     const [popups, setPopups] = useState([]);
 
     useEffect(() => {
@@ -101,7 +63,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
     // Refs for persistence
     const callbacksRef = useRef(new Map()); // popupId -> { onClose, onOpen }
-    const timeoutsRef = useRef(new Map());   // popupId -> timeoutId
+    const timeoutsRef = useRef(new Map());   // popupId -> timeoutId
     const originalOverflowRef = useRef(null);
     const currentPopupsRef = useRef([]);
 
@@ -150,8 +112,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
     // ========== CLOSE POPUP FUNCTION ==========
     const closePopup = useCallback((popupIdOrHasAction, hasActionParam) => {
-        assertClientSide('closePopup');
-        
         setPopups(prev => {
             let popupId;
             let hasAction;
@@ -218,8 +178,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
     // ========== OPEN POPUP FUNCTION (Public API) ==========
     const openPopup = useCallback((popupType, settings = {}) => {
-        assertClientSide('openPopup');
-        
         if (isProcessingRef.current) {
             return new Promise((resolve) => {
                 operationQueueRef.current.push(() => {
@@ -318,8 +276,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
     // ========== CLOSE ALL POPUPS FUNCTION ==========
     const closeAllPopups = useCallback(() => {
-        assertClientSide('closeAllPopups');
-        
         // ... (Close All Popups logic remains the same)
         setPopups(prev => {
             prev.filter(p => !p.hidden).forEach(popup => {
@@ -348,12 +304,10 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
     // ========== UTILITY FUNCTIONS ==========
     const isPopupOpen = useCallback((popupId) => {
-        assertClientSide('isPopupOpen');
         return currentPopupsRef.current.some(p => p.id === popupId && !p.hidden);
     }, []);
 
     const getPopup = useCallback((popupId) => {
-        assertClientSide('getPopup');
         const popup = currentPopupsRef.current.find(p => p.id === popupId);
         return popup && !popup.hidden ? popup : null;
     }, []);
