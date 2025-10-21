@@ -145,12 +145,12 @@
     --ntpopups-scrollbar-thumb-hover: #a1a1a1;
     --ntpopups-scrollbar-border-radius: 10px;
 
-    /* === CLOSE BUTTON === */
-    --ntpopups-close-color: var(--ntpopups-color-secondary);
-    --ntpopups-close-color-hover: var(--ntpopups-color-text);
-    --ntpopups-close-bg: transparent;
-    --ntpopups-close-bg-hover: rgba(0, 0, 0, 0.05);
-    --ntpopups-close-size: 32px;
+    /* === BUTTON style 2 === */
+    --ntpopups-button-style-2-color: var(--ntpopups-color-secondary);
+    --ntpopups-button-style-2-color-hover: var(--ntpopups-color-text);
+    --ntpopups-button-style-2-bg: transparent;
+    --ntpopups-button-style-2-bg-hover: rgba(0, 0, 0, 0.05);
+    --ntpopups-button-style-2-size: 32px;
 
     /* === BACKDROP === */
     --ntpopups-backdrop-blur: 0px;
@@ -229,10 +229,10 @@
     --ntpopups-scrollbar-thumb: #555555;
     --ntpopups-scrollbar-thumb-hover: #777777;
 
-    /* === CLOSE BUTTON (Ajustado para fundo escuro) === */
-    --ntpopups-close-color: var(--ntpopups-color-secondary);
-    --ntpopups-close-color-hover: var(--ntpopups-color-text);
-    --ntpopups-close-bg-hover: rgba(255, 255, 255, 0.1);
+    /* === CLOSE style 2 (Ajustado para fundo escuro) === */
+    --ntpopups-button-style-2-color: var(--ntpopups-color-secondary);
+    --ntpopups-button-style-2-color-hover: var(--ntpopups-color-text);
+    --ntpopups-button-style-2-bg-hover: rgba(255, 255, 255, 0.1);
 }
 
 /* ==================== LAYOUT APPLICATION (Mantido - usa as variáveis) ==================== */
@@ -425,12 +425,12 @@
     border: none;
     cursor: pointer;
     flex: 0;
-    background-color: var(--ntpopups-close-bg) !important;
+    background-color: var(--ntpopups-button-style-2-bg) !important;
     color: var(--ntpopups-color-text);
     box-shadow: none;
-    width: var(--ntpopups-close-size);
-    height: var(--ntpopups-close-size);
-    min-width: var(--ntpopups-close-size);
+    width: var(--ntpopups-button-style-2-size);
+    height: var(--ntpopups-button-style-2-size);
+    min-width: var(--ntpopups-button-style-2-size);
     padding: 0;
     /* Transição para cores */
     transition: color var(--ntpopups-transition-duration-slow) ease, background-color var(--ntpopups-transition-duration-slow) ease;

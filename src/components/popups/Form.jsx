@@ -200,10 +200,10 @@ export default function Form({
 
     const classes = {
         header: `${popupstyles.header} ntpopups-header`,
-        row: `${popupstyles.row} ntpopups-row`,
+        row: `${popupstyles.row} ntpopups-form-row`,
         icon: `${popupstyles.icon} ntpopups-icon`,
-        body: `${popupstyles.body} ${popupstyles.formScrollable} ntpopups-body ntpopups-formbody`,
-        formMessage: `${popupstyles.formMessage} ntpopups-formmessage`,
+        body: `${popupstyles.body} ${popupstyles.formScrollable} ntpopups-body ntpopups-form-body`,
+        formMessage: `${popupstyles.formMessage} ntpopups-form-message`,
         footer: `${popupstyles.footer} ntpopups-footer`,
         componentContainer: `${popupstyles.componentContainer} ntpopups-form-componentcontainer`,
         baseButton: `${popupstyles.baseButton} ntpopups-basebutton`,
