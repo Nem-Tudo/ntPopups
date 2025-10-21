@@ -835,7 +835,7 @@ Crie um arquivo CSS global e sobrescreva as variáveis:
 }
 
 /* Modo escuro personalizado */
-.nt-popups-dark-theme {
+.ntpopups-dark-theme {
   --ntpopups-color-primary: #bb86fc;
   --ntpopups-bg-overlay: rgba(0, 0, 0, 0.9);
 }

@@ -77,7 +77,7 @@ export default function DisplayPopup({
                 <section
                     key={popup.id}
                     // Apply default CSS class or custom fallback class
-                    className={`${styles.popups}${theme != "white" ? ` ${styles[`nt-popups-${theme}-theme`]} ` : " "}ntpopups-overlay`}
+                    className={`${styles.popups}${theme != "white" ? ` ${styles[`nt-popups-${theme}-theme`]} ` : " "}ntpopups-overlay${theme != "white" ? ` ${`ntpopups-${theme}-theme`} ` : " "}`}
                     style={{ zIndex: popup.zIndex }}
                 >
                     {/* POPUP CONTAINER */}
