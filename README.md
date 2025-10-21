@@ -145,10 +145,10 @@ openPopup('generic', {
 ```
 
 **Data Properties:**
-- `title` (string) - Popup title (default: `'Message'`)
-- `message` (string) - Message content (default: `'This is a message'`)
-- `icon` (string | ReactElement) - Icon to display (default: `'ⓘ'`)
-- `closeLabel` (string) - Close button text (default: `'OK'`)
+- `title` (ReactNode) - Popup title (default: `'Message'`)
+- `message` (ReactNode) - Message content (default: `'This is a message'`)
+- `icon` (ReactNode) - Icon to display (default: `'ⓘ'`)
+- `closeLabel` (ReactNode) - Close button text (default: `'OK'`)
 
 ---
 
@@ -178,11 +178,11 @@ openPopup('confirm', {
 ```
 
 **Data Properties:**
-- `title` (string) - Popup title (default: `'Confirm'`)
-- `message` (string) - Confirmation message (default: `'Are you sure you want to proceed?'`)
-- `icon` (string | ReactElement) - Icon to display (default: `'ⓘ'`)
-- `cancelLabel` (string) - Cancel button text (default: `'Cancel'`)
-- `confirmLabel` (string) - Confirm button text (default: `'Confirm'`)
+- `title` (ReactNode) - Popup title (default: `'Confirm'`)
+- `message` (ReactNode) - Confirmation message (default: `'Are you sure you want to proceed?'`)
+- `icon` (ReactNode) - Icon to display (default: `'ⓘ'`)
+- `cancelLabel` (ReactNode) - Cancel button text (default: `'Cancel'`)
+- `confirmLabel` (ReactNode) - Confirm button text (default: `'Confirm'`)
 - `onChoose` (function) - Callback with boolean parameter
 
 ---
@@ -243,9 +243,9 @@ openPopup('form', {
 ```
 
 **Data Properties:**
-- `title` (string) - Form title (default: `'Form'`)
-- `icon` (string | ReactElement) - Icon to display (default: `'ⓘ'`)
-- `doneLabel` (string) - Submit button text (default: `'Done'`)
+- `title` (ReactNode) - Form title (default: `'Form'`)
+- `icon` (ReactNode) - Icon to display (default: `'ⓘ'`)
+- `doneLabel` (ReactNode) - Submit button text (default: `'Done'`)
 - `components` (array) - Array of form components
 - `onResponse` (function) - Callback with form values
 

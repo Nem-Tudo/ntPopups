@@ -41,7 +41,7 @@ PopupContext.displayName = "NtPopupContext";
  * @param {React.ReactNode} props.children
  * @param {NtPopupConfig} [props.config={}] - Global configuration for the popups.
  * @param {Object.<string, React.ComponentType>} [props.customPopups={}] - Map of user-defined React components { type: Component }.
- * @param {'en'|'ptbr'|string} [props.language="en"] - The current language for internal popups (e.g., "en", "pt").
+ * @param {'en'|'ptbr'} [props.language="en"] - The current language for internal popups (e.g., "en", "pt").
  * @param {'white'|'dark'} [props.theme="white"] - The current language for internal popups (e.g., "en", "pt").
  */
 export function NtPopupProvider({ children, config = {}, customPopups = {}, language: propLanguage = defaultLanguage, theme = "white" }) {

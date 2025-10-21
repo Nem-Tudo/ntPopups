@@ -1,7 +1,6 @@
 // /src/components/popups/Confirm.jsx
 
 import React from "react";
-import { useNtPopups } from "../../contexts/PopupContext.jsx"; // <-- NOVO IMPORT para o hook
 
 /**
  * Default Confirmation Popup Component.
@@ -9,11 +8,11 @@ import { useNtPopups } from "../../contexts/PopupContext.jsx"; // <-- NOVO IMPOR
  * @param {(hasAction: boolean) => void} properties.closePopup
  * @param {(key: string) => string} properties.translate
  * @param {Object} [properties.data]
- * @param {string} [properties.data.message]
- * @param {string} [properties.data.title]
- * @param {string} [properties.data.cancelLabel]
- * @param {string} [properties.data.confirmLabel]
- * @param {string|React.ReactElement} [properties.data.icon="ⓘ"]
+ * @param {React.ReactNode} [properties.data.message]
+ * @param {React.ReactNode} [properties.data.title]
+ * @param {React.ReactNode} [properties.data.cancelLabel]
+ * @param {React.ReactNode} [properties.data.confirmLabel]
+ * @param {React.ReactNode} [properties.data.icon="ⓘ"]
  * @param {(choice: boolean) => void} [properties.data.onChoose=() => {}]
  * @param {Object} [properties.popupstyles]
  */

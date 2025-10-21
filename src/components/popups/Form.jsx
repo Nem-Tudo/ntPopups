@@ -93,10 +93,11 @@ const validateComponent = (value, componentData) => {
  * @param {Object} [properties.popupstyles]
  * @param {(key: string) => string} properties.translate
  * @param {Object} [properties.data]
- * @param {string} [properties.data.title="Title"]
- * @param {string} [properties.data.doneLabel="Done"]
+ * @param {React.ReactNode} [properties.data.message=""]
+ * @param {React.ReactNode} [properties.data.title="Title"]
+ * @param {React.ReactNode} [properties.data.doneLabel="Done"]
  * @param {Array} [properties.data.components=[{id: "text01", type: "text", label: "Text", defaultValue: "", disabled: false }]]
- * @param {string|React.ReactElement} [properties.data.icon="ⓘ"]
+ * @param {React.ReactNode} [properties.data.icon="ⓘ"]
  * @param {(arg0: Object) => void} [properties.data.onResponse=() => {}]
  * @param {Boolean} properties.requireAction Is action required?
  * */
@@ -108,6 +109,7 @@ export default function Form({
     data: {
         title,
         icon = "ⓘ",
+        message = "",
         doneLabel,
         components = [{ id: "text01", type: "text", label: "Text", defaultValue: "", disabled: false }],
         onResponse = () => { }
@@ -201,6 +203,7 @@ export default function Form({
         row: `${popupstyles.row} ntpopups-row`,
         icon: `${popupstyles.icon} ntpopups-icon`,
         scrollable: `${popupstyles.scrollable} ${popupstyles.formScrollable} ntpopups-scrollable ntpopups-formscrollable`,
+        formMessage: `${popupstyles.formMessage} ntpopups-formmessage`,
         footer: `${popupstyles.footer} ntpopups-footer`,
         componentContainer: `${popupstyles.componentContainer} ntpopups-form-componentcontainer`,
         doneButton: `${popupstyles.baseButton} ${popupstyles.baseButtonNoFlex} ntpopups-basebutton ntpopups-basebutton-noflex ${!isFormValid ? popupstyles.disabledButton || 'disabled-style' : ''}`,
@@ -217,6 +220,7 @@ export default function Form({
             </div>
 
             <div className={classes.scrollable}>
+                {message && <p className={classes.formMessage}>{message}</p>}
                 {
                     components.map((componentOrArray, index) => {
                         if (Array.isArray(componentOrArray)) {

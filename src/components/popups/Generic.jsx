@@ -7,10 +7,10 @@ import React from "react";
  * @param {Object} [properties.popupstyles]
  * @param {(key: string) => string} properties.translate
  * @param {Object} [properties.data]
- * @param {string} [properties.data.message="Message"]
- * @param {string} [properties.data.title="Title"]
- * @param {string} [properties.data.closeLabel="Close"]
- * @param {string|React.ReactElement} [properties.data.icon="ⓘ"]
+ * @param {React.ReactNode} [properties.data.message="Message"]
+ * @param {React.ReactNode} [properties.data.title="Title"]
+ * @param {React.ReactNode} [properties.data.closeLabel="Close"]
+ * @param {React.ReactNode} [properties.data.icon="ⓘ"]
  */
 export default function Generic({
     closePopup,

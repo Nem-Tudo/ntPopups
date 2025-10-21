@@ -32,7 +32,7 @@ export default function DisplayPopup({
     /**
      * Maps the popup type string to its corresponding React component.
      * @param {import('../utils/types').PopupData} popup - Popup object from context state.
-     * @returns {React.ReactElement | null}
+     * @returns {React.ReactNode | null}
      */
     const getPopupComponent = (popup) => {
         const { popupType, settings, id } = popup;
@@ -85,6 +85,7 @@ export default function DisplayPopup({
                         data-popup-id={popup.id}
                         // Apply default CSS class or custom fallback class
                         className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
+                        style={popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}}
                     >
                         {/* SPECIFIC POPUP CONTENT */}
                         {getPopupComponent(popup)}

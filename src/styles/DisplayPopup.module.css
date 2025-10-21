@@ -117,7 +117,7 @@
 
     /* === SIZING === */
     --ntpopups-width-min: 300px;
-    --ntpopups-width-max: 90dvw;
+    --ntpopups-width-max: 1000px;
     --ntpopups-width-default: fit-content;
     --ntpopups-height-max: 90dvh;
     --ntpopups-button-min-width: 80px;
@@ -267,6 +267,7 @@
     min-width: var(--ntpopups-width-min);
     max-width: var(--ntpopups-width-max);
     max-height: var(--ntpopups-height-max);
+    margin: var(--ntpopups-spacing-md);
     overflow: hidden;
     animation: openPopup var(--ntpopups-transition-duration) var(--ntpopups-transition-easing);
     /* Transição para cores de fundo e sombra */
@@ -310,8 +311,8 @@
     display: flex;
     flex-direction: column;
     padding: var(--ntpopups-padding-body);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: auto;
+    /* overflow-x: hidden; */
     background: var(--ntpopups-bg-body);
     color: var(--ntpopups-color-text);
     flex-grow: 1;

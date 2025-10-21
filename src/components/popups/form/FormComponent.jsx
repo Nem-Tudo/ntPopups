@@ -8,10 +8,10 @@ export default function FormComponent({ value, data, onValueChange, isValid }) {
         switch (data.type) {
             case 'text':
                 return <TextInput value={value} disabled={data.disabled} placeholder={data.placeholder} onChange={e => onValueChange(e.target.value)} valid={String(isValid)} />;
+            case 'textarea':
+                return <TextareaInput value={value} disabled={data.disabled} placeholder={data.placeholder} onChange={e => onValueChange(e.target.value)} valid={String(isValid)} noresize={String(data.disableResize)} />;
             case 'checkbox':
                 return <CheckboxInput checked={value} disabled={data.disabled} onChange={e => onValueChange(e.target.checked)} valid={String(isValid)} />;
-            case 'textarea':
-                return <TextareaInput value={value} disabled={data.disabled} onChange={e => onValueChange(e.target.value)} valid={String(isValid)} noresize={String(data.disableResize)} />;
             default:
                 return null;
         }
@@ -19,7 +19,7 @@ export default function FormComponent({ value, data, onValueChange, isValid }) {
 
     return (
         <>
-            <span>{data.label}{data.required && <span style={{color: "var(--ntpopups-color-danger)"}}>*</span>}</span>
+            <span>{data.label}{data.required && <span style={{ color: "var(--ntpopups-color-danger)" }}>*</span>}</span>
             {renderInput()}
         </>
     );
