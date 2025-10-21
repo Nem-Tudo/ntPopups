@@ -40,9 +40,9 @@ export default function Confirm({
         // ... (classes permanecem as mesmas)
         title: `${popupstyles.title} ntpopups-title`,
         icon: `${popupstyles.icon} ntpopups-icon`,
-        scrollable: `${popupstyles.scrollable} ntpopups-scrollable`,
+        body: `${popupstyles.body} ntpopups-body`,
         footer: `${popupstyles.footer} ntpopups-footer`,
-        cancelButton: `${popupstyles.baseButton} ${popupstyles.cancelButton} ntpopups-basebutton ntpopups-cancel-button`,
+        baseButton: `${popupstyles.baseButton} ntpopups-basebutton`,
         confirmButton: `${popupstyles.baseButton} ${popupstyles.confirmButton} ntpopups-basebutton ntpopups-confirm-button`,
     };
 
@@ -56,13 +56,14 @@ export default function Confirm({
                 {finalTitle}
             </div>
 
-            <div className={classes.scrollable}>
+            <div className={classes.body}>
                 <p>{finalMessage}</p>
             </div>
 
             <div className={classes.footer}>
                 <button
-                    className={classes.cancelButton}
+                    className={classes.baseButton}
+                    base-button-style={"1"}
                     onClick={() => {
                         closePopup(true); // Intentional close
                         onChoose(false); // User chose Cancel

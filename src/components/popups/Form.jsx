@@ -202,12 +202,11 @@ export default function Form({
         title: `${popupstyles.title} ntpopups-title`,
         row: `${popupstyles.row} ntpopups-row`,
         icon: `${popupstyles.icon} ntpopups-icon`,
-        scrollable: `${popupstyles.scrollable} ${popupstyles.formScrollable} ntpopups-scrollable ntpopups-formscrollable`,
+        body: `${popupstyles.body} ${popupstyles.formScrollable} ntpopups-body ntpopups-formbody`,
         formMessage: `${popupstyles.formMessage} ntpopups-formmessage`,
         footer: `${popupstyles.footer} ntpopups-footer`,
         componentContainer: `${popupstyles.componentContainer} ntpopups-form-componentcontainer`,
-        doneButton: `${popupstyles.baseButton} ${popupstyles.baseButtonNoFlex} ntpopups-basebutton ntpopups-basebutton-noflex ${!isFormValid ? popupstyles.disabledButton || 'disabled-style' : ''}`,
-        cancelButton: `${popupstyles.baseButton} ${popupstyles.baseButtonNoFlex} ${popupstyles.cancelButton} ntpopups-basebutton ntpopups-basebutton-noflex ntpopups-cancel-button`,
+        baseButton: `${popupstyles.baseButton} ntpopups-basebutton`,
     };
 
     return (
@@ -219,7 +218,7 @@ export default function Form({
                 {finalTitle}
             </div>
 
-            <div className={classes.scrollable}>
+            <div className={classes.body}>
                 {message && <p className={classes.formMessage}>{message}</p>}
                 {
                     components.map((componentOrArray, index) => {
@@ -261,12 +260,15 @@ export default function Form({
 
             <div className={classes.footer}>
                 {
-                    !requireAction && <button onClick={() => closePopup(false)} className={classes.cancelButton}>
+                    !requireAction && <button onClick={() => closePopup(false)} className={classes.baseButton}
+                        base-button-style={"1"}
+                        base-button-no-flex={"true"}>
                         {translate('util.cancelLabel')}
                     </button>
                 }
                 <button
-                    className={classes.doneButton}
+                    className={classes.baseButton}
+                    base-button-no-flex={"true"}
                     disabled={!isFormValid}
                     onClick={() => {
                         onResponse(value);

@@ -31,7 +31,7 @@ export default function Generic({
     const classes = {
         title: `${popupstyles.title} ntpopups-title`,
         icon: `${popupstyles.icon} ntpopups-icon`,
-        scrollable: `${popupstyles.scrollable} ntpopups-scrollable`,
+        body: `${popupstyles.body} ntpopups-body`,
         footer: `${popupstyles.footer} ntpopups-footer`,
         closeButton: `${popupstyles.baseButton} ntpopups-basebutton`,
     };
@@ -45,7 +45,7 @@ export default function Generic({
                 {finalTitle}
             </div>
 
-            <div className={classes.scrollable}>
+            <div className={classes.body}>
                 <p>{finalMessage}</p>
             </div>
 

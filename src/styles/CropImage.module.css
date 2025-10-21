@@ -92,7 +92,7 @@
 }
 
 /* Estilos de layout e cores */
-.main {
+.cropmain {
     /* Ajustado para usar variáveis globais de padding do corpo do popup, mas mantendo a estrutura original */
     padding: var(--ntpopups-spacing-lg) var(--ntpopups-spacing-xl) 0;
     /* 20px 35px 0 */
@@ -134,7 +134,7 @@
 @media (max-width: 768px) {
 
     /* 1. Ajuste do MAIN/HEADER para usar padding de mobile */
-    .main {
+    .cropmain {
         /* Usa o padding lateral menor para mobile */
         padding: var(--ntpopups-spacing-md) var(--ntpopups-mobile-padding) 0;
     }

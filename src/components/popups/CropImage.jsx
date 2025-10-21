@@ -32,7 +32,7 @@ export default function CropImage({
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [originalFileName, setOriginalFileName] = useState("cropped-image.png");
     // Estado para forçar a re-renderização e medir as dimensões em redimensionamento
-    const [containerSize, setContainerSize] = useState(500); 
+    const [containerSize, setContainerSize] = useState(500);
 
     const canvasRef = useRef(null);
     const fullCanvasRef = useRef(null);
@@ -43,7 +43,7 @@ export default function CropImage({
     // 1. Mapeamento de Classes
     const classes = {
         title: `${popupstyles.title} ${popupstyles.header} ntpopups-title ntpopups-cropimage-header`,
-        scrollable: `${popupstyles.scrollable} ${popupstyles.main} ntpopups-scrollable ntpopups-cropimage-main`,
+        body: `${popupstyles.body} ${popupstyles.cropmain} ntpopups-body ntpopups-cropimage-cropmain`,
         container: `${popupstyles.container} ntpopups-cropimage-container`,
         containerGrab: `${popupstyles.containerGrab} ntpopups-cropimage-container-grab`,
         containerGrabbing: `${popupstyles.containerGrabbing} ntpopups-cropimage-container-grabbing`,
@@ -56,13 +56,12 @@ export default function CropImage({
         zoomSlider: `${popupstyles.zoomSlider} ntpopups-zoom-slider`,
         footer: `${popupstyles.footer} ntpopups-footer`,
         footerResetButton: `${popupstyles.baseButton} ${popupstyles.footerResetButton} ntpopups-basebutton ntpopups-footer-reset-button`,
-        cancelButton: `${popupstyles.baseButton} ${popupstyles.baseButtonNoFlex} ${popupstyles.cancelButton} ntpopups-basebutton ntpopups-basebutton-noflex ntpopups-cancel-button`,
-        applyButton: `${popupstyles.baseButton} ${popupstyles.baseButtonNoFlex} ${popupstyles.applyButton} ntpopups-basebutton ntpopups-basebutton-noflex ntpopups-apply-button`,
+        baseButton: `${popupstyles.baseButton} ntpopups-basebutton`,
         zoomIcon: `${popupstyles.zoomIcon} ntpopups-zoom-icon`,
         zoomIconSmall: `${popupstyles.zoomIconSmall} ntpopups-zoom-icon-small`,
         zoomIconLarge: `${popupstyles.zoomIconLarge} ntpopups-zoom-icon-large`,
         hiddenCanvas: `${popupstyles.hiddenCanvas} ntpopups-hidden-canvas`,
-        resetButton: `${popupstyles.textButton} ${popupstyles.resetButton} ntpopups-text-button ntpopups-cropimage-resetbutton`,
+        resetButton: `${popupstyles.baseButton} ${popupstyles.resetButton} ntpopups-cropimage-resetbutton`,
     };
 
     // 2. Lógica de Carregamento da Imagem
@@ -78,7 +77,7 @@ export default function CropImage({
             setImageSrc(image);
         }
     }, [image]);
-    
+
     // ** NOVA LÓGICA DE OBSERVER PARA RESPONSIVIDADE **
     // Atualiza o estado da largura do container sempre que o container mudar
     useEffect(() => {
@@ -88,15 +87,15 @@ export default function CropImage({
         const updateSize = () => {
             const size = containerRef.current?.clientWidth;
             // Se o tamanho for zero (por exemplo, durante a transição), usa o valor padrão ou o último conhecido.
-            setContainerSize(size > 0 ? size : 500); 
+            setContainerSize(size > 0 ? size : 500);
         };
 
         // Usa ResizeObserver para detectar mudanças de tamanho (incluindo redimensionamento e breakpoints do CSS)
         const observer = new ResizeObserver(updateSize);
         observer.observe(containerRef.current);
-        
+
         // Chamada inicial
-        updateSize(); 
+        updateSize();
 
         return () => observer.disconnect();
     }, [imageSrc]); // Adiciona imageSrc para garantir que a medição ocorra quando a imagem carregar
@@ -106,8 +105,8 @@ export default function CropImage({
         if (!imageRef.current) return newPosition;
 
         // Usa containerSize do estado, garantindo responsividade
-        const fullSize = containerSize; 
-        
+        const fullSize = containerSize;
+
         const img = imageRef.current;
         const imgWidth = img.naturalWidth;
         const imgHeight = img.naturalHeight;
@@ -135,7 +134,7 @@ export default function CropImage({
         const img = imageRef.current;
 
         // ** CORREÇÃO AQUI: Usa containerSize do estado **
-        const fullSize = containerSize; 
+        const fullSize = containerSize;
         // 80% é a proporção definida no CSS para o .cropCanvas em mobile e desktop
         const cropSize = fullSize * 0.6; // Ajustei para 60% apenas para fins de demonstração, o ideal é que seja a mesma proporção do CSS (300/500 = 0.6)
 
@@ -249,7 +248,7 @@ export default function CropImage({
         const ctx = canvas.getContext("2d");
 
         // O tamanho final do crop é o mesmo usado no cropCanvas (que é proporcional)
-        const size = cropCanvas.width; 
+        const size = cropCanvas.width;
         canvas.width = size;
         canvas.height = size;
 
@@ -294,7 +293,7 @@ export default function CropImage({
                 {translate('cropImage.title')} {/* <== Tradução */}
             </div>
 
-            <div className={classes.scrollable}>
+            <div className={classes.body}>
                 {/* Visualizador de Crop */}
                 <div
                     ref={containerRef}
@@ -327,7 +326,7 @@ export default function CropImage({
                             // Reseta os controles ao carregar uma nova imagem
                             onLoad={() => {
                                 resetControls();
-                            }} 
+                            }}
                         />
                     )}
                 </div>
@@ -366,15 +365,20 @@ export default function CropImage({
             </div>
 
             <div className={classes.footer}>
-                <button onClick={resetControls} className={classes.resetButton}>
+                <button onClick={resetControls} className={classes.resetButton} base-button-style={"2"}>
                     {translate('util.resetLabel')} {/* <== Tradução */}
                 </button>
                 {
-                    !requireAction && <button onClick={() => closePopup()} className={classes.cancelButton}>
+                    !requireAction && <button onClick={() => closePopup()} className={classes.baseButton}
+                        base-button-style={"1"}
+                        base-button-no-flex={"true"}
+                    >
                         {translate('util.cancelLabel')} {/* <== Tradução */}
                     </button>
                 }
-                <button onClick={handleCrop} className={classes.applyButton}>
+                <button onClick={handleCrop} className={classes.baseButton}
+                    base-button-no-flex={"true"}
+                >
                     {translate('util.applyLabel')} {/* <== Tradução */}
                 </button>
             </div>

@@ -9,6 +9,7 @@
 .popups {
     /* general */
     --ntpopups-opposite: black;
+    --ntpopups-frosted-glass: linear-gradient(45deg, hsla(0deg, 0%, 96.08%, 96.86%), hsla(0deg, 0%, 100%, 90.98%));
 
     /* === TYPOGRAPHY === */
     --ntpopups-font-family: "Segoe UI", Arial, sans-serif;
@@ -51,7 +52,6 @@
 
     /* === COLORS - Text === */
     --ntpopups-color-text: rgba(64, 64, 64, .95);
-    /* Aumentei um pouco a opacidade para legibilidade */
     --ntpopups-color-text-secondary: rgba(14, 14, 14, 0.6);
     --ntpopups-color-text-muted: rgba(14, 14, 14, 0.4);
     --ntpopups-color-text-light: #f8f9fa;
@@ -61,8 +61,8 @@
     --ntpopups-bg-default: var(--ntpopups-frosted-glass);
     --ntpopups-bg-overlay: rgba(0, 0, 0, 0.459);
     --ntpopups-bg-footer: #f0f0f0;
-    --ntpopups-bg-header: #ffffff;
-    --ntpopups-bg-body: #ffffff;
+    --ntpopups-bg-header: var(--ntpopups-frosted-glass);
+    --ntpopups-bg-body: var(--ntpopups-frosted-glass);
     --ntpopups-bg-button-primary: var(--ntpopups-color-primary);
     --ntpopups-bg-button-secondary: var(--ntpopups-color-secondary);
 
@@ -200,8 +200,8 @@
     --ntpopups-bg-overlay: rgba(0, 0, 0, 0.85);
     /* Mais escuro para focar no popup */
     --ntpopups-bg-footer: #222222;
-    --ntpopups-bg-header: #1a1a1a;
-    --ntpopups-bg-body: #1a1a1a;
+    --ntpopups-bg-header: var(--ntpopups-frosted-glass);
+    --ntpopups-bg-body: var(--ntpopups-frosted-glass);
     --ntpopups-bg-button-primary: var(--ntpopups-color-primary);
     --ntpopups-bg-button-secondary: var(--ntpopups-color-secondary);
 
@@ -273,7 +273,8 @@
     /* Transição para cores de fundo e sombra */
     transition: background var(--ntpopups-transition-duration-slow) ease, box-shadow var(--ntpopups-transition-duration-slow) ease;
 }
-.popup.disableOpenAnimation{
+
+.popup.disableOpenAnimation {
     animation: none !important;
 }
 
@@ -307,7 +308,7 @@
 }
 
 /* ==================== SCROLLABLE BODY ==================== */
-.scrollable {
+.body {
     display: flex;
     flex-direction: column;
     padding: var(--ntpopups-padding-body);
@@ -323,23 +324,23 @@
     transition: background var(--ntpopups-transition-duration-slow) ease, color var(--ntpopups-transition-duration-slow) ease;
 }
 
-.scrollable::-webkit-scrollbar {
+.body::-webkit-scrollbar {
     width: var(--ntpopups-scrollbar-width);
 }
 
-.scrollable::-webkit-scrollbar-track {
+.body::-webkit-scrollbar-track {
     background: var(--ntpopups-scrollbar-bg);
     border-radius: var(--ntpopups-scrollbar-border-radius);
     transition: background var(--ntpopups-transition-duration-slow) ease;
 }
 
-.scrollable::-webkit-scrollbar-thumb {
+.body::-webkit-scrollbar-thumb {
     background: var(--ntpopups-scrollbar-thumb);
     border-radius: var(--ntpopups-scrollbar-border-radius);
     transition: background var(--ntpopups-transition-duration-slow) ease;
 }
 
-.scrollable::-webkit-scrollbar-thumb:hover {
+.body::-webkit-scrollbar-thumb:hover {
     background: var(--ntpopups-scrollbar-thumb-hover);
     transition: background var(--ntpopups-transition-duration-slow) ease;
 }
@@ -404,13 +405,23 @@
     opacity: 0.6;
 }
 
-.baseButtonNoFlex {
+.baseButton[base-button-no-flex="true"] {
     flex: 0;
     padding: var(--ntpopups-spacing-sm);
 }
 
-/* ==================== TEXT BUTTON ==================== */
-.textButton {
+/*  CANCEL BUTTON  */
+
+.baseButton[base-button-style="1"] {
+    background-color: var(--ntpopups-color-secondary);
+}
+
+.baseButton[base-button-style="1"]:hover {
+    background-color: var(--ntpopups-color-secondary-hover) !important;
+}
+
+/*  TEXT BUTTON  */
+.baseButton[base-button-style="2"] {
     border: none;
     cursor: pointer;
     flex: 0;
@@ -425,16 +436,10 @@
     transition: color var(--ntpopups-transition-duration-slow) ease, background-color var(--ntpopups-transition-duration-slow) ease;
 }
 
-.textButton:hover {
+.baseButton[base-button-style="2"]:hover {
     text-decoration: underline;
-}
-
-.cancelButton {
-    background-color: var(--ntpopups-color-secondary);
-}
-
-.cancelButton:hover {
-    background-color: var(--ntpopups-color-secondary-hover) !important;
+    box-shadow: none;
+    transform: unset;
 }
 
 /* ==================== FORM INPUTS ==================== */
@@ -524,7 +529,7 @@
         padding: var(--ntpopups-mobile-padding);
     }
 
-    .scrollable {
+    .body {
         padding: var(--ntpopups-mobile-padding);
         font-size: var(--ntpopups-mobile-font-size);
     }

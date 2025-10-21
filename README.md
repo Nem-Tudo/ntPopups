@@ -781,7 +781,7 @@ export default function CustomPopup({ closePopup, popupstyles, data }) {
   // Option 1: Use the built-in styles from popupstyles
   const classes = {
     title: popupstyles?.title || '',
-    scrollable: popupstyles?.scrollable || '',
+    body: popupstyles?.body || '',
     footer: popupstyles?.footer || ''
   };
   
@@ -1107,7 +1107,7 @@ export default function CustomPopup({ popupstyles, closePopup }) {
       <div className={popupstyles.title}>
         My Title
       </div>
-      <div className={popupstyles.scrollable}>
+      <div className={popupstyles.body}>
         My content
       </div>
       <div className={popupstyles.footer}>
@@ -1152,7 +1152,7 @@ export default function CustomPopup({ popupstyles, closePopup }) {
       </div>
       
       {/* Use custom styles for content */}
-      <div className={popupstyles.scrollable}>
+      <div className={popupstyles.body}>
         <div className={styles.customContent}>
           <img src="..." className={styles.image} />
           <p>Custom styled content</p>
