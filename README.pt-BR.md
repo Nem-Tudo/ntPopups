@@ -9,6 +9,8 @@ Uma biblioteca de popups moderna, totalmente personalizável e responsiva para R
 
 > <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1fa-1f1f8.png" width="20" alt="en" style="vertical-align: middle;" /> [Read this in english](https://github.com/Nem-Tudo/ntPopups/blob/main/README.md)
 
+# [Veja a demonstração](https://ntpopups.nemtudo.me/demo)
+
 ## ✨ Características
 
 - 🎨 **Temas**: Suporte para tema claro e escuro
@@ -1619,8 +1621,8 @@ Contribuições são bem-vindas! Se você encontrou um bug ou tem uma sugestão:
 
 ## 📚 Recursos Adicionais
 
-- **Exemplos ao Vivo**: [https://ntpopups.nemtudo.me]
-- **Documentação Completa**: [https://ntpopups.nemtudo.me/docs]
+- **Exemplos demonstração**: [https://ntpopups.nemtudo.me/demo]
+- **Documentação Completa**: [https://ntpopups.nemtudo.me]
 - **Repositório GitHub**: [https://github.com/Nem-Tudo/ntPopups]
 
 ---
@@ -1637,6 +1639,6 @@ Obrigado por usar **ntPopups**! Se esta biblioteca foi útil para você, conside
 
 ### 🚀 ntPopups - Ease and powerful popup library for React
 
-**[Documentação](https://ntpopups.nemtudo.me/docs) • [Exemplos](https://ntpopups.nemtudo.me/docs) • [GitHub](https://github.com/Nem-Tudo/ntPopups)**
+**[Documentação](https://ntpopups.nemtudo.me) • [Exemplos](https://ntpopups.nemtudo.me/demo) • [GitHub](https://github.com/Nem-Tudo/ntPopups)**
 
 </div>

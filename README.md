@@ -9,6 +9,8 @@ A modern, fully customizable and responsive popup library for React. Create eleg
 
 > <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e7-1f1f7.png" width="20" alt="pt-br" style="vertical-align: middle;" /> [Leia isto em português](https://github.com/Nem-Tudo/ntPopups/blob/main/README.pt-BR.md)
 
+# [See the demo](https://ntpopups.nemtudo.me/demo)
+
 ## ✨ Features
 
 - 🎨 **Themes**: Support for light and dark themes
@@ -1650,8 +1652,8 @@ Contributions are welcome! If you found a bug or have a suggestion:
 
 ## 📚 Additional Resources
 
-- **Live Examples**: [https://ntpopups.nemtudo.me]
-- **Full Documentation**: [https://ntpopups.nemtudo.me/docs]
+- **Demo Examples**: [https://ntpopups.nemtudo.me/demo]
+- **Full Documentation**: [https://ntpopups.nemtudo.me]
 - **GitHub Repository**: [https://github.com/Nem-Tudo/ntPopups]
 
 ---
@@ -1668,6 +1670,6 @@ Thank you for using **ntPopups**! If this library was helpful to you, consider g
 
 ### 🚀 ntPopups - Easy and powerful popup library for React
 
-**[Documentation](https://ntpopups.nemtudo.me/docs) • [Examples](https://ntpopups.nemtudo.me/docs) • [GitHub](https://github.com/Nem-Tudo/ntPopups)**
+**[Documentation](https://ntpopups.nemtudo.me) • [Examples](https://ntpopups.nemtudo.me/demo) • [GitHub](https://github.com/Nem-Tudo/ntPopups)**
 
 </div>
