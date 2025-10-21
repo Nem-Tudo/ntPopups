@@ -4,31 +4,29 @@ const babel = require('@rollup/plugin-babel');
 const postcss = require('rollup-plugin-postcss');
 const terser = require('@rollup/plugin-terser');
 const json = require('@rollup/plugin-json');
-const path = require('path'); // <-- Importe o 'path' do Node
 const packageJson = require('./package.json');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Configuração para tratar as peerDependencies e @babel/runtime como externos
+// Configuração para tratar apenas as peerDependencies como externos
+// NOTE: Removido /^@babel\/runtime/ daqui.
 const external = [
   ...Object.keys(packageJson.peerDependencies),
   'react/jsx-runtime',
-  /^@babel\/runtime/,
 ];
-// ... (imports no topo, incluindo 'path')
 
 module.exports = {
   input: 'src/index.js',
   output: [
     {
       dir: 'dist',
-      entryFileNames: 'cjs/index.js', // Define o nome do arquivo CJS
+      entryFileNames: 'cjs/index.js',
       format: 'cjs',
       sourcemap: isProduction,
     },
     {
       dir: 'dist',
-      entryFileNames: 'esm/index.js', // Define o nome do arquivo ESM
+      entryFileNames: 'esm/index.js',
       format: 'esm',
       sourcemap: isProduction,
     },
@@ -40,17 +38,20 @@ module.exports = {
     commonjs(),
     postcss({
       modules: true,
-      // CORREÇÃO:
-      // Agora que usamos 'output.dir = "dist"', 'styles.css'
-      // será extraído para 'dist/styles.css'.
       extract: 'styles.css',
       minimize: isProduction,
     }),
     babel({
-      babelHelpers: 'runtime',
+      // 🎯 MUDANÇA 1: Usar 'bundled' (ou 'inline') para injetar os helpers.
+      // Isso elimina a necessidade de importar de @babel/runtime.
+      babelHelpers: 'bundled', 
       exclude: 'node_modules/**',
       presets: ['@babel/preset-env', '@babel/preset-react'],
-      plugins: ['@babel/plugin-transform-runtime'],
+      // 🎯 MUDANÇA 2: Remover o plugin @babel/plugin-transform-runtime.
+      // Ele é o responsável por forçar as importações de @babel/runtime.
+      plugins: [
+        // '@babel/plugin-transform-runtime', // REMOVIDO
+      ],
     }),
     isProduction && terser(),
   ].filter(Boolean),
