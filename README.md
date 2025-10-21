@@ -811,7 +811,7 @@ Create a global CSS file and override the variables:
 ```css
 /* styles/custom-ntpopups.css */
 
-:root {
+.ntpopups-overlay {
   /* Custom colors */
   --ntpopups-color-primary: #ff6b6b;
   --ntpopups-color-primary-hover: #ff5252;
