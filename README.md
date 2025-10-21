@@ -380,7 +380,7 @@ export default function MyCustomPopup({
       <div className={popupstyles.footer}>        
         <button
           className={popupstyles.baseButton}
-          base-button-style="0" // default: 0 | Available: "0", "1", "2"
+          base-button-style="0" // default: 0
           base-button-no-flex={"false"} // default: false
           onClick={() => closePopup(true)}
         >Ok</button>
@@ -389,6 +389,24 @@ export default function MyCustomPopup({
   );
 }
 ```
+
+If you are using `baseButton`, you have access to the following properties:
+
+**Boolean** / whether the button expands or not
+
+* `base-button-no-flex`
+
+**Number as a string** / the button style
+
+* `base-button-style`
+
+Values:
+
+* `"0"` = default
+* `"1"` = secondary
+* `"2"` = text
+* `"3"` = success
+* `"4"` = danger
 
 ### 2. Create the Component
 
@@ -857,13 +875,15 @@ All classes follow the `.ntpopups-*` pattern and can be used for additional styl
 ### Main Structure
 
 ```css
-.ntpopups-overlay         /* External backdrop container */
-.ntpopups-container       /* Popup container */
-.ntpopups-header          /* Header */
-.ntpopups-icon            /* Header icon */
-.ntpopups-body            /* Body/content */
-.ntpopups-footer          /* Footer */
-.ntpopups-basebutton      /* Default button */
+.ntpopups-main                /* Parent class of the entire library */
+.ntpopups-[name]-theme        /* Parent class of the entire library (for specific themes) (ex: .ntpopups-dark-theme) */
+.ntpopups-overlay             /* External backdrop container */
+.ntpopups-container           /* Popup container */
+.ntpopups-header              /* Header */
+.ntpopups-icon                /* Header icon */
+.ntpopups-body                /* Body/content */
+.ntpopups-footer              /* Footer */
+.ntpopups-basebutton          /* Default button */
 ```
 
 ### Buttons
