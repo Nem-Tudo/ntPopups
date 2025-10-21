@@ -71,32 +71,35 @@ export default function DisplayPopup({
     };
 
     return (
-        // Semântico: Usa <main> ou <div> com role="region" para o contêiner principal de um aplicativo
-        <main className={`${styles.ntPopups} ntpopups-main ${styles[`${theme}Theme`]} ntpopups-${theme}-theme`}>
-            {popups.map((popup) => (
-                // OVERLAY/BACKDROP LAYER
-                <div
-                    key={popup.id}
-                    // Apply default CSS class or custom fallback class
-                    className={`${styles.popupsOverlay} ntpopups-overlay`}
-                    style={{ zIndex: popup.zIndex }}
-                    // Semântico: Adiciona role="dialog" para o contexto de um modal, se a tag <dialog> não for o container direto.
-                    role="presentation" // 'presentation' é mais seguro para o overlay, que apenas envolve o <dialog> real.
-                >
-                    {/* POPUP CONTAINER */}
-                    {/* Semântico: Substitui o <div> do container principal do popup por <dialog> */}
-                    <dialog
-                        open // O atributo 'open' garante que o browser trate como um modal visível.
-                        data-popup-id={popup.id}
-                        // Apply default CSS class or custom fallback class
-                        className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
-                        style={popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}}
-                    >
-                        {/* SPECIFIC POPUP CONTENT */}
-                        {getPopupComponent(popup)}
-                    </dialog>
+        <>
+            {
+                (popups.length > 0) && <div className={`${styles.ntPopups} ntpopups-main ${styles[`${theme}Theme`]} ntpopups-${theme}-theme`}>
+                    {popups.map((popup) => (
+                        // OVERLAY/BACKDROP LAYER
+                        <div
+                            key={popup.id}
+                            // Apply default CSS class or custom fallback class
+                            className={`${styles.popupsOverlay} ntpopups-overlay`}
+                            style={{ zIndex: popup.zIndex }}
+                            // Semântico: Adiciona role="dialog" para o contexto de um modal, se a tag <dialog> não for o container direto.
+                            role="presentation" // 'presentation' é mais seguro para o overlay, que apenas envolve o <dialog> real.
+                        >
+                            {/* POPUP CONTAINER */}
+                            {/* Semântico: Substitui o <div> do container principal do popup por <dialog> */}
+                            <dialog
+                                open // O atributo 'open' garante que o browser trate como um modal visível.
+                                data-popup-id={popup.id}
+                                // Apply default CSS class or custom fallback class
+                                className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
+                                style={popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}}
+                            >
+                                {/* SPECIFIC POPUP CONTENT */}
+                                {getPopupComponent(popup)}
+                            </dialog>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </main>
+            }
+        </>
     );
 }
