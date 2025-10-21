@@ -83,7 +83,7 @@ const validateComponent = (value, componentData) => {
 };
 
 // ---------------------------------------------------------------------
-// 🚀 2. Componente Principal Form
+// 🚀 2. Componente Principal Form (Semântico)
 // ---------------------------------------------------------------------
 
 /**
@@ -98,7 +98,8 @@ const validateComponent = (value, componentData) => {
  * @param {React.ReactNode} [properties.data.doneLabel="Done"]
  * @param {Array} [properties.data.components=[{id: "text01", type: "text", label: "Text", defaultValue: "", disabled: false }]]
  * @param {React.ReactNode} [properties.data.icon="ⓘ"]
- * @param {(arg0: Object) => void} [properties.data.onResponse=() => {}]
+ * @param {(arg0: object) => void} [properties.data.onSubmit=() => {}]
+ * @param {(arg0: object) => void} [properties.data.onChange=() => {}]
  * @param {Boolean} properties.requireAction Is action required?
  * */
 export default function Form({
@@ -112,7 +113,8 @@ export default function Form({
         message = "",
         doneLabel,
         components = [{ id: "text01", type: "text", label: "Text", defaultValue: "", disabled: false }],
-        onResponse = () => { }
+        onSubmit = () => { },
+        onChange = () => { },
     } = {}
 }) {
 
@@ -210,35 +212,44 @@ export default function Form({
     };
 
     return (
-        <>
-            <div className={classes.header}>
-                <div className={classes.icon}>
+        <form // **Tag Semântica:** O <form> envolve os campos de entrada e botões de submissão.
+            // Para não quebrar o funcionamento (que usa onSubmit(value) customizado)
+            // mantemos como está, mas em um formulário padrão React, o handler estaria aqui.
+            onSubmit={(e) => { e.preventDefault(); /* A submissão é tratada no botão, mas previene o submit nativo*/ }}
+        >
+            <header className={classes.header}> {/* **Tag Semântica:** Para o cabeçalho do popup/formulário */}
+                <div className={classes.icon} aria-hidden="true"> {/* O ícone é decorativo */}
                     {icon}
                 </div>
                 {finalTitle}
-            </div>
+            </header>
 
-            <div className={classes.body}>
+            <section className={classes.body}> {/* **Tag Semântica:** Para o conteúdo principal e campos de formulário */}
                 {message && <p className={classes.formMessage}>{message}</p>}
                 {
                     components.map((componentOrArray, index) => {
                         if (Array.isArray(componentOrArray)) {
                             const componentsArray = componentOrArray;
-                            return <div className={classes.row} key={`row-${index}`}>{componentsArray.map((component, index) => {
-                                // 🚀 Validade individual
-                                const isComponentValid = validateComponent(value[component.id], component);
-                                return <div key={`rc-${index}`} className={classes.componentContainer} component-type={component.type}>
-                                    <FormComponent
-                                        data={component}
-                                        value={value[component.id]}
-                                        // 🚀 Passa o estado de validade individual
-                                        isValid={isComponentValid}
-                                        onValueChange={(inputvalue) => {
-                                            updateStateKey(setValue, value, [component.id, inputvalue])
-                                        }}
-                                    />
-                                </div>
-                            })}</div>
+                            return (
+                                <fieldset className={classes.row} key={`row-${index}`}> {/* **Tag Semântica:** Agrupa componentes relacionados (neste caso, por linha) */}
+                                    {componentsArray.map((component, index) => {
+                                        // 🚀 Validade individual
+                                        const isComponentValid = validateComponent(value[component.id], component);
+                                        return <div key={`rc-${index}`} className={classes.componentContainer} component-type={component.type}>
+                                            <FormComponent
+                                                data={component}
+                                                value={value[component.id]}
+                                                // 🚀 Passa o estado de validade individual
+                                                isValid={isComponentValid}
+                                                onValueChange={(inputvalue) => {
+                                                    onChange({ changedComponentState: { id: component.id, isValid: isComponentValid, value: inputvalue }, formState: { value, isValid: isFormValid } });
+                                                    updateStateKey(setValue, value, [component.id, inputvalue])
+                                                }}
+                                            />
+                                        </div>
+                                    })}
+                                </fieldset>
+                            );
                         } else {
                             const component = componentOrArray;
                             const isComponentValid = validateComponent(value[component.id], component);
@@ -249,6 +260,7 @@ export default function Form({
                                     // 🚀 Passa o estado de validade individual
                                     isValid={isComponentValid}
                                     onValueChange={(inputvalue) => {
+                                        onChange({ changedComponentState: { id: component.id, isValid: isComponentValid, value: inputvalue }, formState: { values: value, isValid: isFormValid } });
                                         updateStateKey(setValue, value, [component.id, inputvalue])
                                     }}
                                 />
@@ -256,13 +268,17 @@ export default function Form({
                         }
                     })
                 }
-            </div>
+            </section>
 
-            <div className={classes.footer}>
+            <footer className={classes.footer}> {/* **Tag Semântica:** Para a área de botões/rodapé */}
                 {
-                    !requireAction && <button onClick={() => closePopup(false)} className={classes.baseButton}
+                    !requireAction && <button
+                        type="button" // **Semântica:** Para indicar que não submete o form
+                        onClick={() => closePopup(false)}
+                        className={classes.baseButton}
                         base-button-style={"1"}
-                        base-button-no-flex={"true"}>
+                        base-button-no-flex={"true"}
+                    >
                         {translate('util.cancelLabel')}
                     </button>
                 }
@@ -271,13 +287,14 @@ export default function Form({
                     base-button-no-flex={"true"}
                     disabled={!isFormValid}
                     onClick={() => {
-                        onResponse(value);
+                        onSubmit(value);
                         closePopup(true);
                     }}
+                    type="submit" // **Semântica:** Indica que este é o botão principal de submissão.
                 >
                     {finalDoneLabel}
                 </button>
-            </div>
-        </>
+            </footer>
+        </form>
     );
 }

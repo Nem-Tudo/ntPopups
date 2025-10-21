@@ -57,22 +57,22 @@ export default function Confirm({
 
     return (
         <>
-
-            <div className={classes.header}>
-                <div className={classes.icon}>
+            <header className={classes.header}>
+                <div className={classes.icon} aria-hidden="true">
                     {icon}
                 </div>
-                {finalTitle}
-            </div>
+                {finalTitle} {/* Semântico: Usa h2 para o título do popup */}
+            </header>
 
-            <div className={classes.body}>
+            <section className={classes.body}> {/* Semântico: Usa section para o corpo principal */}
                 <p>{finalMessage}</p>
-            </div>
+            </section>
 
-            <div className={classes.footer}>
+            <footer className={classes.footer}> {/* Semântico: Usa footer para a área de botões */}
                 <button
                     className={classes.baseButton}
                     base-button-style={"1"}
+                    type="button"
                     onClick={() => {
                         closePopup(true); // Intentional close
                         onChoose(false); // User chose Cancel
@@ -83,6 +83,7 @@ export default function Confirm({
                 <button
                     className={classes.confirmButton}
                     base-button-style={nameToStyle[confirmStyle]}
+                    type="button"
                     onClick={() => {
                         closePopup(true); // Intentional close
                         onChoose(true); // User chose Confirm
@@ -90,7 +91,7 @@ export default function Confirm({
                 >
                     {finalConfirmLabel}
                 </button>
-            </div>
+            </footer>
         </>
     );
 }

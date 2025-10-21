@@ -18,7 +18,7 @@ const defaultCssModules = {
  * @param {import('../utils/types').PopupData[]} properties.popups - Array of active (visible) popups.
  * @param {Function} properties.closePopup - Function to close a specific popup.
  * @param {Object.<string, import("react").ComponentType<any>>} properties.popupComponents - Map of all registered components.
- * @param {(key: string) => string} properties.translate - Function to translate strings (passada do Provider). <-- NOVA PROP
+ * @param {(key: string) => string} properties.translate - Function to translate strings (passada do Provider).
  * @param {String} properties.theme - Theme
  */
 export default function DisplayPopup({
@@ -43,13 +43,13 @@ export default function DisplayPopup({
         if (!Component) {
             console.log(`ntPopups Error: Unknown popup type: ${popupType}`);
             return (
-                <div style={{ padding: '20px', color: 'red' }}>
+                <dialog open style={{ padding: '20px', color: 'red' }}> {/* Semântico: Usa <dialog> para o erro */}
                     <h3>{translate('internalError.title')}</h3>
                     <p>{translate('internalError.message')} {popupType}</p>
-                    <button onClick={() => closePopup(id, false)}>
+                    <button type="button" onClick={() => closePopup(id, false)}>
                         {translate('util.closeLabel')}
                     </button>
-                </div>
+                </dialog>
             );
         }
 
@@ -57,13 +57,13 @@ export default function DisplayPopup({
         const componentProps = {
             closePopup: (hasAction = false) => closePopup(id, hasAction),
             ...settings,
-            translate, // <-- INJETA A FUNÇÃO DE TRADUÇÃO NO COMPONENTE
+            translate,
         };
 
         // Inject the main styles for common elements (header, body, footer)
         componentProps.popupstyles = {
-            ...styles, // Global styles for header/body
-            ...(defaultCssModules[popupType] || {}), // Specific styles (e.g., confirm buttons)
+            ...styles,
+            ...(defaultCssModules[popupType] || {}),
         };
 
         // Return the component with prepared props
@@ -71,29 +71,32 @@ export default function DisplayPopup({
     };
 
     return (
-        <>
-            <div className={`${styles.ntPopups} ntpopups-main ${styles[`${theme}Theme`]} ntpopups-${theme}-theme`}>
-                {popups.map((popup) => (
-                    // OVERLAY/BACKDROP LAYER
-                    <section
-                        key={popup.id}
+        // Semântico: Usa <main> ou <div> com role="region" para o contêiner principal de um aplicativo
+        <main className={`${styles.ntPopups} ntpopups-main ${styles[`${theme}Theme`]} ntpopups-${theme}-theme`}>
+            {popups.map((popup) => (
+                // OVERLAY/BACKDROP LAYER
+                <div
+                    key={popup.id}
+                    // Apply default CSS class or custom fallback class
+                    className={`${styles.popupsOverlay} ntpopups-overlay`}
+                    style={{ zIndex: popup.zIndex }}
+                    // Semântico: Adiciona role="dialog" para o contexto de um modal, se a tag <dialog> não for o container direto.
+                    role="presentation" // 'presentation' é mais seguro para o overlay, que apenas envolve o <dialog> real.
+                >
+                    {/* POPUP CONTAINER */}
+                    {/* Semântico: Substitui o <div> do container principal do popup por <dialog> */}
+                    <dialog
+                        open // O atributo 'open' garante que o browser trate como um modal visível.
+                        data-popup-id={popup.id}
                         // Apply default CSS class or custom fallback class
-                        className={`${styles.popupsOverlay} ntpopups-overlay`}
-                        style={{ zIndex: popup.zIndex }}
+                        className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
+                        style={popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}}
                     >
-                        {/* POPUP CONTAINER */}
-                        <div
-                            data-popup-id={popup.id}
-                            // Apply default CSS class or custom fallback class
-                            className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
-                            style={popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}}
-                        >
-                            {/* SPECIFIC POPUP CONTENT */}
-                            {getPopupComponent(popup)}
-                        </div>
-                    </section>
-                ))}
-            </div>
-        </>
+                        {/* SPECIFIC POPUP CONTENT */}
+                        {getPopupComponent(popup)}
+                    </dialog>
+                </div>
+            ))}
+        </main>
     );
 }

@@ -289,13 +289,13 @@ export default function CropImage({
     // 7. Renderização com Traduções e Classes da Lib
     return (
         <>
-            <div className={classes.header}>
-                {translate('cropImage.title')} {/* <== Tradução */}
-            </div>
+            <header className={classes.header}>
+                {translate('cropImage.title')} {/* Semântico: Título hierárquico (h2) */}
+            </header>
 
-            <div className={classes.body}>
+            <section className={classes.body}> {/* Semântico: Usa <section> para o conteúdo principal */}
                 {/* Visualizador de Crop */}
-                <div
+                <figure // Semântico: <figure> é apropriado para conteúdo auto-contido (como uma imagem ou canvas)
                     ref={containerRef}
                     // A classe de cursor muda dinamicamente
                     className={`${classes.container} ${isDragging ? classes.containerGrabbing : classes.containerGrab}`}
@@ -306,14 +306,17 @@ export default function CropImage({
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
+                    role="application" // ARIA: Sugere uma interface interativa
+                    aria-label={translate('cropImage.viewerLabel')} // ARIA: Rótulo para o leitor de tela
                 >
                     {/* fullCanvas e cropCanvas continuam no DOM */}
-                    <canvas ref={fullCanvasRef} className={classes.fullCanvas} />
+                    <canvas ref={fullCanvasRef} className={classes.fullCanvas} aria-hidden="true" /> {/* ARIA: O canvas é visual, não precisa ser lido diretamente */}
 
                     <canvas
                         ref={cropCanvasRef}
                         // Classe condicional para formato circular
                         className={`${classes.cropCanvas} ${format === 'circle' ? classes.cropCanvasCircle : ''}`}
+                        aria-hidden="true"
                     />
 
                     {imageSrc && (
@@ -321,7 +324,7 @@ export default function CropImage({
                         <img
                             ref={imageRef}
                             src={imageSrc}
-                            alt="Source"
+                            alt="" // Alt vazio, pois a imagem é funcional, mas é renderizada no canvas.
                             className={classes.hiddenImage}
                             // Reseta os controles ao carregar uma nova imagem
                             onLoad={() => {
@@ -329,13 +332,13 @@ export default function CropImage({
                             }}
                         />
                     )}
-                </div>
+                </figure>
 
                 {/* Controles de Zoom */}
                 <div className={classes.zoomSection}>
-                    <div className={classes.zoomControls}>
-                        {/* Ícone de zoom pequeno */}
-                        <svg className={`${classes.zoomIcon} ${classes.zoomIconSmall}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px' }}>
+                    <label className={classes.zoomControls}> {/* Semântico: Usa <label> para agrupar o controle de zoom */}
+                        {/* Ícone de zoom pequeno (mantido como SVG, mas com aria-hidden) */}
+                        <svg className={`${classes.zoomIcon} ${classes.zoomIconSmall}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px' }} aria-hidden="true">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <circle cx="8.5" cy="8.5" r="1.5"></circle>
                             <polyline points="21 15 16 10 5 21"></polyline>
@@ -349,39 +352,42 @@ export default function CropImage({
                             value={zoom}
                             onChange={(e) => handleZoomChange(e.target.value)}
                             className={classes.zoomSlider}
+                            aria-label={translate('cropImage.zoomSliderLabel')} // ARIA: Rótulo para leitores de tela
                         />
 
-                        {/* Ícone de zoom grande */}
-                        <svg className={`${classes.zoomIcon} ${classes.zoomIconLarge}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '24px', height: '24px' }}>
+                        {/* Ícone de zoom grande (mantido como SVG, mas com aria-hidden) */}
+                        <svg className={`${classes.zoomIcon} ${classes.zoomIconLarge}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '24px', height: '24px' }} aria-hidden="true">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <circle cx="8.5" cy="8.5" r="1.5"></circle>
                             <polyline points="21 15 16 10 5 21"></polyline>
                         </svg>
-                    </div>
+                    </label>
                 </div>
 
                 {/* Canvas oculto para gerar a imagem final (blob/base64) */}
-                <canvas ref={canvasRef} className={classes.hiddenCanvas} />
-            </div>
+                <canvas ref={canvasRef} className={classes.hiddenCanvas} aria-hidden="true" />
+            </section>
 
-            <div className={classes.footer}>
-                <button onClick={resetControls} className={classes.resetButton} base-button-style={"2"}>
-                    {translate('util.resetLabel')} {/* <== Tradução */}
+            <footer className={classes.footer}> {/* Semântico: Usa <footer> para o rodapé */}
+                <button onClick={resetControls} className={classes.resetButton} base-button-style={"2"} type="button">
+                    {translate('util.resetLabel')}
                 </button>
                 {
                     !requireAction && <button onClick={() => closePopup()} className={classes.baseButton}
                         base-button-style={"1"}
                         base-button-no-flex={"true"}
+                        type="button" // Indica que não é o botão principal de ação
                     >
-                        {translate('util.cancelLabel')} {/* <== Tradução */}
+                        {translate('util.cancelLabel')}
                     </button>
                 }
                 <button onClick={handleCrop} className={classes.baseButton}
                     base-button-no-flex={"true"}
+                    type="submit" // Indica o botão principal de ação (se estivesse dentro de um <form>, o que é recomendado para popups de ação)
                 >
-                    {translate('util.applyLabel')} {/* <== Tradução */}
+                    {translate('util.applyLabel')}
                 </button>
-            </div>
+            </footer>
         </>
     );
 }

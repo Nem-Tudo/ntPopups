@@ -38,25 +38,25 @@ export default function Generic({
 
     return (
         <>
-            <div className={classes.header}>
+            <header className={classes.header}>
                 <div className={classes.icon}>
                     {icon}
                 </div>
                 {finalTitle}
-            </div>
+            </header>
 
-            <div className={classes.body}>
+            <section className={classes.body}>
                 <p>{finalMessage}</p>
-            </div>
+            </section>
 
-            <div className={classes.footer}>
+            <footer className={classes.footer}>
                 <button
                     className={classes.closeButton}
                     onClick={() => closePopup(true)}
                 >
                     {finalCloseLabel}
                 </button>
-            </div>
+            </footer>
         </>
     );
 }

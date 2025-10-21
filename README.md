@@ -278,9 +278,20 @@ openPopup('form', {
         }
       ]
     ],
-    onResponse: (values) => {
+    onSubmit: (values) => {
       console.log('Form data:', values);
       // { name: "...", email: "...", bio: "...", accept: true, city: "...", state: "..." }
+    },
+    onChange: ({ changedComponentState, formState }) => {
+      const { id, value, isValid } = changedComponentState;
+      const { values, idValid} = formState;
+      
+      console.log('Changed component:', id);
+      console.log('New value:', value);
+      console.log('New value is valid:', isValid);
+
+      console.log('Current form values:', values);
+      console.log('Current form values is valid:', values);
     }
   }
 });
@@ -292,7 +303,8 @@ openPopup('form', {
 - `doneLabel` (ReactNode): Submit button text
 - `icon` (ReactNode): Header icon
 - `components` (Array): List of form components
-- `onResponse` (Function): Callback with object containing all values `{ id: value }`
+- `onSubmit` (Function): Callback with object containing all values `{ id: value }`
+- `onChange` (Function): Event fired when any information changes
 
 **Component Types:**
 
@@ -1082,7 +1094,7 @@ const openFeedbackForm = () => {
           defaultValue: true
         }
       ],
-      onResponse: async (data) => {
+      onSubmit: async (data) => {
         await api.post('/feedback', data);
         
         openPopup('generic', {
@@ -1202,7 +1214,7 @@ const registrationWizard = () => {
         ...config,
         icon: '📝',
         doneLabel: step === 'preferences' ? 'Finish' : 'Next',
-        onResponse: (values) => {
+        onSubmit: (values) => {
           data = { ...data, ...values };
           
           if (step === 'preferences') {
@@ -1460,7 +1472,7 @@ const advancedForm = () => {
           }
         ]
       ],
-      onResponse: async (data) => {
+      onSubmit: async (data) => {
         try {
           await api.post('/create-account', data);
           
@@ -1495,7 +1507,7 @@ const advancedForm = () => {
 
 1. **Async Callbacks**: Always handle errors in async operations
    ```jsx
-   onResponse: async (data) => {
+   onSubmit: async (data) => {
      try {
        await saveData(data);
      } catch (error) {

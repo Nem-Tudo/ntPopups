@@ -1,3 +1,9 @@
+/* some resets */
+.ntPopups fieldset{
+    border: none;
+}
+
+
 /*
  * /src/styles/DisplayPopup.module.css
  * Sistema completo de variáveis CSS para personalização total do popup
@@ -263,6 +269,9 @@
 
 /* ==================== POPUP CONTAINER ==================== */
 .popup {
+    position: static;
+    border: none;
+    
     display: flex;
     flex-direction: column;
     border-radius: var(--ntpopups-border-radius);

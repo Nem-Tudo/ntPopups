@@ -150,7 +150,8 @@ import React from "react";
  * @property {React.ReactNode} [doneLabel] - [form] Text for the confirmation button. Defaults to i18n key 'util.done'.
  * @property {React.ReactNode} [icon="ⓘ"] - [form] Icon displayed next to the title.
  * @property {FormComponentOrRow[]} [components] - [form] Array defining the fields/layout of the form.
- * @property {(values: Object.<string, any>) => void} [onResponse] - [form] Callback executed upon form submission with all field values.
+ * @property {(values: Object.<string, any>) => void} [onSubmit] - [form] Callback executed upon form submission with all field values.
+ * @property {(params: { changedComponentState: { id: string, value: any, isValid: boolean }, formState: { values: Object.<string, any>, isValid: boolean }}) => void} [onChange] - [form] Callback executed whenever any form field changes.
  */
 
 /**

@@ -1,5 +1,3 @@
-/* CropImage.module.css - FINAL RESPONSIVO */
-
 .container {
     position: relative;
     /* Mantido para desktops, mas será sobrescrito em mobile */
@@ -102,7 +100,7 @@
     /* O estilo base para header vem de .title global. Aqui sobrescrevemos cores e padding. */
     color: var(--ntpopups-opposite);
     /* Assumindo que esta variável existe e define a cor */
-    padding: var(--ntpopups-spacing-lg) 0 0 var(--ntpopups-spacing-xl);
+    padding: var(--ntpopups-spacing-lg) 0 var(--ntpopups-spacing-lg) var(--ntpopups-spacing-xl);
     /* 20px 0 0 35px */
     border-bottom: none;
     font-weight: var(--ntpopups-font-weight-bold);

@@ -278,7 +278,7 @@ openPopup('form', {
         }
       ]
     ],
-    onResponse: (valores) => {
+    onSubmit: (valores) => {
       console.log('Dados do formulário:', valores);
       // { nome: "...", email: "...", bio: "...", aceito: true, cidade: "...", estado: "..." }
     }
@@ -292,7 +292,7 @@ openPopup('form', {
 - `doneLabel` (ReactNode): Texto do botão de submissão
 - `icon` (ReactNode): Ícone do cabeçalho
 - `components` (Array): Lista de componentes de formulário
-- `onResponse` (Function): Callback com objeto contendo todos os valores `{ id: value }`
+- `onSubmit` (Function): Callback com objeto contendo todos os valores `{ id: value }`
 
 **Tipos de Componentes:**
 
@@ -1062,7 +1062,7 @@ const abrirFormularioFeedback = () => {
           defaultValue: true
         }
       ],
-      onResponse: async (dados) => {
+      onSubmit: async (dados) => {
         await api.post('/feedback', dados);
         
         openPopup('generic', {
@@ -1182,7 +1182,7 @@ const wizardCadastro = () => {
         ...config,
         icon: '📝',
         doneLabel: etapa === 'preferencias' ? 'Finalizar' : 'Próximo',
-        onResponse: (valores) => {
+        onSubmit: (valores) => {
           dados = { ...dados, ...valores };
           
           if (etapa === 'preferencias') {
@@ -1440,7 +1440,7 @@ const formularioAvancado = () => {
           }
         ]
       ],
-      onResponse: async (dados) => {
+      onSubmit: async (dados) => {
         try {
           await api.post('/criar-conta', dados);
           
@@ -1476,7 +1476,7 @@ const formularioAvancado = () => {
 
 1. **Callbacks Assíncronos**: Sempre trate erros em operações assíncronas
    ```jsx
-   onResponse: async (dados) => {
+   onSubmit: async (dados) => {
      try {
        await salvarDados(dados);
      } catch (erro) {
