@@ -237,6 +237,7 @@
 
 /* ==================== (WHITE THEME ECLUSIVE) ==================== */
 .whiteTheme {
+    --ntpopups-opposite: black;
 }
 
 /* ==================== LAYOUT APPLICATION (Mantido - usa as variáveis) ==================== */

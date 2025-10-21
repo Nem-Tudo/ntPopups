@@ -392,7 +392,7 @@ export default function MyCustomPopup({
 
 If you are using `baseButton`, you have access to the following properties:
 
-**Boolean** / whether the button expands or not
+**Boolean as a string** / whether the button expands or not
 
 * `base-button-no-flex`
 
