@@ -6,7 +6,7 @@
  */
 
 /* ==================== CSS VARIABLES (TEMA CLARO) ==================== */
-.popups {
+.ntPopups {
     /* general */
     --ntpopups-opposite: black;
     --ntpopups-frosted-glass: linear-gradient(45deg, hsla(0deg, 0%, 96.08%, 96.86%), hsla(0deg, 0%, 100%, 90.98%));
@@ -162,7 +162,7 @@
 }
 
 /* ==================== TEMA ESCURO (DARK THEME) ==================== */
-.popups.nt-popups-dark-theme {
+.darkTheme {
     /* general */
     --ntpopups-opposite: rgb(255, 255, 255);
     --ntpopups-frosted-glass: linear-gradient(45deg, rgba(40, 40, 40, .97), rgba(35, 35, 35, .91));
@@ -235,8 +235,12 @@
     --ntpopups-button-style-2-bg-hover: rgba(255, 255, 255, 0.1);
 }
 
+/* ==================== (WHITE THEME ECLUSIVE) ==================== */
+.whiteTheme {
+}
+
 /* ==================== LAYOUT APPLICATION (Mantido - usa as variáveis) ==================== */
-.popups {
+.popupsOverlay {
     width: 100dvw;
     height: 100dvh;
     background-color: var(--ntpopups-bg-overlay);
@@ -506,8 +510,8 @@
 }
 
 /* ==================== FORM INPUTS ==================== */
-.popups input[type="text"],
-.popups textarea {
+.popupsOverlay input[type="text"],
+.popupsOverlay textarea {
     width: 100%;
     font-family: var(--ntpopups-font-family);
     font-size: var(--ntpopups-font-size-base);
@@ -527,42 +531,42 @@
 }
 
 /* --- Input Inválido (valid="false") --- */
-.popups input[valid="false"],
-.popups textarea[valid="false"] {
+.popupsOverlay input[valid="false"],
+.popupsOverlay textarea[valid="false"] {
     border-color: var(--ntpopups-color-input-invalid);
 }
 
-.popups textarea[noresize="true"] {
+.popupsOverlay textarea[noresize="true"] {
     resize: none;
 }
 
 /* ------------------------------------- */
 
-.popups input[type="text"]::placeholder,
-.popups textarea::placeholder {
+.popupsOverlay input[type="text"]::placeholder,
+.popupsOverlay textarea::placeholder {
     color: var(--ntpopups-input-placeholder-color);
     opacity: 1;
 }
 
-.popups input[type="text"]:focus,
-.popups textarea:focus {
+.popupsOverlay input[type="text"]:focus,
+.popupsOverlay textarea:focus {
     border-color: var(--ntpopups-input-border-focus);
     box-shadow: 0 0 0 3px rgba(95, 84, 240, 0.1);
 }
 
-.popups.nt-popups-dark-theme input[type="text"]:focus,
-.popups.nt-popups-dark-theme textarea:focus {
+.popupsOverlay.nt-popups-dark-theme input[type="text"]:focus,
+.popupsOverlay.nt-popups-dark-theme textarea:focus {
     box-shadow: 0 0 0 3px rgba(122, 112, 255, 0.2);
 }
 
-.popups input[type="text"]:disabled,
-.popups textarea:disabled {
+.popupsOverlay input[type="text"]:disabled,
+.popupsOverlay textarea:disabled {
     background-color: var(--ntpopups-color-secondary-light);
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-.popups textarea {
+.popupsOverlay textarea {
     min-height: 100px;
     resize: vertical;
 }

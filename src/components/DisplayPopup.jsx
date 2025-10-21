@@ -72,26 +72,28 @@ export default function DisplayPopup({
 
     return (
         <>
-            {popups.map((popup) => (
-                // OVERLAY/BACKDROP LAYER
-                <section
-                    key={popup.id}
-                    // Apply default CSS class or custom fallback class
-                    className={`${styles.popups}${theme != "white" ? ` ${styles[`nt-popups-${theme}-theme`]} ` : " "}ntpopups-overlay${theme != "white" ? ` ${`ntpopups-${theme}-theme`} ` : " "}`}
-                    style={{ zIndex: popup.zIndex }}
-                >
-                    {/* POPUP CONTAINER */}
-                    <div
-                        data-popup-id={popup.id}
+            <div className={`${styles.ntPopups} ntpopups-main ${styles[`${theme}Theme`]} ntpopups-${theme}-theme`}>
+                {popups.map((popup) => (
+                    // OVERLAY/BACKDROP LAYER
+                    <section
+                        key={popup.id}
                         // Apply default CSS class or custom fallback class
-                        className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
-                        style={popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}}
+                        className={`${styles.popupsOverlay} ntpopups-overlay`}
+                        style={{ zIndex: popup.zIndex }}
                     >
-                        {/* SPECIFIC POPUP CONTENT */}
-                        {getPopupComponent(popup)}
-                    </div>
-                </section>
-            ))}
+                        {/* POPUP CONTAINER */}
+                        <div
+                            data-popup-id={popup.id}
+                            // Apply default CSS class or custom fallback class
+                            className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
+                            style={popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}}
+                        >
+                            {/* SPECIFIC POPUP CONTENT */}
+                            {getPopupComponent(popup)}
+                        </div>
+                    </section>
+                ))}
+            </div>
         </>
     );
 }
