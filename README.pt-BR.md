@@ -41,7 +41,7 @@ Envolva sua aplicação com o `NtPopupProvider`:
 ```jsx
 // App.jsx
 import { NtPopupProvider } from 'ntpopups';
-import 'ntpopups/dist/style.css'; // Importar os estilos
+import 'ntpopups/dist/styles.css'; // Importar os estilos
 
 function App() {
   return (
@@ -63,7 +63,7 @@ Crie um componente Providers separado como Client Component:
 'use client';
 
 import { NtPopupProvider } from 'ntpopups';
-import 'ntpopups/dist/style.css';
+import 'ntpopups/dist/styles.css';
 
 export default function Providers({ children }) {
   return (
@@ -98,7 +98,7 @@ export default function RootLayout({ children }) {
 ```jsx
 // pages/_app.jsx
 import { NtPopupProvider } from 'ntpopups';
-import 'ntpopups/dist/style.css';
+import 'ntpopups/dist/styles.css';
 
 function MyApp({ Component, pageProps }) {
   return (
