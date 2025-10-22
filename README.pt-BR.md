@@ -558,6 +558,7 @@ Aplicáveis a **qualquer popup** (nativos ou customizados):
 | `hiddenFooter` | boolean | false | Oculta o rodapé |
 | `disableOpenAnimation` | boolean | false | Desabilita animação de abertura |
 | `maxWidth` | string | - | Largura máxima CSS (ex: '800px') |
+| `minWidth` | string | - | Largura mínima CSS (ex: '800px') |
 | `onOpen` | Function | - | Callback ao abrir: `(id) => {}` |
 | `onClose` | Function | - | Callback ao fechar: `(hasAction, id) => {}` |
 
@@ -574,6 +575,7 @@ openPopup('generic', {
   hiddenFooter: true,
   disableOpenAnimation: true,
   maxWidth: '400px',
+  minWidth: '200px',
   onOpen: (id) => console.log('Popup aberto:', id),
   onClose: (hasAction, id) => {
     console.log('Fechado com ação?', hasAction);

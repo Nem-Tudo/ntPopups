@@ -588,6 +588,7 @@ Applicable to **any popup** (native or custom):
 | `hiddenFooter` | boolean | false | Hides the footer |
 | `disableOpenAnimation` | boolean | false | Disables opening animation |
 | `maxWidth` | string | - | CSS max width (e.g., '800px') |
+| `minWidth` | string | - | CSS min width (e.g., '100px') |
 | `onOpen` | Function | - | Callback on open: `(id) => {}` |
 | `onClose` | Function | - | Callback on close: `(hasAction, id) => {}` |
 
@@ -604,6 +605,7 @@ openPopup('generic', {
   hiddenFooter: true,
   disableOpenAnimation: true,
   maxWidth: '400px',
+  minWidth: '200px',
   onOpen: (id) => console.log('Popup opened:', id),
   onClose: (hasAction, id) => {
     console.log('Closed with action?', hasAction);
