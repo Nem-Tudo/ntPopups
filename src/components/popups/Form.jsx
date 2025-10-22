@@ -232,11 +232,12 @@ export default function Form({
                             const componentsArray = componentOrArray;
                             return (
                                 <fieldset className={classes.row} key={`row-${index}`}> {/* **Tag Semântica:** Agrupa componentes relacionados (neste caso, por linha) */}
-                                    {componentsArray.map((component, index) => {
+                                    {componentsArray.map((component) => {
                                         // 🚀 Validade individual
                                         const isComponentValid = validateComponent(value[component.id], component);
                                         return <div key={`rc-${index}`} className={classes.componentContainer} component-type={component.type}>
                                             <FormComponent
+                                                autoFocus={index === 0}
                                                 data={component}
                                                 value={value[component.id]}
                                                 // 🚀 Passa o estado de validade individual
@@ -255,6 +256,7 @@ export default function Form({
                             const isComponentValid = validateComponent(value[component.id], component);
                             return <div key={`cc-${index}`} className={classes.componentContainer} component-type={component.type}>
                                 <FormComponent
+                                    autoFocus={index === 0}
                                     data={component}
                                     value={value[component.id]}
                                     // 🚀 Passa o estado de validade individual

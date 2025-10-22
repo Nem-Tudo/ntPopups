@@ -51,6 +51,7 @@ export default function Generic({
 
             <footer className={classes.footer}>
                 <button
+                    autoFocus={true}
                     className={classes.closeButton}
                     onClick={() => closePopup(true)}
                 >

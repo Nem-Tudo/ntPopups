@@ -43,7 +43,7 @@ export default function DisplayPopup({
         if (!Component) {
             console.log(`ntPopups Error: Unknown popup type: ${popupType}`);
             return (
-                <dialog open style={{ padding: '20px', color: 'red' }}> {/* Semântico: Usa <dialog> para o erro */}
+                <dialog open style={{ padding: '20px', color: 'red', position: "static" }}>
                     <h3>{translate('internalError.title')}</h3>
                     <p>{translate('internalError.message')} {popupType}</p>
                     <button type="button" onClick={() => closePopup(id, false)}>

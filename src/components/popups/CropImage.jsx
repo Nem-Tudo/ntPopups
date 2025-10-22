@@ -382,6 +382,7 @@ export default function CropImage({
                     </button>
                 }
                 <button onClick={handleCrop} className={classes.baseButton}
+                    autoFocus={true}
                     base-button-no-flex={"true"}
                     type="submit" // Indica o botão principal de ação (se estivesse dentro de um <form>, o que é recomendado para popups de ação)
                 >

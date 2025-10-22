@@ -81,6 +81,7 @@ export default function Confirm({
                     {finalCancelLabel}
                 </button>
                 <button
+                    autoFocus={true}
                     className={classes.confirmButton}
                     base-button-style={nameToStyle[confirmStyle]}
                     type="button"
