@@ -37,7 +37,7 @@ import React from "react";
  * @property {boolean} [hiddenFooter=false] - CSS utility: Hides the default popup footer area.
  * @property {boolean} [disableOpenAnimation=false] - CSS utility: Disables the opening transition.
  * @property {string} [maxWidth] - CSS utility: Max popup width
- * @property {string} [minWidth] - CSS utility: Max popup width
+ * @property {string} [minWidth] - CSS utility: Min popup width
  */
 
 /**
