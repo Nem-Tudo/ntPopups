@@ -131,6 +131,7 @@ export default function Form({
         return flat;
     }, [components]);
 
+    if (flattenedComponents.some(component => (!component.id) || (!component.type))) throw new Error("Form components must have an id and a type");
 
     const getInitialValue = (components) => {
         const initialValue = {};
@@ -165,7 +166,7 @@ export default function Form({
         return initialValue;
     };
 
-    const [value, setValue] = useState(() => getInitialValue(components));
+    const [values, setValues] = useState(() => getInitialValue(components));
     // 🚀 Estado para rastrear se o formulário inteiro é válido
     const [isFormValid, setIsFormValid] = useState(false);
 
@@ -192,9 +193,9 @@ export default function Form({
 
     // 🚀 Efeito para recalcular a validade sempre que 'value' (os dados) mudar
     useEffect(() => {
-        const isValid = checkFormValidity(value);
+        const isValid = checkFormValidity(values);
         setIsFormValid(isValid);
-    }, [value, flattenedComponents]);
+    }, [values, flattenedComponents]);
 
 
     const finalTitle = title ?? translate('form.title');
@@ -234,17 +235,17 @@ export default function Form({
                                 <fieldset className={classes.row} key={`row-${index}`}> {/* **Tag Semântica:** Agrupa componentes relacionados (neste caso, por linha) */}
                                     {componentsArray.map((component) => {
                                         // 🚀 Validade individual
-                                        const isComponentValid = validateComponent(value[component.id], component);
+                                        const isComponentValid = validateComponent(values[component.id], component);
                                         return <div key={`rc-${index}`} className={classes.componentContainer} component-type={component.type}>
                                             <FormComponent
                                                 autoFocus={index === 0}
                                                 data={component}
-                                                value={value[component.id]}
+                                                value={values[component.id]}
                                                 // 🚀 Passa o estado de validade individual
                                                 isValid={isComponentValid}
                                                 onValueChange={(inputvalue) => {
-                                                    onChange({ changedComponentState: { id: component.id, isValid: isComponentValid, value: inputvalue }, formState: { value, isValid: isFormValid } });
-                                                    updateStateKey(setValue, value, [component.id, inputvalue])
+                                                    updateStateKey(setValues, values, [component.id, inputvalue])
+                                                    onChange({ changedComponentState: { id: component.id, isValid: isComponentValid, value: inputvalue }, formState: { values: { ...values, [component.id]: inputvalue }, isValid: isFormValid } });
                                                 }}
                                             />
                                         </div>
@@ -253,17 +254,17 @@ export default function Form({
                             );
                         } else {
                             const component = componentOrArray;
-                            const isComponentValid = validateComponent(value[component.id], component);
+                            const isComponentValid = validateComponent(values[component.id], component);
                             return <div key={`cc-${index}`} className={classes.componentContainer} component-type={component.type}>
                                 <FormComponent
                                     autoFocus={index === 0}
                                     data={component}
-                                    value={value[component.id]}
+                                    value={values[component.id]}
                                     // 🚀 Passa o estado de validade individual
                                     isValid={isComponentValid}
                                     onValueChange={(inputvalue) => {
-                                        onChange({ changedComponentState: { id: component.id, isValid: isComponentValid, value: inputvalue }, formState: { values: value, isValid: isFormValid } });
-                                        updateStateKey(setValue, value, [component.id, inputvalue])
+                                        updateStateKey(setValues, values, [component.id, inputvalue])
+                                        onChange({ changedComponentState: { id: component.id, isValid: isComponentValid, value: inputvalue }, formState: { values: { ...values, [component.id]: inputvalue }, isValid: isFormValid } });
                                     }}
                                 />
                             </div>
@@ -289,7 +290,7 @@ export default function Form({
                     base-button-no-flex={"true"}
                     disabled={!isFormValid}
                     onClick={() => {
-                        onSubmit(value);
+                        onSubmit(values);
                         closePopup(true);
                     }}
                     type="submit" // **Semântica:** Indica que este é o botão principal de submissão.
