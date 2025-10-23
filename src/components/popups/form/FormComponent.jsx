@@ -43,8 +43,6 @@ export default function FormComponent({ value, data, onValueChange, isInvalid, a
         }
     };
 
-    console.log("isInvalid", isInvalid)
-
     return (
         <>
             <span>{data.label}{data.required && <span style={{ color: "var(--ntpopups-color-danger)" }}>*</span>}</span>
