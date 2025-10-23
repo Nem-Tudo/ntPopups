@@ -279,7 +279,7 @@
 .popup {
     position: static;
     border: none;
-    
+    white-space: pre-wrap;
     pointer-events: all;
     display: flex;
     flex-direction: column;
