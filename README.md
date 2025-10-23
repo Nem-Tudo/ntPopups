@@ -298,7 +298,7 @@ openPopup('form', {
 });
 ```
 
-**Form Props:**
+**Available Props:**
 - `title` (ReactNode): Form title
 - `message` (ReactNode): Optional explanatory message
 - `doneLabel` (ReactNode): Submit button text
@@ -462,6 +462,18 @@ openPopup('form', {
 - Applied validations: `required`, `minLength`, `maxLength`, `matchRegex`
 
 ---
+
+### 5. **HTML** - Custom html popup
+
+```jsx
+openPopup('html', {
+  data: {
+    html: <h1>Hello!</h1>
+  }
+});
+```
+**Available props:**
+- `html` (ReactNode): Custom HTML content
 
 ## 🎨 Creating Custom Popups
 

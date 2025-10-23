@@ -8,7 +8,7 @@ import React from "react";
  */
 
 /**
- * @typedef {'confirm'|'generic'|'crop_image'|'form'|(string & {})} NtPopupType
+ * @typedef {'confirm'|'generic'|'crop_image'|'form'|'html'|(string & {})} NtPopupType
  * A string literal representing the type of popup. Includes built-in types and custom types.
  */
 
@@ -86,6 +86,13 @@ import React from "react";
  * @property {File|string} [image] - [crop_image] The source image (File object or Base64/URL string).
  * @property {'square'|'circle'} [format='circle'] - [crop_image] The shape of the crop area.
  * @property {(result: CropImageResult) => void} [onCrop] - [crop_image] Callback executed upon successful crop.
+ */
+
+
+/**
+ * @typedef {object} HtmlPopupData
+ * Data specific to the 'html' popup type.
+ * @property {React.ReactNode} [html] - [html] The custom HTML content to display.
  */
 
 /**
@@ -267,7 +274,7 @@ import React from "react";
 
 /**
  * @typedef {NtPopupBaseSettings & PopupLifeCycleCallbacks & {
- * data?: GenericPopupData | ConfirmPopupData | CropImagePopupData | FormPopupData | object
+ * data?: GenericPopupData | ConfirmPopupData | CropImagePopupData | FormPopupData | HtmlPopupData | object
  * }} PopupSettings
  */
 
