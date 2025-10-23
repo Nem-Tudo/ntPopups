@@ -1,3 +1,4 @@
+// ./contexts/PopupContext.jsx
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
@@ -7,11 +8,15 @@ import { internalPopupTypes } from "./popupTypes";
 // IMPORTANTE: Certifique-se de que este caminho está correto.
 // O arquivo '../utils/types' deve conter o typedef PopupContextValue.
 /**
- * @typedef {import("../utils/types").PopupContextValue} PopupContextValue // <-- NOVO: Usa o tipo completo e estendido
+ * @typedef {import("../utils/types").PopupContextValue} PopupContextValue
  * @typedef {import("../utils/types").NtPopupConfig} NtPopupConfig
+ * @typedef {import("../utils/types").PopupData} AnimatedPopupData
  */
 
 import { getTranslation, defaultLanguage } from "../i18n/index";
+
+// Duração da animação de fechamento em milissegundos. Deve corresponder ao CSS.
+const CLOSE_ANIMATION_DURATION = 100; 
 
 // ==================== CONTEXT CREATION ====================
 
@@ -65,6 +70,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
     const callbacksRef = useRef(new Map()); // popupId -> { onClose, onOpen }
     const timeoutsRef = useRef(new Map());   // popupId -> timeoutId
     const originalOverflowRef = useRef(null);
+    /** @type {React.MutableRefObject<AnimatedPopupData[]>} */
     const currentPopupsRef = useRef([]);
 
     // Queue system for race condition prevention
@@ -110,45 +116,15 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         return `ntpopup_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     };
 
-    // ========== CLOSE POPUP FUNCTION ==========
-    const closePopup = useCallback((popupIdOrHasAction, hasActionParam) => {
+    /**
+     * Remove o pop-up do estado após a animação de fechamento.
+     * @param {string} popupId 
+     * @param {boolean} hasAction 
+     */
+    const removePopupFromState = useCallback((popupId, hasAction) => {
         setPopups(prev => {
-            let popupId;
-            let hasAction;
-
-            // Parameter flexibility logic
-            if (typeof popupIdOrHasAction === 'boolean') {
-                popupId = prev[prev.length - 1]?.id;
-                hasAction = popupIdOrHasAction;
-            } else if (typeof popupIdOrHasAction === 'string' && typeof hasActionParam === 'boolean') {
-                popupId = popupIdOrHasAction;
-                hasAction = hasActionParam;
-            } else if (typeof popupIdOrHasAction === 'string') {
-                popupId = popupIdOrHasAction;
-                hasAction = false;
-            } else {
-                popupId = prev[prev.length - 1]?.id;
-                hasAction = false;
-            }
-
-            if (!popupId) return prev;
-
             const closingPopup = prev.find(p => p.id === popupId);
             if (!closingPopup) return prev;
-
-            if (closingPopup.settings.requireAction && !hasAction) return prev;
-
-            if (!closingPopup.settings.allowPageBodyScroll) {
-                document.querySelector("body").style.overflow = "";
-                document.querySelector("html").style.overflow = "";
-            }
-
-            // Clear timeout
-            const timeoutId = timeoutsRef.current.get(popupId);
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                timeoutsRef.current.delete(popupId);
-            }
 
             // Execute onClose callback
             const callbacks = callbacksRef.current.get(popupId);
@@ -160,6 +136,13 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                 }
             }
             callbacksRef.current.delete(popupId);
+
+            // Clear timeout
+            const timeoutId = timeoutsRef.current.get(popupId);
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutsRef.current.delete(popupId);
+            }
 
             const filtered = prev.filter(p => p.id !== popupId);
 
@@ -180,6 +163,78 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             return filtered;
         });
     }, []);
+
+    // ========== CLOSE POPUP FUNCTION ==========
+    /**
+     * @param {string | boolean | undefined} popupIdOrHasAction
+     * @param {boolean | undefined} [hasActionParam]
+     */
+    const closePopup = useCallback((popupIdOrHasAction, hasActionParam) => {
+        setPopups(prev => {
+            let popupId;
+            let hasAction;
+
+            // Parameter flexibility logic
+            if (typeof popupIdOrHasAction === 'boolean') {
+                // @ts-ignore
+                popupId = prev.findLast(p => !p.hidden)?.id;
+                hasAction = popupIdOrHasAction;
+            } else if (typeof popupIdOrHasAction === 'string' && typeof hasActionParam === 'boolean') {
+                popupId = popupIdOrHasAction;
+                hasAction = hasActionParam;
+            } else if (typeof popupIdOrHasAction === 'string') {
+                popupId = popupIdOrHasAction;
+                hasAction = false;
+            } else {
+                // @ts-ignore
+                popupId = prev.findLast(p => !p.hidden)?.id;
+                hasAction = false;
+            }
+
+            if (!popupId) return prev;
+
+            const closingPopup = prev.find(p => p.id === popupId && !p.isClosing);
+            if (!closingPopup) return prev;
+
+            if (closingPopup.settings.requireAction && !hasAction) return prev;
+
+            // 1. UPDATE STATE: Mark as closing
+            const newState = prev.map(p => 
+                p.id === popupId ? { ...p, isClosing: true } : p
+            );
+
+            // 2. SCHEDULE REMOVAL: Remove from state after animation
+            // Importante: A função removePopupFromState agora contém a lógica de limpeza (callbacks, timeouts, overflow)
+            setTimeout(() => {
+                removePopupFromState(popupId, hasAction);
+            }, CLOSE_ANIMATION_DURATION);
+
+
+            // 3. HANDLE OVERFLOW: If it's the last one closing, ensure overflow is restored.
+            // A lógica de overflow deve ser tratada aqui antes do agendamento, verificando
+            // se este é o único pop-up *visível e não fechando* que resta.
+            const remainingVisiblePopups = prev.filter(p => p.id !== popupId && !p.hidden && !p.isClosing);
+            if (remainingVisiblePopups.length === 0) {
+                 // Esta lógica é um fallback, o useEffect de listener faz a limpeza final
+                 // mas é bom ter aqui para garantir que o scroll volte o mais rápido possível.
+                 if (!closingPopup.settings.allowPageBodyScroll) {
+                    document.querySelector("body").style.overflow = "";
+                    document.querySelector("html").style.overflow = "";
+                 }
+            }
+
+            // Clear timeout, já que a ação manual está substituindo o auto-timeout
+            const timeoutId = timeoutsRef.current.get(popupId);
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutsRef.current.delete(popupId);
+            }
+            
+            // O retorno é o novo estado com o pop-up marcado para fechamento
+            return newState;
+        });
+    }, [removePopupFromState]);
+
 
     // ========== OPEN POPUP FUNCTION (Public API) ==========
     const openPopup = useCallback((popupType, settings = {}) => {
@@ -205,8 +260,8 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         }
 
         // if (!allPopupTypes[popupType]) {
-        //     console.error(`ntPopups Error: Unknown popup type "${popupType}"`);
-        //     return null;
+        //     console.error(`ntPopups Error: Unknown popup type "${popupType}"`);
+        //     return null;
         // }
 
         callbacksRef.current.set(popupId, {
@@ -217,11 +272,13 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         const typeDefaults = defaultSettings[popupType] || {};
 
         setPopups(prev => {
-            const visiblePopups = prev.filter(p => !p.hidden);
+            const visiblePopups = prev.filter(p => !p.hidden && !p.isClosing); // Filtra os que estão fechando
 
+            /** @type {AnimatedPopupData} */
             const newPopup = {
                 id: popupId,
                 popupType,
+                isClosing: false,
                 settings: {
                     // Default library settings (lowest priority)
                     closeOnEscape: true,
@@ -291,56 +348,70 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         return popupId;
     };
 
-    // ========== CLOSE ALL POPUPS FUNCTION ==========
+    // ========== CLOSE ALL POPUPS FUNCTION (Atualizada) ==========
     const closeAllPopups = useCallback(() => {
-        // ... (Close All Popups logic remains the same)
+        // Usamos uma abordagem assíncrona para que a animação seja executada
+        // em todos os pop-ups visíveis antes de limpar o estado.
+        const popupsToClose = currentPopupsRef.current.filter(p => !p.hidden && !p.isClosing);
 
-        document.querySelector("body").style.overflow = "";
-        document.querySelector("html").style.overflow = "";
+        if (popupsToClose.length === 0) return;
 
-        setPopups(prev => {
-            prev.filter(p => !p.hidden).forEach(popup => {
-                // Execute onClose callback
-                const callbacks = callbacksRef.current.get(popup.id);
-                if (callbacks?.onClose) {
-                    try {
-                        callbacks.onClose(false, popup.id);
-                    } catch (error) {
-                        console.error(`Error in onClose callback for popup ${popup.id}:`, error);
+        // 1. Marcar todos como isClosing
+        setPopups(prev => prev.map(p => ({ ...p, isClosing: p.hidden ? p.isClosing : true })));
+
+        // 2. Agendar remoção do estado e callbacks/cleanup (após a animação)
+        setTimeout(() => {
+            // @ts-ignore
+            setPopups(prev => {
+                // Executa callbacks e limpa para todos os popups que foram fechados
+                popupsToClose.forEach(popup => {
+                    const callbacks = callbacksRef.current.get(popup.id);
+                    if (callbacks?.onClose) {
+                        try {
+                            callbacks.onClose(false, popup.id);
+                        } catch (error) {
+                            console.error(`Error in onClose callback for popup ${popup.id}:`, error);
+                        }
                     }
-                }
-                callbacksRef.current.delete(popup.id);
+                    callbacksRef.current.delete(popup.id);
 
-                // Clear timeout
-                const timeoutId = timeoutsRef.current.get(popup.id);
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                    timeoutsRef.current.delete(popup.id);
-                }
+                    const timeoutId = timeoutsRef.current.get(popup.id);
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                        timeoutsRef.current.delete(popup.id);
+                    }
+                });
+
+                // Restaura o overflow
+                document.querySelector("body").style.overflow = "";
+                document.querySelector("html").style.overflow = "";
+
+                // Retorna um array vazio, limpando tudo
+                return [];
             });
+        }, CLOSE_ANIMATION_DURATION);
 
-            return [];
-        });
     }, []);
 
     // ========== UTILITY FUNCTIONS ==========
     const isPopupOpen = useCallback((popupId) => {
-        return currentPopupsRef.current.some(p => p.id === popupId && !p.hidden);
+        return currentPopupsRef.current.some(p => p.id === popupId && !p.hidden && !p.isClosing);
     }, []);
 
     const getPopup = useCallback((popupId) => {
         const popup = currentPopupsRef.current.find(p => p.id === popupId);
-        return popup && !popup.hidden ? popup : null;
+        return popup && !popup.hidden && !popup.isClosing ? popup : null;
     }, []);
 
     // ========== EFFECT: OVERFLOW & EVENT LISTENERS ==========
     useEffect(() => {
-        const visiblePopups = popups.filter(p => !p.hidden);
+        const visiblePopups = popups.filter(p => !p.hidden && !p.isClosing); // Inclui isClosing no filtro
 
         // Restore overflow
         if (visiblePopups.length === 0) {
             if (originalOverflowRef.current !== null) {
                 document.body.style.overflow = originalOverflowRef.current;
+                document.querySelector("html").style.overflow = "";
                 originalOverflowRef.current = null;
             }
             return;
@@ -369,7 +440,8 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
             const popupElement = document.querySelector(`[data-popup-id="${topPopup.id}"]`);
 
-            if (popupElement && !popupElement.contains(event.target)) {
+            // Verifica se o clique foi fora do elemento e se o pop-up não está em processo de fechamento
+            if (popupElement && !popupElement.contains(event.target) && !topPopup.isClosing) {
                 closePopup(topPopup.id, false);
             }
         };
@@ -380,6 +452,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
             document.removeEventListener("mousedown", handleClickOutside);
+            // NOTA: A restauração final do overflow é feita pelo EFFECT: FINAL CLEANUP ou dentro do closePopup/closeAllPopups.
         };
     }, [popups, closePopup]);
 
@@ -391,6 +464,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             callbacksRef.current.clear();
             if (originalOverflowRef.current !== null) {
                 document.body.style.overflow = originalOverflowRef.current;
+                document.querySelector("html").style.overflow = "";
             }
         };
     }, []);
@@ -398,7 +472,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
     // ========== PROVIDER RENDERING ==========
     return (
         <PopupContext.Provider value={{
-            popups: popups.filter(p => !p.hidden), // <-- ESTA LINHA AGORA DEVE ESTAR CORRETA DEVIDO AO TYPEDEF
+            popups: popups.filter(p => !p.hidden && !p.isClosing), // Filtra pop-ups fechando para API pública
             openPopup,
             closePopup,
             closeAllPopups,
@@ -409,7 +483,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         }}>
             <DisplayPopup
                 theme={theme}
-                popups={popups.filter(p => !p.hidden)}
+                popups={popups.filter(p => !p.hidden)} // Passa pop-ups ocultos, mas não removidos, para DisplayPopup
                 closePopup={closePopup}
                 popupComponents={allPopupTypes}
                 translate={translate}

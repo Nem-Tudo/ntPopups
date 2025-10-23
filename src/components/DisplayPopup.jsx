@@ -1,3 +1,4 @@
+// ./components/DisplayPopup.jsx
 import React from "react";
 
 // Import all default CSS modules internally
@@ -15,7 +16,7 @@ const defaultCssModules = {
 /**
  * Component responsible for rendering all active popups.
  * @param {Object} properties
- * @param {import('../utils/types').PopupData[]} properties.popups - Array of active (visible) popups.
+ * @param {import('../utils/types').PopupData[]} properties.popups - Array of active (visible) popups. (Agora inclui popups com isClosing: true)
  * @param {Function} properties.closePopup - Function to close a specific popup.
  * @param {Object.<string, import("react").ComponentType<any>>} properties.popupComponents - Map of all registered components.
  * @param {(key: string) => string} properties.translate - Function to translate strings (passada do Provider).
@@ -31,7 +32,7 @@ export default function DisplayPopup({
 
     /**
      * Maps the popup type string to its corresponding React component.
-     * @param {import('../utils/types').PopupData} popup - Popup object from context state.
+     * @param {import('../utils/types').PopupData & { isClosing?: boolean }} popup - Popup object from context state.
      * @returns {React.ReactNode | null}
      */
     const getPopupComponent = (popup) => {
@@ -80,19 +81,16 @@ export default function DisplayPopup({
                             key={popup.id}
                             data-interactive={String(popup.settings.interactiveBackdrop)}
                             data-hidden={String(popup.settings.hiddenBackdrop)}
-                            // Apply default CSS class or custom fallback class
-                            className={`${styles.popupsOverlay} ntpopups-overlay`}
+                            data-closing={String(!!popup.isClosing)}
+                            className={`${styles.popupsOverlay}${popup.isClosing ? ` ${styles.closingOverlay} ` : ' '}ntpopups-overlay${popup.isClosing ? ' ntpopups-overlay-closing ' : ' '}`} 
                             style={{ zIndex: popup.zIndex }}
-                            // Semântico: Adiciona role="dialog" para o contexto de um modal, se a tag <dialog> não for o container direto.
-                            role="presentation" // 'presentation' é mais seguro para o overlay, que apenas envolve o <dialog> real.
+                            role="presentation" 
                         >
                             {/* POPUP CONTAINER */}
-                            {/* Semântico: Substitui o <div> do container principal do popup por <dialog> */}
                             <dialog
-                                open // O atributo 'open' garante que o browser trate como um modal visível.
+                                open
                                 data-popup-id={popup.id}
-                                // Apply default CSS class or custom fallback class
-                                className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}`}
+                                className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}${popup.isClosing ? ` ${styles.closing} ` : " "}`}
                                 style={{
                                     ...(popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}),
                                     ...(popup.settings.minWidth ? { minWidth: popup.settings.minWidth } : {})

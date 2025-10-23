@@ -1,15 +1,14 @@
-/* some resets */
-.ntPopups fieldset {
-    border: none;
-}
-
-
 /*
  * /src/styles/DisplayPopup.module.css
  * Sistema completo de variáveis CSS para personalização total do popup
  *
  * TEMA CLARO (Padrão)
  */
+
+/* some resets */
+.ntPopups fieldset {
+    border: none;
+}
 
 /* ==================== CSS VARIABLES (TEMA CLARO) ==================== */
 .ntPopups {
@@ -140,6 +139,9 @@
     --ntpopups-transition-easing: ease-in-out;
     --ntpopups-transition-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
+    /* NOVO: Duração da animação de fechamento para sincronizar com o JS */
+    --ntpopups-close-animation-duration: 0.1s;
+
     /* === ANIMATIONS === */
     --ntpopups-animation-scale-start: 0.95;
     --ntpopups-animation-opacity-start: 0.8;
@@ -267,6 +269,11 @@
     /* Adicionando transição */
 }
 
+/* NOVO: ESTILO PARA FECHAMENTO DO OVERLAY */
+.closingOverlay {
+    animation: closeOverlay var(--ntpopups-close-animation-duration) var(--ntpopups-transition-easing) forwards;
+}
+
 .popupsOverlay[data-interactive="true"] {
     pointer-events: none;
 }
@@ -292,7 +299,7 @@
     max-height: var(--ntpopups-height-max);
     margin: var(--ntpopups-spacing-md);
     overflow: hidden;
-    animation: openPopup var(--ntpopups-transition-duration) var(--ntpopups-transition-easing);
+    animation: openPopup var(--ntpopups-transition-duration) var(--ntpopups-transition-easing-bounce);
     /* Transição para cores de fundo e sombra */
     transition: background var(--ntpopups-transition-duration-slow) ease, box-shadow var(--ntpopups-transition-duration-slow) ease;
 }
@@ -301,6 +308,10 @@
     animation: none !important;
 }
 
+/* NOVO: ESTILO PARA FECHAMENTO DO POPUP */
+.popup.closing {
+    animation: closePopup var(--ntpopups-close-animation-duration) var(--ntpopups-transition-easing) forwards;
+}
 
 .row {
     display: flex;
@@ -458,7 +469,7 @@
     opacity: 0.6;
 }
 
-/* === STYLE 2: TEXT   === */
+/* === STYLE 2: TEXT   === */
 .baseButton[base-button-style="2"] {
     border: none;
     cursor: pointer;
@@ -633,6 +644,27 @@
     100% {
         transform: scale(1);
         opacity: 1;
+    }
+}
+
+/* NOVO: Keyframe para Fechamento do Popup */
+@keyframes closePopup {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(var(--ntpopups-animation-scale-start));
+        opacity: 0;
+    }
+}
+
+/* NOVO: Keyframe para Fechamento do Overlay (Apenas Opacidade) */
+@keyframes closeOverlay {
+    to {
+        /* Garante que o backdrop-filter e background sumam */
+        background-color: transparent !important;
     }
 }
 

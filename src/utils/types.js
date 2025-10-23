@@ -1,3 +1,5 @@
+// ./utils/types.js
+
 import React from "react";
 /**
  * ==============================================================================
@@ -206,6 +208,7 @@ import React from "react";
  * @property {number} zIndex - The current z-index for stacking.
  * @property {string|null} replacedPopupId - If this popup replaced a previous one, its ID is stored here.
  * @property {boolean} hidden - True if the popup is temporarily hidden (replaced by another).
+ * @property {boolean} [isClosing=false] - True if the popup is currently executing the closing animation.
  */
 
 /**
