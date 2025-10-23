@@ -1,5 +1,5 @@
 /* some resets */
-.ntPopups fieldset{
+.ntPopups fieldset {
     border: none;
 }
 
@@ -267,11 +267,11 @@
     /* Adicionando transição */
 }
 
-.popupsOverlay[data-interactive="true"]{
+.popupsOverlay[data-interactive="true"] {
     pointer-events: none;
 }
 
-.popupsOverlay[data-hidden="true"]{
+.popupsOverlay[data-hidden="true"] {
     background: transparent;
 }
 
@@ -458,7 +458,7 @@
     opacity: 0.6;
 }
 
-/* === STYLE 2: TEXT  === */
+/* === STYLE 2: TEXT   === */
 .baseButton[base-button-style="2"] {
     border: none;
     cursor: pointer;
@@ -588,6 +588,39 @@
 .popupsOverlay textarea {
     min-height: 100px;
     resize: vertical;
+}
+
+/* ==================== ANCHOR LINKS (<a>) ==================== */
+.body a {
+    color: var(--ntpopups-color-primary);
+    /* Usa a cor primária para links */
+    text-decoration: none;
+    /* Remove o sublinhado padrão */
+    font-weight: var(--ntpopups-font-weight-semibold);
+    /* Torna o texto um pouco mais encorpado */
+    transition: color var(--ntpopups-transition-duration) var(--ntpopups-transition-easing);
+}
+
+.body a:hover {
+    color: var(--ntpopups-color-primary-hover);
+    /* Escurece/ilumina no hover */
+    text-decoration: underline;
+    /* Adiciona sublinhado no hover para melhor feedback */
+}
+
+.body a:active,
+.body a:focus {
+    color: var(--ntpopups-color-primary-active);
+    /* Cor de ativação no clique/foco */
+    outline: none;
+    /* Indicador de foco customizado para acessibilidade */
+    box-shadow: 0 0 0 2px var(--ntpopups-color-primary-light);
+    border-radius: var(--ntpopups-border-radius-sm);
+}
+
+.body a:visited {
+    color: var(--ntpopups-color-primary);
+    /* Mantém a cor primária para links visitados */
 }
 
 /* ==================== ANIMATIONS ==================== */
