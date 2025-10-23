@@ -17,3 +17,8 @@
     font-size: 1rem;
     margin-bottom: 7px;
 }
+
+.componentInvalid{
+    font-size: 0.8rem;
+    color: var(--ntpopups-color-input-invalid);
+}

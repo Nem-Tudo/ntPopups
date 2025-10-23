@@ -81,3 +81,61 @@
     /* left e right não são mais necessários se usarmos apenas transform */
     left: 2px;
 }
+
+/* ================================================= */
+/* === ESTADO DISABLED (Desabilitado) === */
+/* ================================================= */
+
+/* Aplica estilos ao contêiner (input) quando ele está disabled */
+.toggleSwitch[disabled] {
+    cursor: not-allowed;
+    /* Reduz a opacidade geral para dar um aspecto desabilitado */
+    opacity: 0.6;
+}
+
+/* 1. Estilo da Pista (::before) quando disabled */
+.toggleSwitch[disabled]::before {
+    /* Altera o cursor no pseudo-elemento */
+    cursor: not-allowed;
+    /* Cor de fundo para o estado disabled (usa a cor desabilitada ou cinza) */
+    background-color: var(--ntpopups-color-secondary-disabled);
+}
+
+/* 2. Estilo da Bolinha (::after) quando disabled */
+.toggleSwitch[disabled]::after {
+    /* Altera o cursor no pseudo-elemento */
+    cursor: not-allowed;
+    /* Opacidade para a bolinha (opcional, mas complementa o efeito) */
+    opacity: 0.8;
+}
+
+/* 3. Estilo da Pista no estado 'checked' (Ligado) E 'disabled' */
+.toggleSwitch:checked[disabled]::before {
+    /* Mantém a cor primária, mas com menor saturação ou usa a versão disabled da cor primária */
+    background-color: var(--ntpopups-color-primary-disabled);
+}
+
+/* 4. Estilo da Bolinha no estado 'checked' E 'disabled' */
+.toggleSwitch:checked[disabled]::after {
+    /* Se você quiser a bolinha mais escura no disabled/checked */
+    background-color: var(--ntpopups-bg-footer);
+}
+
+/* ================================================= */
+/* === REMOVER EFEITOS DE INTERAÇÃO QUANDO DISABLED === */
+/* ================================================= */
+
+/* Remove qualquer sombra ou efeito de foco/hover quando disabled */
+.toggleSwitch[disabled]:hover::before,
+.toggleSwitch[disabled]:focus::before {
+    /* Garante que o hover/focus não altere a cor da pista desabilitada */
+    background-color: var(--ntpopups-color-secondary-disabled);
+    box-shadow: var(--ntpopups-shadow-sm);
+    /* Mantém a sombra original */
+}
+
+.toggleSwitch:checked[disabled]:hover::before,
+.toggleSwitch:checked[disabled]:focus::before {
+    /* Garante que o hover/focus não altere a cor da pista desabilitada (ligada) */
+    background-color: var(--ntpopups-color-primary-disabled);
+}

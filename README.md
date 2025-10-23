@@ -7,7 +7,7 @@ A modern, fully customizable and responsive popup library for React. Create eleg
 [![npm version](https://img.shields.io/npm/v/ntpopups.svg)](https://www.npmjs.com/package/ntpopups)
 [![License](https://img.shields.io/npm/l/ntpopups.svg)](https://github.com/Nem-Tudo/ntpopups/blob/main/LICENSE)
 
-> <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e7-1f1f7.png" width="20" alt="pt-br" style="vertical-align: middle;" /> [Leia isto em português](https://github.com/Nem-Tudo/ntPopups/blob/main/README.pt-BR.md)
+<!-- > <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e7-1f1f7.png" width="20" alt="pt-br" style="vertical-align: middle;" /> [Leia isto em português](https://github.com/Nem-Tudo/ntPopups/blob/main/README.pt-BR.md) -->
 
 # [See the demo](https://ntpopups.nemtudo.me/demo)
 
@@ -243,11 +243,10 @@ openPopup('form', {
       },
       {
         id: 'email',
-        type: 'text',
+        type: 'email',
         label: 'Email',
         placeholder: 'your@email.com',
         required: true,
-        matchRegex: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$'
       },
       {
         id: 'bio',
@@ -343,6 +342,48 @@ openPopup('form', {
 }
 ```
 
+#### Email Input
+```javascript
+{
+  id: 'email_field',
+  type: 'email',
+  label: 'Email',
+  placeholder: 'Enter your email...',
+  defaultValue: '',
+  required: true,          // boolean (optional)
+  disabled: false
+}
+```
+
+#### Number Input
+```javascript
+{
+  id: 'number_field',
+  type: 'number',
+  label: 'Age',
+  placeholder: 'Enter your age...',
+  defaultValue: 5,
+  required: false,
+  disabled: false,
+  min: 0,                  // number (optional)
+  max: 120                 // number (optional)
+}
+```
+
+#### Password Input
+```javascript
+{
+  id: 'password_field',
+  type: 'password',
+  label: 'Password',
+  placeholder: 'Enter your password...',
+  defaultValue: '',
+  required: true,          // boolean (optional)
+  minLength: 8,             // number (optional)
+  maxLength: 100            // number (optional)
+}
+```
+
 #### Checkbox
 ```javascript
 {
@@ -351,7 +392,66 @@ openPopup('form', {
   label: 'I accept the terms of use',
   defaultValue: false,     // boolean (optional)
   disabled: false,
-  required: false          // If true, must be checked
+  required: true           // If true, must be checked
+}
+```
+
+#### Radio Button
+```javascript
+{
+  id: 'gender',
+  type: 'radio',
+  label: 'Gender',
+  options: ['Male', 'Female', { label: "Other", value: null }], // array of strings or {value: "", label: ""}
+  required: true,
+  defaultValue: ""
+}
+```
+
+#### Select Dropdown
+```javascript
+{
+  id: 'country',
+  type: 'select',
+  label: 'Country',
+  options: ['USA', 'Canada', { label: "Other", value: "World" }], // array of strings or {value: "", label: ""}
+  required: true,
+  defaultValue: ""
+}
+```
+
+#### Date Input
+```javascript
+{
+  id: 'birthdate',
+  type: 'date',
+  label: 'Birthdate',
+  minDate: new Date('1900-01-01'),   // Date (optional)
+  maxDate: new Date('2024-12-31'),   // Date (optional)
+  required: true,
+  defaultValue: new Date('2000-01-01') // Date (optional)
+}
+```
+
+#### Time Input
+```javascript
+{
+  id: 'appointment_time',
+  type: 'time',
+  label: 'Appointment Time',
+  required: false
+}
+```
+
+#### File Upload
+```javascript
+{
+  id: 'file_upload',
+  type: 'file',
+  label: 'Upload File',
+  accept: '.jpg,.png,.pdf', // string (optional) - accepted file types
+  multiple: false,          // boolean (optional) - allow multiple file selection
+  required: false
 }
 ```
 
@@ -920,7 +1020,7 @@ All classes follow the `.ntpopups-*` pattern and can be used for additional styl
 ```css
 .ntpopups-form-body               /* Form body */
 .ntpopups-form-row                /* Component row */
-.ntpopups-form-componentcontainer /* Each field container */
+.ntpopups-form-component-container /* Each field container */
 .ntpopups-form-message            /* Form message */
 ```
 

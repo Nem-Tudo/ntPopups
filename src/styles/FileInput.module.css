@@ -1,0 +1,75 @@
+/* As classes agora usam 'styles.' no React, então o CSS não precisa mudar as chaves. */
+
+/* Classe para o contêiner principal - styles.container */
+.container {
+    /* width: 300px;  */
+    min-height: 120px;
+    padding: var(--ntpopups-spacing-md);
+    
+    /* === Borda Pontilhada === */
+    border-style: dotted;
+    border-width: var(--ntpopups-border-width-thick, 2px);
+    border-color: var(--ntpopups-border-color-dark, #aaa); 
+    border-radius: var(--ntpopups-border-radius, 10px); 
+    
+    /* Centralização */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    
+    /* Fundo e transições */
+    background-color: var(--ntpopups-input-bg, #ffffff);
+    cursor: pointer;
+    transition: all var(--ntpopups-transition-duration, 0.2s) var(--ntpopups-transition-easing, ease-in-out);
+}
+
+/* Efeito de HOVER normal */
+.container:hover {
+    border-color: var(--ntpopups-color-primary, #5f54f0);
+    box-shadow: var(--ntpopups-shadow-sm);
+}
+
+/* ================================================= */
+/* === SUPORTE A DISABLED (DESABILITADO) === */
+/* ================================================= */
+
+/* Quando o input nativo tem o atributo [disabled] */
+.container:has(.hidden[disabled]) {
+    /* 1. Mudança de Cursor */
+    cursor: not-allowed;
+    
+    /* 2. Aspecto visual "acinzentado" */
+    opacity: 0.6; 
+    
+    /* 3. Cor da borda para indicar desabilitado */
+    border-color: var(--ntpopups-color-secondary-disabled, #b8bfc6);
+    background-color: var(--ntpopups-color-secondary-light, #e9ecef);
+}
+
+/* 4. Remover efeitos de hover para o estado disabled */
+.container:has(.hidden[disabled]):hover {
+    /* Volta para o estado padrão do disabled, sem hover */
+    border-color: var(--ntpopups-color-secondary-disabled, #b8bfc6);
+    box-shadow: none;
+}
+
+/* Classe para o placeholder/info dos arquivos - styles.placeholder */
+.placeholder {
+    margin: 0;
+    padding: 0;
+    color: var(--ntpopups-input-placeholder-color, rgba(14, 14, 14, 0.4));
+    font-family: var(--ntpopups-font-family, sans-serif);
+    font-size: var(--ntpopups-font-size-base, 18px);
+    user-select: none;
+    line-height: var(--ntpopups-line-height-base, 1.5);
+    
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Oculta o input nativo - styles.hidden */
+.hidden {
+    display: none !important;
+}

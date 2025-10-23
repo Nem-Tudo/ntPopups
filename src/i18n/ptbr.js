@@ -1,5 +1,3 @@
-// /src/i18n/pt.js
-
 /**
  * Strings de tradução para Português (pt).
  */
@@ -30,5 +28,30 @@ export default {
     },
     form: {
         title: "Preencha"
+    },
+    file: {
+        selectedFiles: (n) => `${n} arquivos selecionado${n !== 1 ? 's' : ''}`,
+        fileSelect: "Selecione um arquivo"
+    },
+    validation: {
+        required: (fieldName) => `O campo é obrigatório.`,
+        minLength: (fieldName, length) => `O campo deve ter no mínimo ${length} caracteres.`,
+        maxLength: (fieldName, length) => `O campo deve ter no máximo ${length} caracteres.`,
+        regexMismatch: (fieldName) => `O campo não corresponde ao formato esperado.`,
+        regexInternalError: (fieldName) => `Erro interno na validação do campo (Regex inválido).`,
+        invalidEmail: (fieldName) => `O campo deve ser um email válido.`,
+        notANumber: (fieldName) => `O campo deve ser um número.`,
+        minNumber: (fieldName, min) => `O valor deve ser maior ou igual a ${min}.`,
+        maxNumber: (fieldName, max) => `O valor deve ser menor ou igual a ${max}.`,
+        selectOption: (fieldName) => `Selecione uma opção`,
+        acceptCheckbox: (fieldName) => `Você deve aceitar a opção.`,
+        requiredFile: (fieldName) => `O campo requer um arquivo.`,
+        invalidDate: (fieldName) => `O campo não contém uma data válida.`,
+        minDateError: (fieldName, date) => `A data deve ser igual ou posterior a ${date}.`,
+        minDateInternalError: (fieldName) => `Erro interno na validação de data mínima.`,
+        maxDateError: (fieldName, date) => `A data deve ser igual ou anterior a ${date}.`,
+        maxDateInternalError: (fieldName) => `Erro interno na validação de data máxima.`,
+        passwordMinLength: (length) => `A senha deve ter no mínimo ${length} caracteres.`,
+        passwordMaxLength: (length) => `A senha deve ter no máximo ${length} caracteres.`,
     }
 };

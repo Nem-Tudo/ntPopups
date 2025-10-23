@@ -93,7 +93,7 @@ import React from "react";
  *
  * @typedef {object} FormComponentBase
  * @property {string} id - Unique identifier for the field (used as the key in the response object).
- * @property {'text'|'textarea'|'checkbox'|'file'} type - Input type
+ * @property {'text'|'textarea'|'checkbox'|'file'|'email'|'number'|'password'|'radio'|'select'|'date'|'time'} type - Input type
  * @property {string} label - Field label displayed to the user.
  * @property {boolean} [disabled=false] - If true, the field is disabled and not validated.
  */
@@ -120,9 +120,64 @@ import React from "react";
  */
 
 /**
+ * @typedef {object} FormEmailProps
+ * @property {string} [defaultValue=""] - [email] Default value
+ * @property {boolean} [required=false] - [email] If true, value must not be empty (after trim).
+ * @property {string} [placeholder=""] - [email] Placeholder
+ */
+
+/**
+ * @typedef {object} FormNumberProps
+ * @property {number} [defaultValue=0] - [number] Default value
+ * @property {boolean} [required=false] - [number] If true, value must not be empty (after trim).
+ * @property {number} [min] - [number] Minimum value.
+ * @property {number} [max] - [number] Maximum value.
+ * @property {string} [placeholder=""] - [number] Placeholder
+ */
+
+/**
+ * @typedef {object} FormPasswordProps
+ * @property {string} [defaultValue=""] - [password] Default value
+ * @property {boolean} [required=false] - [password] If true, value must not be empty (after trim).
+ * @property {number} [minLength] - [password] Minimum string length.
+ * @property {number} [maxLength] - [password] Maximum string length.
+ * @property {string} [placeholder=""] - [password] Placeholder
+ */
+
+/**
  * @typedef {object} FormCheckboxProps
  * @property {boolean} [defaultValue=false] - [checkbox] Default value
  * @property {boolean} [required=false] - [checkbox] If true, the checkbox must be checked.
+ */
+
+/**
+ * @typedef {object} FormRadioProps
+ * @property {string} [defaultValue=""] - [radio] Default value
+ * @property {boolean} [required=false] - [radio] If true, one option must be selected.
+ * @property {Array<string|{label: string, value: string|null}>} options - [radio] Array of options.
+ * @property {string} label - [radio] Field label displayed to the user.
+ */
+
+/**
+ * @typedef {object} FormSelectProps
+ * @property {string} [defaultValue=""] - [select] Default value
+ * @property {boolean} [required=false] - [select] If true, a selection must be made.
+ * @property {Array<string|{label: string, value: string}>} options - [select] Array of options.
+ * @property {string} label - [select] Field label displayed to the user.
+ */
+
+/**
+ * @typedef {object} FormDateProps
+ * @property {Date} [defaultValue] - [date] Default value
+ * @property {Date} [minDate] - [date] Minimum selectable date.
+ * @property {Date} [maxDate] - [date] Maximum selectable date.
+ * @property {boolean} [required=false] - [date] If true, a date must be selected.
+ */
+
+/**
+ * @typedef {object} FormTimeProps
+ * @property {string} [defaultValue=""] - [time] Default value
+ * @property {boolean} [required=false] - [time] If true, a time must be selected.
  */
 
 /**
@@ -144,8 +199,43 @@ import React from "react";
  */
 
 /**
+ * @typedef {FormComponentBase & FormEmailProps} FormEmailComponent
+ * Componente de entrada de email.
+ */
+
+/**
+ * @typedef {FormComponentBase & FormNumberProps} FormNumberComponent
+ * Componente de entrada de número.
+ */
+
+/**
+ * @typedef {FormComponentBase & FormPasswordProps} FormPasswordComponent
+ * Componente de entrada de senha.
+ */
+
+/**
  * @typedef {FormComponentBase & FormCheckboxProps} FormCheckboxComponent
  * Componente de caixa de seleção (checkbox).
+ */
+
+/**
+ * @typedef {FormComponentBase & FormRadioProps} FormRadioComponent
+ * Componente de botão de opção (radio).
+ */
+
+/**
+ * @typedef {FormComponentBase & FormSelectProps} FormSelectComponent
+ * Componente de seleção (select).
+ */
+
+/**
+ * @typedef {FormComponentBase & FormDateProps} FormDateComponent
+ * Componente de entrada de data.
+ */
+
+/**
+ * @typedef {FormComponentBase & FormTimeProps} FormTimeComponent
+ * Componente de entrada de hora.
  */
 
 /**
@@ -154,7 +244,7 @@ import React from "react";
  */
 
 /**
- * @typedef {FormTextComponent | FormTextAreaComponent | FormCheckboxComponent | FormFileComponent} FormComponent
+ * @typedef {FormTextComponent | FormTextAreaComponent | FormEmailComponent | FormNumberComponent | FormPasswordComponent | FormCheckboxComponent | FormRadioComponent | FormSelectComponent | FormDateComponent | FormTimeComponent | FormFileComponent} FormComponent
  * A single component (input field) definition for the 'form' popup.
  */
 
