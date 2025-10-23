@@ -78,6 +78,8 @@ export default function DisplayPopup({
                         // OVERLAY/BACKDROP LAYER
                         <div
                             key={popup.id}
+                            data-interactive={String(popup.settings.interactiveBackdrop)}
+                            data-hidden={String(popup.settings.hiddenBackdrop)}
                             // Apply default CSS class or custom fallback class
                             className={`${styles.popupsOverlay} ntpopups-overlay`}
                             style={{ zIndex: popup.zIndex }}

@@ -33,6 +33,9 @@ import React from "react";
  * @property {boolean} [requireAction=false] - If true, the popup can only be closed via an internal component action (i.e., calling `closePopup(true)`).
  * @property {number} [timeout=0] - Time in milliseconds before the popup auto-closes. Disabled if 0 or undefined.
  * @property {boolean} [keepLast=false] - If true, the previously visible popup remains visible (underneath) when this new one opens.
+ * @property {boolean} [allowPageBodyScroll=false] - CSS utility: Allow page body scroll
+ * @property {boolean} [interactiveBackdrop=false] - Allow interactions in the background
+ * @property {boolean} [hiddenBackdrop=false] - CSS utility: Hides the backdrop.
  * @property {boolean} [hiddenHeader=false] - CSS utility: Hides the default popup header area.
  * @property {boolean} [hiddenFooter=false] - CSS utility: Hides the default popup footer area.
  * @property {boolean} [disableOpenAnimation=false] - CSS utility: Disables the opening transition.
@@ -88,7 +91,7 @@ import React from "react";
  *
  * @typedef {object} FormComponentBase
  * @property {string} id - Unique identifier for the field (used as the key in the response object).
- * @property {'text'|'textarea'|'checkbox'} type - Input type
+ * @property {'text'|'textarea'|'checkbox'|'file'} type - Input type
  * @property {string} label - Field label displayed to the user.
  * @property {boolean} [disabled=false] - If true, the field is disabled and not validated.
  */
@@ -116,7 +119,16 @@ import React from "react";
 
 /**
  * @typedef {object} FormCheckboxProps
- * @property {boolean} [defaultValue=false]
+ * @property {boolean} [defaultValue=false] - [checkbox] Default value
+ * @property {boolean} [required=false] - [checkbox] If true, the checkbox must be checked.
+ */
+
+/**
+ * @typedef {object} FormFileProps
+ * @property {boolean} [defaultValue=[]] - [file] Default value
+ * @property {boolean} [accept="*"] - [file] Accepted file types (as per the input 'accept' attribute).
+ * @property {boolean} [multiple=false] - [file] If true, allows selecting multiple files.
+ * @property {boolean} [required=false] - [file] If true, at least one file must be selected.
  */
 
 /**
@@ -135,7 +147,12 @@ import React from "react";
  */
 
 /**
- * @typedef {FormTextComponent | FormTextAreaComponent | FormCheckboxComponent} FormComponent
+ * @typedef {FormComponentBase & FormFileProps} FormFileComponent
+ * Componente de aquivo (file).
+ */
+
+/**
+ * @typedef {FormTextComponent | FormTextAreaComponent | FormCheckboxComponent | FormFileComponent} FormComponent
  * A single component (input field) definition for the 'form' popup.
  */
 

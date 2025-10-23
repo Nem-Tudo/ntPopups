@@ -59,11 +59,30 @@ const validateTextComponent = (value, componentData) => {
     return true;
 };
 
+const validateCheckboxComponent = (value, componentData) => {
+    const { required } = componentData;
+    // Se 'required' é true e o valor não é true, é inválido.
+    if (required === true && value !== true) {
+        return false;
+    }
+    return true;
+};
+
+const validateFileComponent = (value, componentData) => {
+    const { required } = componentData;
+    // Se 'required' é true e nenhum arquivo foi selecionado, é inválido.
+    if (required === true && (!value || value?.length === 0)) {
+        return false;
+    }
+    return true;
+};
+
 // Mapeamento de funções de validação por tipo (para expansões futuras)
 const validationFunctions = {
     'text': validateTextComponent,
     'textarea': validateTextComponent,
-    // Adicionar outros tipos aqui (ex: 'email': validateEmailComponent)
+    'checkbox': validateCheckboxComponent,
+    'file': validateFileComponent,
 };
 
 /**
@@ -139,7 +158,8 @@ export default function Form({
         const falsyByType = {
             "text": "",
             "checkbox": false,
-            "textarea": ""
+            "textarea": "",
+            "file": []
         };
 
         const processComponent = (component) => {
@@ -236,7 +256,7 @@ export default function Form({
                                     {componentsArray.map((component) => {
                                         // 🚀 Validade individual
                                         const isComponentValid = validateComponent(values[component.id], component);
-                                        return <div key={`rc-${index}`} className={classes.componentContainer} component-type={component.type}>
+                                        return <div key={`rc-${index}-${component.id}`} className={classes.componentContainer} component-type={component.type}>
                                             <FormComponent
                                                 autoFocus={index === 0}
                                                 data={component}
@@ -255,7 +275,7 @@ export default function Form({
                         } else {
                             const component = componentOrArray;
                             const isComponentValid = validateComponent(values[component.id], component);
-                            return <div key={`cc-${index}`} className={classes.componentContainer} component-type={component.type}>
+                            return <div key={`cc-${index}-${component.id}`} className={classes.componentContainer} component-type={component.type}>
                                 <FormComponent
                                     autoFocus={index === 0}
                                     data={component}

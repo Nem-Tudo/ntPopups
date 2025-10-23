@@ -15,10 +15,10 @@ import { getTranslation, defaultLanguage } from "../i18n/index";
 
 // ==================== CONTEXT CREATION ====================
 
-if(typeof createContext != "function") throw new Error(
-        `ntPopups Error: NtPopupProvider and useNtPopups cannot be called on the server.\n` +
-        `If you're in the App Router, ensure the component calling this function has "use client" at the top.`
-    )
+if (typeof createContext != "function") throw new Error(
+    `ntPopups Error: NtPopupProvider and useNtPopups cannot be called on the server.\n` +
+    `If you're in the App Router, ensure the component calling this function has "use client" at the top.`
+)
 
 // O JSDoc AGORA USA O TIPO EXTENDIDO CORRETO
 /** @type {React.Context<PopupContextValue>} */
@@ -138,6 +138,11 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
             if (closingPopup.settings.requireAction && !hasAction) return prev;
 
+            if (!closingPopup.settings.allowPageBodyScroll) {
+                document.querySelector("body").style.overflow = "";
+                document.querySelector("html").style.overflow = "";
+            }
+
             // Clear timeout
             const timeoutId = timeoutsRef.current.get(popupId);
             if (timeoutId) {
@@ -221,8 +226,15 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                     // Default library settings (lowest priority)
                     closeOnEscape: true,
                     closeOnClickOutside: true,
-                    keepLast: false,
                     requireAction: false,
+                    timeout: 0,
+                    keepLast: false,
+                    allowPageBodyScroll: false,
+                    interactiveBackdrop: false,
+                    hiddenBackdrop: false,
+                    hiddenHeader: false,
+                    hiddenFooter: false,
+                    disableOpenAnimation: false,
                     // 1. Global defaults from config
                     ...globalDefaults,
                     // 2. Type-specific defaults from config
@@ -254,6 +266,11 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             return [...prev, newPopup];
         });
 
+        if (!settings.allowPageBodyScroll) {
+            document.querySelector("body").style.overflow = "hidden";
+            document.querySelector("html").style.overflow = "hidden";
+        }
+
         // Execute onOpen callback
         if (settings.onOpen) {
             try {
@@ -277,6 +294,10 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
     // ========== CLOSE ALL POPUPS FUNCTION ==========
     const closeAllPopups = useCallback(() => {
         // ... (Close All Popups logic remains the same)
+
+        document.querySelector("body").style.overflow = "";
+        document.querySelector("html").style.overflow = "";
+
         setPopups(prev => {
             prev.filter(p => !p.hidden).forEach(popup => {
                 // Execute onClose callback
@@ -344,6 +365,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         // Click Outside Handler
         const handleClickOutside = (event) => {
             if (!topPopup.settings.closeOnClickOutside) return;
+            if (topPopup.settings.interactiveBackdrop) return;
 
             const popupElement = document.querySelector(`[data-popup-id="${topPopup.id}"]`);
 

@@ -554,6 +554,9 @@ Aplicáveis a **qualquer popup** (nativos ou customizados):
 | `requireAction` | boolean | false | Exige ação interna para fechar |
 | `timeout` | number | 0 | Tempo (ms) para fechar automaticamente |
 | `keepLast` | boolean | false | Mantém popup anterior visível embaixo |
+| `allowPageBodyScroll` | boolean | false | Permite scrollar o body da página |
+| `interactiveBackdrop` | boolean | false | Permite interações no background |
+| `hiddenBackdrop` | boolean | false | Oculta o backdrop |
 | `hiddenHeader` | boolean | false | Oculta o cabeçalho |
 | `hiddenFooter` | boolean | false | Oculta o rodapé |
 | `disableOpenAnimation` | boolean | false | Desabilita animação de abertura |
@@ -571,6 +574,9 @@ openPopup('generic', {
   requireAction: true,
   timeout: 5000,
   keepLast: true,
+  allowPageBodyScroll: true,
+  interactiveBackdrop: true,
+  hiddenBackdrop: true,
   hiddenHeader: true,
   hiddenFooter: true,
   disableOpenAnimation: true,

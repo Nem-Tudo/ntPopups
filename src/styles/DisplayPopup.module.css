@@ -267,11 +267,20 @@
     /* Adicionando transição */
 }
 
+.popupsOverlay[data-interactive="true"]{
+    pointer-events: none;
+}
+
+.popupsOverlay[data-hidden="true"]{
+    background: transparent;
+}
+
 /* ==================== POPUP CONTAINER ==================== */
 .popup {
     position: static;
     border: none;
     
+    pointer-events: all;
     display: flex;
     flex-direction: column;
     border-radius: var(--ntpopups-border-radius);
