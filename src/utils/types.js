@@ -167,6 +167,7 @@ import React from "react";
  * @typedef {object} FormPopupData
  * Data specific to the 'form' popup type.
  * @property {React.ReactNode} [title] - [form] The header title. Defaults to i18n key 'form.title'.
+ * @property {React.ReactNode} [message] - [form] The message content. Defaults to i18n key 'form.message'.
  * @property {React.ReactNode} [doneLabel] - [form] Text for the confirmation button. Defaults to i18n key 'util.done'.
  * @property {React.ReactNode} [icon="ⓘ"] - [form] Icon displayed next to the title.
  * @property {FormComponentOrRow[]} [components] - [form] Array defining the fields/layout of the form.
