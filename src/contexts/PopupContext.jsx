@@ -479,10 +479,11 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
     // ========== EFFECT: OVERFLOW & EVENT LISTENERS ==========
     useEffect(() => {
-        const visiblePopups = popups.filter(p => !p.hidden && !p.isClosing); // Inclui isClosing no filtro
+        const visiblePopups = popups.filter(p => !p.hidden && !p.isClosing);
+        const notClosedPopups = popups.filter(p => !p.isClosing);
 
         // Restore overflow
-        if (visiblePopups.length === 0) {
+        if (notClosedPopups.length === 0) {
             document.querySelector("html").style.overflow = "";
             document.querySelector("body").style.overflow = "";
             return;
