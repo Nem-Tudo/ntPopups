@@ -257,8 +257,8 @@ const createValidator = (translate) => {
                 return translate('validation.minDateInternalError')(fieldName);
             }
             // Compara ignorando a parte do tempo para ser mais fiel à validação de "data"
-            const dateOnlyValue = new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
-            const dateOnlyMin = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+            const dateOnlyValue = new Date(dateValue.getUTCFullYear(), dateValue.getUTCMonth(), dateValue.getUTCDate());
+            const dateOnlyMin = new Date(min.getUTCFullYear(), min.getUTCMonth(), min.getUTCDate());
 
             if (dateOnlyValue < dateOnlyMin) {
                 // Passa a data formatada para a tradução
@@ -273,8 +273,8 @@ const createValidator = (translate) => {
                 return translate('validation.maxDateInternalError')(fieldName);
             }
             // Compara ignorando a parte do tempo
-            const dateOnlyValue = new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
-            const dateOnlyMax = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+            const dateOnlyValue = new Date(dateValue.getUTCFullYear(), dateValue.getUTCMonth(), dateValue.getUTCDate());
+            const dateOnlyMax = new Date(max.getUTCFullYear(), max.getUTCMonth(), max.getUTCDate());
 
             if (dateOnlyValue > dateOnlyMax) {
                 // Passa a data formatada para a tradução
