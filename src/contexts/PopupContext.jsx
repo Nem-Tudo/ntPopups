@@ -457,8 +457,8 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                 });
 
                 // Restaura o overflow
-                document.querySelector("body").style.overflow = "";
-                document.querySelector("html").style.overflow = "";
+                // document.querySelector("body").style.overflow = "";
+                // document.querySelector("html").style.overflow = "";
 
                 // Retorna um array vazio, limpando tudo
                 return [];
