@@ -47,11 +47,23 @@ export default {
         acceptCheckbox: (fieldName) => `You must accept the option.`,
         requiredFile: (fieldName) => `The field requires a file.`,
         invalidDate: (fieldName) => `The field does not contain a valid date.`,
-        minDateError: (fieldName, date) => `The date must be equal to or later than ${date}.`,
+        minDateError: (fieldName, date) => `The date must be equal to or later than ${localDateString(date)}.`,
         minDateInternalError: (fieldName) => `Internal error in minimum date validation.`,
-        maxDateError: (fieldName, date) => `The date must be equal to or earlier than ${date}.`,
+        maxDateError: (fieldName, date) => `The date must be equal to or earlier than ${localDateString(date)}.`,
         maxDateInternalError: (fieldName) => `Internal error in maximum date validation.`,
         passwordMinLength: (length) => `The password must be at least ${length} characters long.`,
         passwordMaxLength: (length) => `The password must be at most ${length} characters long.`,
     }
 };
+
+function localDateString(date) {
+    date = new Date(date);
+
+    const year = date.getFullYear();
+
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${day}/${month}/${year}`;
+}

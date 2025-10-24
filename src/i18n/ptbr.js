@@ -47,11 +47,23 @@ export default {
         acceptCheckbox: (fieldName) => `Você deve aceitar a opção.`,
         requiredFile: (fieldName) => `O campo requer um arquivo.`,
         invalidDate: (fieldName) => `O campo não contém uma data válida.`,
-        minDateError: (fieldName, date) => `A data deve ser igual ou posterior a ${date}.`,
+        minDateError: (fieldName, date) => `A data deve ser igual ou posterior a ${localDateString(date)}.`,
         minDateInternalError: (fieldName) => `Erro interno na validação de data mínima.`,
-        maxDateError: (fieldName, date) => `A data deve ser igual ou anterior a ${date}.`,
+        maxDateError: (fieldName, date) => `A data deve ser igual ou anterior a ${localDateString(date)}.`,
         maxDateInternalError: (fieldName) => `Erro interno na validação de data máxima.`,
         passwordMinLength: (length) => `A senha deve ter no mínimo ${length} caracteres.`,
         passwordMaxLength: (length) => `A senha deve ter no máximo ${length} caracteres.`,
     }
 };
+
+function localDateString(date) {
+    date = new Date(date);
+
+    const year = date.getFullYear();
+
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${day}/${month}/${year}`;
+}
