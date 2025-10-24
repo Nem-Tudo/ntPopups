@@ -2,6 +2,63 @@ import React, { useRef, useState, useCallback } from 'react';
 import styles from "../../../../styles/FileInput.module.css";
 
 
+/**
+ * Função robusta para verificar se um arquivo corresponde ao critério 'accept' do input file.
+ * Lida com: MIME types exatos (application/pdf), coringas (image/*), e extensões (.jpg).
+ * @param {File} file O objeto File a ser verificado.
+ * @param {string | undefined} acceptString A string do atributo accept (ex: "image/*, .pdf, application/json").
+ * @returns {boolean} True se o arquivo for aceito, False caso contrário.
+ */
+const checkFileAccept = (file, acceptString) => {
+    if (!acceptString) return true; // Se não há 'accept', aceita qualquer arquivo
+
+    // 1. Normaliza e separa os tipos aceitos.
+    const acceptedTypes = acceptString
+        .toLowerCase() // Normaliza para minúsculas
+        .split(',')
+        .map(type => type.trim())
+        .filter(type => type.length > 0);
+
+    if (acceptedTypes.length === 0) return true;
+
+    const fileName = file.name ? file.name.toLowerCase() : '';
+    const fileType = file.type ? file.type.toLowerCase() : '';
+    
+    // Extrai a extensão do arquivo (ex: '.jpg')
+    const fileExtensionMatch = fileName.match(/\.([0-9a-z]+)$/i);
+    const fileExtension = fileExtensionMatch ? `.${fileExtensionMatch[1]}` : '';
+
+    return acceptedTypes.some(accept => {
+        // 2. Coringa (ex: image/*)
+        if (accept.endsWith('/*')) {
+            const majorType = accept.slice(0, -2); // Ex: 'image'
+            // Verifica se o tipo MIME do arquivo começa com o majorType (ex: image/png)
+            return fileType.startsWith(`${majorType}/`);
+        }
+        
+        // 3. Extensão de arquivo (ex: .png, .pdf)
+        if (accept.startsWith('.')) {
+            // Se o arquivo tem uma extensão, verifica a correspondência
+            if (fileExtension) {
+                return fileExtension === accept;
+            }
+            // Se o arquivo não tem extensão, não pode corresponder a uma extensão exigida
+            return false;
+        }
+        
+        // 4. Tipo MIME exato (ex: application/json, application/pdf)
+        if (accept.includes('/')) {
+            return fileType === accept;
+        }
+        
+        // Se não for nenhum dos tipos acima, o accept é inválido/não reconhecido,
+        // mas para evitar rejeitar um arquivo válido em um caso limite,
+        // vamos considerar a string literal como um tipo MIME (embora seja raro/inválido)
+        return fileType === accept;
+    });
+};
+
+
 export default function FileInput(props) {
     // Desestrutura props para separar o que é do componente do que vai para o <input>
     const {
@@ -115,14 +172,29 @@ export default function FileInput(props) {
         const droppedFiles = event.dataTransfer.files;
 
         if (droppedFiles.length > 0) {
-            // Verifica se 'multiple' está habilitado para restringir a seleção
-            if (Boolean(inputProps.multiple) === false && droppedFiles.length > 1) {
-                // Se 'multiple' é false e soltou mais de um, pega apenas o primeiro.
-                // Você pode querer adicionar um feedback ao usuário aqui.
-                processFiles([droppedFiles[0]]);
+            const accept = inputProps.accept;
+            
+            // 1. Filtra os arquivos usando a prop 'accept'
+            const filteredFiles = Array.from(droppedFiles).filter(file => 
+                checkFileAccept(file, accept)
+            );
+
+            // Se nenhum arquivo passou no filtro, não faz nada
+            if (filteredFiles.length === 0) {
+                // Opcional: Adicionar um feedback de erro aqui (ex: console.warn)
+                return;
+            }
+
+            const filesToProcess = filteredFiles;
+
+            // 2. Verifica se 'multiple' está habilitado para restringir a seleção
+            if (Boolean(inputProps.multiple) === false && filesToProcess.length > 1) {
+                // Se 'multiple' é false e soltou mais de um (mesmo depois de filtrar), pega apenas o primeiro.
+                processFiles([filesToProcess[0]]);
             } else {
-                // Repassa o FileList para a função de processamento
-                processFiles(droppedFiles);
+                // Repassa a lista de arquivos filtrada para a função de processamento
+                // (Note que estamos passando um Array de Files, não um FileList, mas processFiles lida com isso)
+                processFiles(filesToProcess);
             }
         }
     };
