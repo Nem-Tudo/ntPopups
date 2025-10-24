@@ -217,8 +217,8 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                 // Esta lógica é um fallback, o useEffect de listener faz a limpeza final
                 // mas é bom ter aqui para garantir que o scroll volte o mais rápido possível.
                 if (!closingPopup.settings.allowPageBodyScroll) {
-                    document.querySelector("body").style.overflow = "";
-                    document.querySelector("html").style.overflow = "";
+                    // document.querySelector("body").style.overflow = "";
+                    // document.querySelector("html").style.overflow = "";
                 }
             }
 
