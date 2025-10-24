@@ -69,7 +69,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
     // Refs for persistence
     const callbacksRef = useRef(new Map()); // popupId -> { onClose, onOpen }
     const timeoutsRef = useRef(new Map());   // popupId -> timeoutId
-    const originalOverflowRef = useRef(null);
     /** @type {React.MutableRefObject<PopupData[]>} */
     const currentPopupsRef = useRef([]);
 
@@ -320,6 +319,11 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
         let newPopup; // Variável para armazenar o objeto criado antes do setPopups
 
+        if (!settings.allowPageBodyScroll) {
+            document.querySelector("body").style.overflow = "hidden";
+            document.querySelector("html").style.overflow = "hidden";
+        }
+
         setPopups(prev => {
             const visiblePopups = prev.filter(p => !p.hidden && !p.isClosing);
 
@@ -376,11 +380,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
         // Se newPopup não foi atribuído por algum erro interno, retorne null
         if (!newPopup) return null;
-
-        if (!settings.allowPageBodyScroll) {
-            document.querySelector("body").style.overflow = "hidden";
-            document.querySelector("html").style.overflow = "hidden";
-        }
 
         // Execute onOpen callback
         if (settings.onOpen) {
@@ -484,19 +483,13 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
         // Restore overflow
         if (visiblePopups.length === 0) {
-            if (originalOverflowRef.current !== null) {
-                document.body.style.overflow = originalOverflowRef.current;
-                document.querySelector("html").style.overflow = "";
-                originalOverflowRef.current = null;
-            }
+            document.querySelector("html").style.overflow = "";
+            document.querySelector("body").style.overflow = "";
             return;
         }
 
-        // Lock scroll
-        if (originalOverflowRef.current === null) {
-            originalOverflowRef.current = document.body.style.overflow || 'unset';
-        }
-        document.body.style.overflow = 'hidden';
+        // document.querySelector("html").style.overflow = "hidden";
+        // document.querySelector("body").style.overflow = "hidden";
 
         const topPopup = visiblePopups[visiblePopups.length - 1];
 
@@ -537,10 +530,9 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             timeoutsRef.current.forEach(timeoutId => clearTimeout(timeoutId));
             timeoutsRef.current.clear();
             callbacksRef.current.clear();
-            if (originalOverflowRef.current !== null) {
-                document.body.style.overflow = originalOverflowRef.current;
-                document.querySelector("html").style.overflow = "";
-            }
+            
+            document.querySelector("html").style.overflow = "";
+            document.querySelector("body").style.overflow = "";
         };
     }, []);
 
