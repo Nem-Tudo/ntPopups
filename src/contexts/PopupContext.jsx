@@ -72,6 +72,11 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
     /** @type {React.MutableRefObject<PopupData[]>} */
     const currentPopupsRef = useRef([]);
 
+    // CORREÇÃO: Ref para armazenar a função closePopup mais recente
+    /** @type {React.MutableRefObject<typeof closePopup | null>} */
+    const closePopupRef = useRef(null);
+    // FIM DA CORREÇÃO
+
     // Queue system for race condition prevention
     const operationQueueRef = useRef([]);
     const isProcessingRef = useRef(false);
@@ -203,7 +208,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             );
 
             // 2. SCHEDULE REMOVAL: Remove from state after animation
-            // Importante: A função removePopupFromState agora contém a lógica de limpeza (callbacks, timeouts, overflow)
             setTimeout(() => {
                 removePopupFromState(popupId, hasAction);
             }, CLOSE_ANIMATION_DURATION);
@@ -220,6 +224,11 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             return newState;
         });
     }, [removePopupFromState]);
+
+    // CORREÇÃO: Efeito para garantir que a função closePopup mais recente seja armazenada no ref.
+    useEffect(() => {
+        closePopupRef.current = closePopup;
+    }, [closePopup]);
 
 
     // ========== UPDATE POPUP FUNCTION ==========
@@ -266,6 +275,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                 // Set new timeout if greater than 0
                 if (newSettings.timeout && newSettings.timeout > 0) {
                     const newTimeoutId = setTimeout(() => {
+                        // Usamos closePopup diretamente pois ele está na dependência do useCallback
                         closePopup(popupId, false); // HasAction false for timeout close
                     }, newSettings.timeout);
                     timeoutsRef.current.set(popupId, newTimeoutId);
@@ -305,7 +315,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         const typeDefaults = defaultSettings[popupType] || {};
 
         /** @type {PopupData | null} */
-        let newPopup; // Variável para armazenar o objeto criado antes do setPopups
+        let newPopup = null;
 
         // Função para calcular a largura da barra de rolagem
         function getScrollbarWidth() {
@@ -338,7 +348,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
         if (!settings.allowPageBodyScroll) {
             // 1. Verifica se a página PRECISA de scroll (se o conteúdo excede a altura da janela)
-            // Uma maneira simples de verificar se há uma barra de rolagem vertical presente (no body ou html)
             const hasVerticalScrollbar = document.documentElement.scrollHeight > window.innerHeight;
 
             if (hasVerticalScrollbar) {
@@ -418,13 +427,15 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             }
         }
 
-        // Setup timeout - CORREÇÃO AQUI: o closePopup usado é a versão atual do escopo
-        // (graças ao useCallback de openPopup, a referência não será obsoleta)
+        // Setup timeout - CORREÇÃO FINAL: Usar a Ref da função closePopup
         if (newPopup.settings.timeout && newPopup.settings.timeout > 0) {
             const timeoutId = setTimeout(() => {
-                // Ao utilizar o closePopup que está no escopo, e garantir que openPopup
-                // tenha closePopup como dependência (ver abaixo), o timeout funciona.
-                closePopup(popupId, false); // HasAction false for timeout close
+                // Verifica se a ref existe e chama a função mais atualizada.
+                if (closePopupRef.current) {
+                    closePopupRef.current(popupId, false); // HasAction false for timeout close
+                } else {
+                    console.error("ntPopups Error: closePopupRef is null when timeout triggered.");
+                }
             }, newPopup.settings.timeout);
             timeoutsRef.current.set(popupId, timeoutId);
         }
@@ -451,7 +462,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         }
         // Retorna o objeto (ou null) diretamente
         return openPopupImmediate(popupType, settings);
-    }, [closePopup]); // <<-- CORREÇÃO: ADICIONAR closePopup COMO DEPENDÊNCIA AQUI
+    }, [closePopup]); // Mantém closePopup como dependência para que openPopupImmediate use a versão mais nova
 
 
     // ========== CLOSE ALL POPUPS FUNCTION (Atualizada) ==========
