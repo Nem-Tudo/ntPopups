@@ -209,20 +209,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             }, CLOSE_ANIMATION_DURATION);
 
 
-            // 3. HANDLE OVERFLOW: If it's the last one closing, ensure overflow is restored.
-            // A lógica de overflow deve ser tratada aqui antes do agendamento, verificando
-            // se este é o único pop-up *visível e não fechando* que resta.
-            // const remainingVisiblePopups = prev.filter(p => p.id !== popupId && !p.hidden && !p.isClosing);
-            // if (remainingVisiblePopups.length === 0) {
-            //     // Esta lógica é um fallback, o useEffect de listener faz a limpeza final
-            //     // mas é bom ter aqui para garantir que o scroll volte o mais rápido possível.
-            //     if (!closingPopup.settings.allowPageBodyScroll) {
-            //         document.querySelector("body").style.overflow = "";
-            //         document.querySelector("html").style.overflow = "";
-            //     }
-            // }
-
-            // Clear timeout, já que a ação manual está substituindo o auto-timeout
+            // 3. Clear timeout, já que a ação manual está substituindo o auto-timeout
             const timeoutId = timeoutsRef.current.get(popupId);
             if (timeoutId) {
                 clearTimeout(timeoutId);
@@ -294,7 +281,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         return updatedPopup;
     }, [closePopup]);
 
-    // ========== OPEN POPUP FUNCTION (Immediate Logic)  ==========
+    // ========== OPEN POPUP FUNCTION (Immediate Logic)  ==========
     /**
      * Lógica imediata para abertura de pop-up.
      * @param {string} popupType
@@ -317,6 +304,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
         const typeDefaults = defaultSettings[popupType] || {};
 
+        /** @type {PopupData | null} */
         let newPopup; // Variável para armazenar o objeto criado antes do setPopups
 
         // Função para calcular a largura da barra de rolagem
@@ -430,11 +418,14 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             }
         }
 
-        // Setup timeout
-        if (settings.timeout && settings.timeout > 0) {
+        // Setup timeout - CORREÇÃO AQUI: o closePopup usado é a versão atual do escopo
+        // (graças ao useCallback de openPopup, a referência não será obsoleta)
+        if (newPopup.settings.timeout && newPopup.settings.timeout > 0) {
             const timeoutId = setTimeout(() => {
+                // Ao utilizar o closePopup que está no escopo, e garantir que openPopup
+                // tenha closePopup como dependência (ver abaixo), o timeout funciona.
                 closePopup(popupId, false); // HasAction false for timeout close
-            }, settings.timeout);
+            }, newPopup.settings.timeout);
             timeoutsRef.current.set(popupId, timeoutId);
         }
 
@@ -460,7 +451,8 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         }
         // Retorna o objeto (ou null) diretamente
         return openPopupImmediate(popupType, settings);
-    }, []);
+    }, [closePopup]); // <<-- CORREÇÃO: ADICIONAR closePopup COMO DEPENDÊNCIA AQUI
+
 
     // ========== CLOSE ALL POPUPS FUNCTION (Atualizada) ==========
     const closeAllPopups = useCallback(() => {
@@ -496,10 +488,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                     }
                 });
 
-                // Restaura o overflow
-                // document.querySelector("body").style.overflow = "";
-                // document.querySelector("html").style.overflow = "";
-
                 // Retorna um array vazio, limpando tudo
                 return [];
             });
@@ -530,10 +518,9 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             return;
         }
 
-        // document.querySelector("html").style.overflow = "hidden";
-        // document.querySelector("body").style.overflow = "hidden";
-
         const topPopup = visiblePopups[visiblePopups.length - 1];
+
+        if (!topPopup) return; // Se não houver pop-up visível, não há evento para ouvir
 
         // KeyDown Handler (ESC)
         const handleKeyDown = (e) => {
@@ -562,7 +549,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
             document.removeEventListener("mousedown", handleClickOutside);
-            // NOTA: A restauração final do overflow é feita pelo EFFECT: FINAL CLEANUP ou dentro do closePopup/closeAllPopups.
         };
     }, [popups, closePopup]);
 
