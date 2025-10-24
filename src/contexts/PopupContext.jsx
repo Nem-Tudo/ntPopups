@@ -212,15 +212,15 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             // 3. HANDLE OVERFLOW: If it's the last one closing, ensure overflow is restored.
             // A lógica de overflow deve ser tratada aqui antes do agendamento, verificando
             // se este é o único pop-up *visível e não fechando* que resta.
-            const remainingVisiblePopups = prev.filter(p => p.id !== popupId && !p.hidden && !p.isClosing);
-            if (remainingVisiblePopups.length === 0) {
-                // Esta lógica é um fallback, o useEffect de listener faz a limpeza final
-                // mas é bom ter aqui para garantir que o scroll volte o mais rápido possível.
-                if (!closingPopup.settings.allowPageBodyScroll) {
-                    // document.querySelector("body").style.overflow = "";
-                    // document.querySelector("html").style.overflow = "";
-                }
-            }
+            // const remainingVisiblePopups = prev.filter(p => p.id !== popupId && !p.hidden && !p.isClosing);
+            // if (remainingVisiblePopups.length === 0) {
+            //     // Esta lógica é um fallback, o useEffect de listener faz a limpeza final
+            //     // mas é bom ter aqui para garantir que o scroll volte o mais rápido possível.
+            //     if (!closingPopup.settings.allowPageBodyScroll) {
+            //         document.querySelector("body").style.overflow = "";
+            //         document.querySelector("html").style.overflow = "";
+            //     }
+            // }
 
             // Clear timeout, já que a ação manual está substituindo o auto-timeout
             const timeoutId = timeoutsRef.current.get(popupId);
@@ -530,7 +530,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             timeoutsRef.current.forEach(timeoutId => clearTimeout(timeoutId));
             timeoutsRef.current.clear();
             callbacksRef.current.clear();
-            
+
             document.querySelector("html").style.overflow = "";
             document.querySelector("body").style.overflow = "";
         };
