@@ -740,8 +740,9 @@ openPopup('generic', {
 
 ```typescript
 const {
-  openPopup,       // (type, settings) => string|null
+  openPopup,       // (type, settings) => PopupData|null
   closePopup,      // (id?, hasAction?) => void
+  updatePopup,     // (id, settings) => PopupData|null
   closeAllPopups,  // () => void
   isPopupOpen,     // (id) => boolean
   getPopup,        // (id) => PopupData|null
@@ -754,7 +755,7 @@ const {
 Opens a popup and returns its unique ID.
 
 ```jsx
-const popupId = openPopup('confirm', {
+const popup = openPopup('confirm', {
   data: { message: 'Do you want to continue?' }
 });
 ```
@@ -771,6 +772,19 @@ closePopup('popup_123', true);
 
 // Close last popup with action
 closePopup(true);
+```
+
+### `updatePopup(id, newSettings)`
+Updates the settings of a open popup.
+
+```jsx
+const openPopup = openPopup('generic', {
+  data: { message: 'Initial message' }
+});
+
+const updatedPopup = updatePopup(openPopup.id, {
+  data: { ...openPopup.data, message: 'Updated message!' }
+});
 ```
 
 ### `closeAllPopups()`
@@ -1373,22 +1387,21 @@ const registrationWizard = () => {
 
 ```jsx
 const executeLongAction = async () => {
-  const loadingId = openPopup('generic', {
+  const loading = openPopup('generic', {
     id: 'loading_popup',
     data: {
       title: 'Processing...',
       message: 'Please wait while we process your request.',
       icon: '⏳'
     },
-    closeOnEscape: false,
-    closeOnClickOutside: false,
+    requireAction: true,
     hiddenFooter: true
   });
   
   try {
     await performLongOperation();
     
-    closePopup(loadingId, true);
+    closePopup(loading.id, true);
     
     openPopup('generic', {
       data: {
@@ -1399,7 +1412,7 @@ const executeLongAction = async () => {
       timeout: 3000
     });
   } catch (error) {
-    closePopup(loadingId, true);
+    closePopup(loading.id, true);
     
     openPopup('generic', {
       data: {
@@ -1739,17 +1752,6 @@ const advancedForm = () => {
 // ✅ Mark the provider as 'use client'
 'use client';
 import { NtPopupProvider } from 'ntpopups';
-```
-
-### TypeScript: Type Errors
-
-**Problem**: Types not recognized
-
-**Solution**:
-```typescript
-// Install types (if available)
-// or use type assertions
-const popup = openPopup('custom', settings) as string;
 ```
 
 ---

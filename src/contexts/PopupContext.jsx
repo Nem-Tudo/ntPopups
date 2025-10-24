@@ -1,4 +1,3 @@
-// ./contexts/PopupContext.jsx
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
@@ -10,13 +9,14 @@ import { internalPopupTypes } from "./popupTypes";
 /**
  * @typedef {import("../utils/types").PopupContextValue} PopupContextValue
  * @typedef {import("../utils/types").NtPopupConfig} NtPopupConfig
- * @typedef {import("../utils/types").PopupData} AnimatedPopupData
+ * @typedef {import("../utils/types").PopupData} PopupData
+ * @typedef {import("../utils/types").PopupSettings} PopupSettings
  */
 
 import { getTranslation, defaultLanguage } from "../i18n/index";
 
 // Duração da animação de fechamento em milissegundos. Deve corresponder ao CSS.
-const CLOSE_ANIMATION_DURATION = 100; 
+const CLOSE_ANIMATION_DURATION = 100;
 
 // ==================== CONTEXT CREATION ====================
 
@@ -28,13 +28,13 @@ if (typeof createContext != "function") throw new Error(
 // O JSDoc AGORA USA O TIPO EXTENDIDO CORRETO
 /** @type {React.Context<PopupContextValue>} */
 const PopupContext = createContext({
-    // Definir todos os valores padrão, incluindo os novos (language e translate)
     popups: [],
     openPopup: () => null,
     closePopup: () => { },
     closeAllPopups: () => { },
     isPopupOpen: () => false,
     getPopup: () => null,
+    updatePopup: () => null,
     language: defaultLanguage,
     translate: (key) => `[${key}]`,
 });
@@ -70,7 +70,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
     const callbacksRef = useRef(new Map()); // popupId -> { onClose, onOpen }
     const timeoutsRef = useRef(new Map());   // popupId -> timeoutId
     const originalOverflowRef = useRef(null);
-    /** @type {React.MutableRefObject<AnimatedPopupData[]>} */
+    /** @type {React.MutableRefObject<PopupData[]>} */
     const currentPopupsRef = useRef([]);
 
     // Queue system for race condition prevention
@@ -199,7 +199,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             if (closingPopup.settings.requireAction && !hasAction) return prev;
 
             // 1. UPDATE STATE: Mark as closing
-            const newState = prev.map(p => 
+            const newState = prev.map(p =>
                 p.id === popupId ? { ...p, isClosing: true } : p
             );
 
@@ -215,12 +215,12 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             // se este é o único pop-up *visível e não fechando* que resta.
             const remainingVisiblePopups = prev.filter(p => p.id !== popupId && !p.hidden && !p.isClosing);
             if (remainingVisiblePopups.length === 0) {
-                 // Esta lógica é um fallback, o useEffect de listener faz a limpeza final
-                 // mas é bom ter aqui para garantir que o scroll volte o mais rápido possível.
-                 if (!closingPopup.settings.allowPageBodyScroll) {
+                // Esta lógica é um fallback, o useEffect de listener faz a limpeza final
+                // mas é bom ter aqui para garantir que o scroll volte o mais rápido possível.
+                if (!closingPopup.settings.allowPageBodyScroll) {
                     document.querySelector("body").style.overflow = "";
                     document.querySelector("html").style.overflow = "";
-                 }
+                }
             }
 
             // Clear timeout, já que a ação manual está substituindo o auto-timeout
@@ -229,27 +229,79 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                 clearTimeout(timeoutId);
                 timeoutsRef.current.delete(popupId);
             }
-            
+
             // O retorno é o novo estado com o pop-up marcado para fechamento
             return newState;
         });
     }, [removePopupFromState]);
 
 
-    // ========== OPEN POPUP FUNCTION (Public API) ==========
-    const openPopup = useCallback((popupType, settings = {}) => {
-        if (isProcessingRef.current) {
-            return new Promise((resolve) => {
-                operationQueueRef.current.push(() => {
-                    const id = openPopupImmediate(popupType, settings);
-                    resolve(id);
-                });
-            });
-        }
-        return openPopupImmediate(popupType, settings);
-    }, []);
+    // ========== UPDATE POPUP FUNCTION ==========
+    /**
+     * Altera reativamente as settings de um pop-up aberto.
+     * @param {string} popupId - O ID do pop-up a ser atualizado.
+     * @param {PopupSettings} newSettings - O novo objeto de settings (mescla com as settings existentes).
+     */
+    const updatePopup = useCallback((popupId, newSettings) => {
+        let updatedPopup = null;
 
-    // ========== OPEN POPUP FUNCTION (Immediate Logic) ==========
+        setPopups(prev => {
+            const popupIndex = prev.findIndex(p => p.id === popupId);
+
+            if (popupIndex === -1 || prev[popupIndex].isClosing) {
+                console.warn(`ntPopups Warning: Could not find open popup with id ${popupId} to update settings.`);
+                // updatedPopup já é null
+                return prev;
+            }
+
+            const currentPopup = prev[popupIndex];
+
+            // 1. Cria uma cópia com as settings atualizadas.
+            const tempUpdatedPopup = {
+                ...currentPopup,
+                settings: {
+                    ...currentPopup.settings,
+                    ...newSettings,
+                    id: popupId // Garante que o ID não seja alterado
+                },
+            };
+
+            updatedPopup = tempUpdatedPopup;
+
+            // 2. Clear/Update Timeout se o 'timeout' foi alterado.
+            if (newSettings.timeout !== undefined) {
+                // Clear old timeout
+                const oldTimeoutId = timeoutsRef.current.get(popupId);
+                if (oldTimeoutId) {
+                    clearTimeout(oldTimeoutId);
+                    timeoutsRef.current.delete(popupId);
+                }
+
+                // Set new timeout if greater than 0
+                if (newSettings.timeout && newSettings.timeout > 0) {
+                    const newTimeoutId = setTimeout(() => {
+                        closePopup(popupId, false); // HasAction false for timeout close
+                    }, newSettings.timeout);
+                    timeoutsRef.current.set(popupId, newTimeoutId);
+                }
+            }
+
+            // 3. Retorna um novo array de estado com o pop-up atualizado.
+            const newState = [...prev];
+            newState[popupIndex] = updatedPopup; // Usa a variável que será retornada
+            return newState;
+        });
+
+        return updatedPopup;
+    }, [closePopup]);
+
+    // ========== OPEN POPUP FUNCTION (Immediate Logic)  ==========
+    /**
+     * Lógica imediata para abertura de pop-up.
+     * @param {string} popupType
+     * @param {object} [settings]
+     * @returns {PopupData | null} O objeto do pop-up recém-criado, ou null em caso de erro.
+     */
     const openPopupImmediate = (popupType, settings = {}) => {
         const popupId = settings.id || generatePopupId();
         const keepLast = settings.keepLast !== undefined ? settings.keepLast : false;
@@ -259,11 +311,6 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             return null;
         }
 
-        // if (!allPopupTypes[popupType]) {
-        //     console.error(`ntPopups Error: Unknown popup type "${popupType}"`);
-        //     return null;
-        // }
-
         callbacksRef.current.set(popupId, {
             onClose: settings.onClose,
             onOpen: settings.onOpen
@@ -271,11 +318,13 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
         const typeDefaults = defaultSettings[popupType] || {};
 
-        setPopups(prev => {
-            const visiblePopups = prev.filter(p => !p.hidden && !p.isClosing); // Filtra os que estão fechando
+        let newPopup; // Variável para armazenar o objeto criado antes do setPopups
 
-            /** @type {AnimatedPopupData} */
-            const newPopup = {
+        setPopups(prev => {
+            const visiblePopups = prev.filter(p => !p.hidden && !p.isClosing);
+
+            /** @type {PopupData} */
+            const popupData = {
                 id: popupId,
                 popupType,
                 isClosing: false,
@@ -305,6 +354,8 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
                 hidden: false
             };
 
+            newPopup = popupData;
+
             // Substitution logic
             if (!keepLast && visiblePopups.length > 0) {
                 const lastVisiblePopup = visiblePopups[visiblePopups.length - 1];
@@ -323,6 +374,9 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             return [...prev, newPopup];
         });
 
+        // Se newPopup não foi atribuído por algum erro interno, retorne null
+        if (!newPopup) return null;
+
         if (!settings.allowPageBodyScroll) {
             document.querySelector("body").style.overflow = "hidden";
             document.querySelector("html").style.overflow = "hidden";
@@ -331,7 +385,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         // Execute onOpen callback
         if (settings.onOpen) {
             try {
-                settings.onOpen(popupId);
+                settings.onOpen(newPopup);
             } catch (error) {
                 console.error(`Error in onOpen callback for popup ${popupId}:`, error);
             }
@@ -345,8 +399,29 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             timeoutsRef.current.set(popupId, timeoutId);
         }
 
-        return popupId;
+        // RETORNA O OBJETO COMPLETO
+        return newPopup;
     };
+
+    // ========== OPEN POPUP FUNCTION (Public API) - MODIFICADA ==========
+    /**
+     * @param {import("../utils/types").NtPopupType} popupType - The type of popup to open.
+     * @param {PopupSettings} [settings={}] - Optional settings for the popup.
+     * @returns {PopupData | null | Promise<PopupData | null>} - Returns a Promise resolving to the popup object (or null) if queued, or the popup object (or null) if opened immediately.
+     */
+    const openPopup = useCallback((popupType, settings = {}) => {
+        if (isProcessingRef.current) {
+            return new Promise((resolve) => {
+                operationQueueRef.current.push(() => {
+                    // Agora, openPopupImmediate retorna o objeto (ou null)
+                    const popupObject = openPopupImmediate(popupType, settings);
+                    resolve(popupObject); // Resolve a Promise com o objeto
+                });
+            });
+        }
+        // Retorna o objeto (ou null) diretamente
+        return openPopupImmediate(popupType, settings);
+    }, []);
 
     // ========== CLOSE ALL POPUPS FUNCTION (Atualizada) ==========
     const closeAllPopups = useCallback(() => {
@@ -478,6 +553,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
             closeAllPopups,
             isPopupOpen,
             getPopup,
+            updatePopup,
             language: activeLanguage,
             translate,
         }}>

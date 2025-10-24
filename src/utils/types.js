@@ -330,12 +330,13 @@ import React from "react";
  * @typedef {object} PopupContextValue
  * The object returned by the `useNtPopups` hook.
  * @property {PopupData[]} popups - An array of all currently active (visible) popups.
- * @property {(popupType: NtPopupType, settings?: PopupSettings) => string|null|Promise<string|null>} openPopup - Function to open a popup. Returns the new popup's ID.
+ * @property {(popupType: NtPopupType, settings?: PopupSettings) => Promise<PopupData|null> | PopupData | null} openPopup - Function to open a popup. Returns the new popup's ID.
  * @property {(popupIdOrHasAction?: string|boolean, hasActionParam?: boolean) => void} closePopup - Function to close a popup by ID or the top one.
  * @property {() => void} closeAllPopups - Function to close all open popups.
  * @property {(popupId: string) => boolean} isPopupOpen - Checks if a popup with the given ID is currently open and visible.
  * @property {(popupId: string) => PopupData|null} getPopup - Gets the configuration object for an open and visible popup.
  * @property {TranslateFunction} translate - Function to translate strings based on the active language.
+ * @property {(popupId: string, newSettings: Partial<PopupSettings>) => PopupData|null} updatePopup - Function to update the settings of an open popup.
  * @property {'en'|'ptbr'} language - The active language code.
  */
 

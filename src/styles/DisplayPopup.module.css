@@ -340,6 +340,10 @@
     display: none !important;
 }
 
+.header .icon{
+    
+}
+
 /* ==================== BODY ==================== */
 .body {
     max-height: var(--ntpopups-height-max);
