@@ -85,6 +85,9 @@ import React from "react";
  * Data specific to the 'crop_image' popup type.
  * @property {File|string} [image] - [crop_image] The source image (File object or Base64/URL string).
  * @property {'square'|'circle'} [format='circle'] - [crop_image] The shape of the crop area.
+ * @property {string} [aspectRatio='1:1'] - [crop_image] The aspect ratio of the crop area in "width:height" format.
+ * @property {number} [minZoom=1] - [crop_image] The minimum zoom level allowed.
+ * @property {number} [maxZoom=4] - [crop_image] The maximum zoom level allowed.
  * @property {(result: CropImageResult) => void} [onCrop] - [crop_image] Callback executed upon successful crop.
  */
 

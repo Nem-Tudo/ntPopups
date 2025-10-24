@@ -204,6 +204,7 @@ openPopup('crop_image', {
   data: {
     image: fileOrUrl, // File or string (base64/URL)
     format: 'circle', // 'circle' or 'square'
+    aspectRatio: '1:1', // Aspect ratio in "width:height" format
     onCrop: (result) => {
       console.log('Blob:', result.blob);
       console.log('Base64:', result.base64);
@@ -216,6 +217,9 @@ openPopup('crop_image', {
 **Available props:**
 - `image` (File | string): Image file or URL/base64
 - `format` ('circle' | 'square'): Crop format (default: 'circle')
+- `aspectRatio` (string): Aspect ratio in "width:height" format (default: "1:1")
+- `minZoom` (number): Minimum zoom level (default: 1)
+- `maxZoom` (number): Maximum zoom level (default: 4)
 - `onCrop` (Function): Callback with result `{ blob, base64, file }`
 
 **💡 Tip:**

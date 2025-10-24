@@ -1,6 +1,31 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-// Assumindo que você não usará mais o styles de módulo local.
-// A lógica CSS será mapeada para `popupstyles` ou classes globais.
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+
+/**
+ * Utility: Converte o aspect ratio (W:H) para dimensões reais limitadas.
+ * @param {number} containerSize - O tamanho do container principal (quadrado).
+ * @param {string} aspectRatioString - A proporção 'W:H' (ex: '16:9').
+ * @param {number} maxRatio - A proporção máxima que o crop pode ocupar no container (ex: 0.8).
+ * @returns {{aspectW: number, aspectH: number, cropWidth: number, cropHeight: number}}
+ */
+const getCropDimensions = (containerSize, aspectRatioString, maxRatio = 0.8) => {
+    const parts = aspectRatioString.split(':').map(Number);
+    const [w, h] = parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] > 0 && parts[1] > 0 ? parts : [1, 1];
+    
+    if (containerSize === 0) return { aspectW: w, aspectH: h, cropWidth: 0, cropHeight: 0 };
+
+    const maxDim = containerSize * maxRatio;
+    
+    let cropWidth = maxDim;
+    let cropHeight = (maxDim * h) / w;
+
+    // Se a altura calculada for maior que o limite máximo, escala para baixo
+    if (cropHeight > maxDim) {
+        cropHeight = maxDim;
+        cropWidth = (maxDim * w) / h;
+    }
+
+    return { aspectW: w, aspectH: h, cropWidth, cropHeight };
+};
 
 /**
  * Pop-up para crop de imagem.
@@ -10,6 +35,9 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
  * @param {Object} [properties.data]
  * @param {File|string} [properties.data.image]
  * @param {'square'|'circle'} [properties.data.format='circle']
+ * @param {string} [properties.data.aspectRatio='1:1']
+ * @param {number} [properties.data.minZoom=1]
+ * @param {number} [properties.data.maxZoom=4]
  * @param {(result: {blob: Blob, base64: string, file: File}) => void} [properties.data.onCrop=() => {}]
  * @param {Object} [properties.popupstyles]
  * @param {Boolean} properties.requireAction Is action required?
@@ -22,27 +50,37 @@ export default function CropImage({
     data: {
         image = null,
         format = "circle",
+        aspectRatio = "1:1",
+        minZoom = 1,
+        maxZoom = 4,
         onCrop = () => { }
     } = {},
 }) {
     const [imageSrc, setImageSrc] = useState(null);
+    // Zoom 1 é agora o zoom mínimo necessário para cobrir a área de corte
     const [zoom, setZoom] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [originalFileName, setOriginalFileName] = useState("cropped-image.png");
     // Estado para forçar a re-renderização e medir as dimensões em redimensionamento
-    const [containerSize, setContainerSize] = useState(500);
+    const [containerSize, setContainerSize] = useState(500); // Default size for initialization
 
-    const canvasRef = useRef(null);
-    const fullCanvasRef = useRef(null);
-    const cropCanvasRef = useRef(null);
-    const imageRef = useRef(null);
-    const containerRef = useRef(null);
+    const canvasRef = useRef(null); // Canvas oculto para output final
+    const fullCanvasRef = useRef(null); // Canvas principal com imagem e máscara
+    const cropCanvasRef = useRef(null); // Canvas de pré-visualização (visível)
+    const imageRef = useRef(null); // Tag <img> para obter dimensões naturais
+    const containerRef = useRef(null); // Container principal para medir o tamanho
+
+    // --- CÁLCULO DE DIMENSÕES DE CROP E ASPECT RATIO (Ponto 2) ---
+    const { cropWidth, cropHeight, aspectW, aspectH } = useMemo(() => {
+        // O crop pode ocupar no máximo 80% do container
+        return getCropDimensions(containerSize, aspectRatio, 0.8);
+    }, [containerSize, aspectRatio]);
 
     // 1. Mapeamento de Classes
     const classes = {
-        header: `${popupstyles.header} ${popupstyles.header} ntpopups-header ntpopups-cropimage-header`,
+        header: `${popupstyles.header} ntpopups-header ntpopups-cropimage-header`,
         body: `${popupstyles.body} ${popupstyles.cropmain} ntpopups-body ntpopups-cropimage-main`,
         container: `${popupstyles.container} ntpopups-cropimage-container`,
         containerGrab: `${popupstyles.containerGrab} ntpopups-cropimage-container-grab`,
@@ -55,7 +93,6 @@ export default function CropImage({
         zoomControls: `${popupstyles.zoomControls} ntpopups-cropimage-zoom-controls`,
         zoomSlider: `${popupstyles.zoomSlider} ntpopups-cropimage-zoom-slider`,
         footer: `${popupstyles.footer} ntpopups-footer`,
-        footerResetButton: `${popupstyles.baseButton} ${popupstyles.footerResetButton} ntpopups-basebutton ntpopups-cropimage-footer-reset-button`,
         baseButton: `${popupstyles.baseButton} ntpopups-basebutton`,
         zoomIcon: `${popupstyles.zoomIcon} ntpopups-cropimage-zoom-icon`,
         zoomIconSmall: `${popupstyles.zoomIconSmall} ntpopups-cropimage-zoom-icon-small`,
@@ -78,54 +115,67 @@ export default function CropImage({
         }
     }, [image]);
 
-    // ** NOVA LÓGICA DE OBSERVER PARA RESPONSIVIDADE **
-    // Atualiza o estado da largura do container sempre que o container mudar
+    // 3. Resize Observer para responsividade
     useEffect(() => {
         if (!containerRef.current) return;
 
-        // Função para obter o tamanho e atualizar o estado
         const updateSize = () => {
             const size = containerRef.current?.clientWidth;
-            // Se o tamanho for zero (por exemplo, durante a transição), usa o valor padrão ou o último conhecido.
-            setContainerSize(size > 0 ? size : 500);
+            // Garante que o containerSize seja o valor medido ou um valor seguro (mínimo de 100px)
+            setContainerSize(size > 100 ? size : 500);
         };
 
-        // Usa ResizeObserver para detectar mudanças de tamanho (incluindo redimensionamento e breakpoints do CSS)
         const observer = new ResizeObserver(updateSize);
         observer.observe(containerRef.current);
 
-        // Chamada inicial
         updateSize();
 
         return () => observer.disconnect();
-    }, [imageSrc]); // Adiciona imageSrc para garantir que a medição ocorra quando a imagem carregar
+    }, []);
 
-    // 3. Lógica de Posição (atualizada para usar containerSize)
+    // 4. Lógica de Posição (Constrain)
     const constrainPosition = useCallback((newPosition, currentZoom) => {
-        if (!imageRef.current) return newPosition;
-
-        // Usa containerSize do estado, garantindo responsividade
-        const fullSize = containerSize;
+        if (!imageRef.current || containerSize === 0 || cropWidth === 0 || cropHeight === 0) return newPosition;
 
         const img = imageRef.current;
         const imgWidth = img.naturalWidth;
         const imgHeight = img.naturalHeight;
-        const scale = Math.max(fullSize / imgWidth, fullSize / imgHeight) * currentZoom;
-        const scaledWidth = imgWidth * scale;
-        const scaledHeight = imgHeight * scale;
 
-        const maxX = Math.max(0, (scaledWidth - fullSize) / 2);
-        const maxY = Math.max(0, (scaledHeight - fullSize) / 2);
+        // S_min: Escala mínima para a imagem COBRIR a área de corte (cropWidth x cropHeight)
+        const S_min = Math.max(cropWidth / imgWidth, cropHeight / imgHeight);
+        const S_total = S_min * currentZoom;
+
+        const scaledWidth = imgWidth * S_total;
+        const scaledHeight = imgHeight * S_total;
+
+        // As bordas (maxX, maxY) representam a distância máxima que o centro da imagem pode se mover
+        // antes que a borda da área de corte encontre a borda da imagem ampliada.
+        // O zoom é limitado para que a imagem ampliada seja sempre maior ou igual à área de corte.
+
+        // Metade da "folga" do lado da imagem que fica fora do crop box
+        const maxBoundX = (scaledWidth - cropWidth) / 2;
+        const maxBoundY = (scaledHeight - cropHeight) / 2;
+
+        // Define a restrição de movimento. Se a imagem for menor que o crop box (só acontece se zoom < 1), maxX/Y será 0.
+        const maxX = Math.max(0, maxBoundX);
+        const maxY = Math.max(0, maxBoundY);
+
+        // Se o zoom for < 1, a imagem não pode ser arrastada (constrained to 0)
+        if (currentZoom < 1) {
+             return { x: 0, y: 0 };
+        }
 
         return {
             x: Math.max(-maxX, Math.min(maxX, newPosition.x)),
             y: Math.max(-maxY, Math.min(maxY, newPosition.y))
         };
-    }, [containerSize]); // Depende de containerSize
+    }, [containerSize, cropWidth, cropHeight]);
 
-    // 4. Lógica de Desenho no Canvas (Atualizada para usar containerSize)
+
+    // 5. Lógica de Desenho no Canvas
     useEffect(() => {
-        if (!imageRef.current || !fullCanvasRef.current || !cropCanvasRef.current || containerSize === 0) return;
+        // Verifica se todas as referências e dimensões críticas estão prontas
+        if (!imageRef.current || !fullCanvasRef.current || !cropCanvasRef.current || containerSize === 0 || cropWidth === 0 || cropHeight === 0) return;
 
         const fullCanvas = fullCanvasRef.current;
         const cropCanvas = cropCanvasRef.current;
@@ -133,68 +183,94 @@ export default function CropImage({
         const cropCtx = cropCanvas.getContext("2d");
         const img = imageRef.current;
 
-        // ** CORREÇÃO AQUI: Usa containerSize do estado **
         const fullSize = containerSize;
-        // 80% é a proporção definida no CSS para o .cropCanvas em mobile e desktop
-        const cropSize = fullSize * 0.6; // Ajustei para 60% apenas para fins de demonstração, o ideal é que seja a mesma proporção do CSS (300/500 = 0.6)
-
-        fullCanvas.width = fullSize;
-        fullCanvas.height = fullSize;
-        cropCanvas.width = cropSize;
-        cropCanvas.height = cropSize;
-
         const imgWidth = img.naturalWidth;
         const imgHeight = img.naturalHeight;
-        // O cálculo do scale agora é baseado em fullSize
-        const scale = Math.max(fullSize / imgWidth, fullSize / imgHeight) * zoom;
-        const scaledWidth = imgWidth * scale;
-        const scaledHeight = imgHeight * scale;
 
+        // Define o tamanho do fullCanvas para o tamanho do container
+        fullCanvas.width = fullSize;
+        fullCanvas.height = fullSize;
+        
+        // Define o tamanho do cropCanvas para as dimensões de crop calculadas
+        cropCanvas.width = cropWidth;
+        cropCanvas.height = cropHeight;
+
+
+        // S_min: Escala mínima para a imagem COBRIR a área de corte (Ponto 1)
+        const S_min = Math.max(cropWidth / imgWidth, cropHeight / imgHeight);
+        const S_total = S_min * zoom;
+
+        const scaledWidth = imgWidth * S_total;
+        const scaledHeight = imgHeight * S_total;
+
+        // Posições de desenho no fullCanvas (centralizado no fullSize)
+        // O centro da imagem está em (fullSize/2 + position.x, fullSize/2 + position.y)
         const x = (fullSize - scaledWidth) / 2 + position.x;
         const y = (fullSize - scaledHeight) / 2 + position.y;
 
+        // --- Desenho no Full Canvas (Imagem + Máscara) ---
         fullCtx.clearRect(0, 0, fullSize, fullSize);
         fullCtx.save();
+        
+        // 1. Desenha a imagem na escala total
         fullCtx.drawImage(img, x, y, scaledWidth, scaledHeight);
 
-        // Aplica a máscara para escurecer a área fora do crop
+        // 2. Aplica a máscara para escurecer a área fora do crop
         fullCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         fullCtx.fillRect(0, 0, fullSize, fullSize);
 
-        // "Limpa" a área do crop para mostrar a imagem sem máscara
+        // 3. "Limpa" a área do crop (o "buraco")
         fullCtx.globalCompositeOperation = 'destination-out';
+
+        const cropXStart = (fullSize - cropWidth) / 2;
+        const cropYStart = (fullSize - cropHeight) / 2;
+
         if (format === "circle") {
+            // Círculo usa o diâmetro da menor dimensão do crop
+            const diameter = Math.min(cropWidth, cropHeight);
             fullCtx.beginPath();
-            fullCtx.arc(fullSize / 2, fullSize / 2, cropSize / 2, 0, Math.PI * 2);
+            fullCtx.arc(fullSize / 2, fullSize / 2, diameter / 2, 0, Math.PI * 2);
             fullCtx.closePath();
             fullCtx.fill();
         } else {
-            // O crop quadrado agora usa cropSize, que é proporcional ao fullSize
-            fullCtx.fillRect((fullSize - cropSize) / 2, (fullSize - cropSize) / 2, cropSize, cropSize);
+            // Retângulo/Quadrado
+            fullCtx.fillRect(cropXStart, cropYStart, cropWidth, cropHeight);
         }
+        
         fullCtx.globalCompositeOperation = 'source-over';
         fullCtx.restore();
-
-        // Desenha a pré-visualização do crop
-        cropCtx.clearRect(0, 0, cropSize, cropSize);
+        
+        // --- Desenho na Pré-visualização do Crop (cropCanvas) ---
+        cropCtx.clearRect(0, 0, cropWidth, cropHeight);
         cropCtx.save();
-
+        
+        // Aplica o clip circular se necessário
         if (format === "circle") {
+            const diameter = Math.min(cropWidth, cropHeight);
             cropCtx.beginPath();
-            cropCtx.arc(cropSize / 2, cropSize / 2, cropSize / 2, 0, Math.PI * 2);
+            cropCtx.arc(cropWidth / 2, cropHeight / 2, diameter / 2, 0, Math.PI * 2);
             cropCtx.closePath();
             cropCtx.clip();
         }
 
-        const cropOffsetX = (fullSize - cropSize) / 2;
-        const cropOffsetY = (fullSize - cropSize) / 2;
+        // Calcula o ponto de desenho relativo ao cropCanvas (0,0)
+        // Distância do canto superior esquerdo do fullCanvas até o canto superior esquerdo do cropCanvas
+        const fullCanvasToCropCanvasX = (fullSize - cropWidth) / 2;
+        const fullCanvasToCropCanvasY = (fullSize - cropHeight) / 2;
+        
+        // O ponto de desenho inicial (x, y) no fullCanvas menos o offset para o cropCanvas (0,0)
+        const drawX = x - fullCanvasToCropCanvasX;
+        const drawY = y - fullCanvasToCropCanvasY;
 
-        cropCtx.drawImage(img, x - cropOffsetX, y - cropOffsetY, scaledWidth, scaledHeight);
+        cropCtx.drawImage(img, drawX, drawY, scaledWidth, scaledHeight);
         cropCtx.restore();
 
-    }, [imageSrc, zoom, position, format, containerSize]); // Adicionada dependência containerSize
+        // Atualiza a posição da pré-visualização para o círculo (para corresponder ao CSS)
+        // Embora o canvas seja retangular/quadrado, o CSS o posiciona no centro.
+        // O CSS agora precisa lidar com diferentes aspect ratios, o que será feito com transform: scale.
+    }, [imageSrc, zoom, position, format, containerSize, cropWidth, cropHeight]); // Dependências cruciais
 
-    // 5. Handlers de Movimento e Zoom (mantidos)
+    // 6. Handlers de Movimento e Zoom
     const handleMouseDown = (e) => {
         setIsDragging(true);
         setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
@@ -206,7 +282,10 @@ export default function CropImage({
             x: e.clientX - dragStart.x,
             y: e.clientY - dragStart.y
         };
-        setPosition(constrainPosition(newPosition, zoom));
+        // Apenas permite arrastar se o zoom for >= 1
+        if (zoom >= 1) {
+            setPosition(constrainPosition(newPosition, zoom));
+        }
     };
 
     const handleMouseUp = () => {
@@ -226,7 +305,10 @@ export default function CropImage({
             x: touch.clientX - dragStart.x,
             y: touch.clientY - dragStart.y
         };
-        setPosition(constrainPosition(newPosition, zoom));
+        // Apenas permite arrastar se o zoom for >= 1
+        if (zoom >= 1) {
+            setPosition(constrainPosition(newPosition, zoom));
+        }
     };
 
     const handleTouchEnd = () => {
@@ -236,37 +318,17 @@ export default function CropImage({
     const handleZoomChange = (newZoom) => {
         const parsedZoom = parseFloat(newZoom);
         setZoom(parsedZoom);
-        setPosition(constrainPosition(position, parsedZoom));
+        // Recalcula a posição para manter o centro, e re-constrain
+        setPosition(oldPosition => constrainPosition(oldPosition, parsedZoom));
     };
 
-    // 6. Lógica de Crop e Callback (Atualizada para usar containerSize)
+    // 7. Lógica de Crop e Callback
     const handleCrop = () => {
-        if (!cropCanvasRef.current || containerSize === 0) return;
+        if (!cropCanvasRef.current) return;
 
-        const canvas = canvasRef.current;
-        const cropCanvas = cropCanvasRef.current;
-        const ctx = canvas.getContext("2d");
-
-        // O tamanho final do crop é o mesmo usado no cropCanvas (que é proporcional)
-        const size = cropCanvas.width;
-        canvas.width = size;
-        canvas.height = size;
-
-        ctx.clearRect(0, 0, size, size);
-        ctx.save();
-
-        if (format === "circle") {
-            ctx.beginPath();
-            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.clip();
-        }
-
-        ctx.drawImage(cropCanvas, 0, 0); // Desenha o conteúdo do pré-visualização
-        ctx.restore();
-
-        canvas.toBlob((blob) => {
-            const base64 = canvas.toDataURL("image/png");
+        // O cropCanvas já tem o conteúdo recortado (preview).
+        cropCanvasRef.current.toBlob((blob) => {
+            const base64 = cropCanvasRef.current.toDataURL("image/png");
             const file = new File([blob], originalFileName, { type: "image/png" });
 
             if (onCrop) {
@@ -283,22 +345,37 @@ export default function CropImage({
 
     const resetControls = () => {
         setZoom(1);
-        setPosition(constrainPosition({ x: 0, y: 0 }, 1)); // Garante que a posição inicial também é restringida
+        // Garante que a posição inicial (0,0) também é restringida (o que é trivial em zoom=1)
+        setPosition(constrainPosition({ x: 0, y: 0 }, 1));
     };
-
-    // 7. Renderização com Traduções e Classes da Lib
+    
+    // Calcula o estilo para posicionar e dimensionar corretamente a pré-visualização (cropCanvasRef)
+    const cropCanvasStyle = {
+        width: cropWidth,
+        height: cropHeight,
+        // Garante o posicionamento central
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        // Estilos visuais dinâmicos para suportar retângulos
+        borderRadius: format === 'circle' ? '50%' : 'var(--ntpopups-border-radius-sm)',
+        boxShadow: format === 'circle' 
+            ? '0 0 0 3px #fff, 0 0 0 4px rgba(255, 255, 255, 0.3)' 
+            : '0 0 0 3px #fff, 0 0 0 4px rgba(255, 255, 255, 0.3)',
+    };
+    
+    // 8. Renderização com Traduções e Classes da Lib
     return (
         <>
             <header className={classes.header}>
-                {translate('cropImage.title')} {/* Semântico: Título hierárquico (h2) */}
+                {translate('cropImage.title')}
             </header>
 
-            <section className={classes.body}> {/* Semântico: Usa <section> para o conteúdo principal */}
+            <section className={classes.body}>
                 {/* Visualizador de Crop */}
-                <figure // Semântico: <figure> é apropriado para conteúdo auto-contido (como uma imagem ou canvas)
+                <figure
                     ref={containerRef}
-                    // A classe de cursor muda dinamicamente
-                    className={`${classes.container} ${isDragging ? classes.containerGrabbing : classes.containerGrab}`}
+                    className={`${classes.container} ${isDragging && zoom >= 1 ? classes.containerGrabbing : classes.containerGrab}`}
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
@@ -306,38 +383,37 @@ export default function CropImage({
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
-                    role="application" // ARIA: Sugere uma interface interativa
-                    aria-label={translate('cropImage.viewerLabel')} // ARIA: Rótulo para o leitor de tela
+                    role="application"
+                    aria-label={translate('cropImage.viewerLabel')}
                 >
-                    {/* fullCanvas e cropCanvas continuam no DOM */}
-                    <canvas ref={fullCanvasRef} className={classes.fullCanvas} aria-hidden="true" /> {/* ARIA: O canvas é visual, não precisa ser lido diretamente */}
+                    {/* fullCanvas: Imagem e Máscara */}
+                    <canvas ref={fullCanvasRef} className={classes.fullCanvas} aria-hidden="true" />
 
+                    {/* cropCanvas: Pré-visualização (visível, estilizado dinamicamente) */}
                     <canvas
                         ref={cropCanvasRef}
-                        // Classe condicional para formato circular
+                        // Remove classes que fixavam tamanho e usa inline style para as dimensões calculadas
                         className={`${classes.cropCanvas} ${format === 'circle' ? classes.cropCanvasCircle : ''}`}
+                        style={cropCanvasStyle}
                         aria-hidden="true"
                     />
 
                     {imageSrc && (
-                        // Imagem para cálculo de dimensões, permanece escondida
+                        /* Imagem para cálculo de dimensões */
                         <img
                             ref={imageRef}
                             src={imageSrc}
-                            alt="" // Alt vazio, pois a imagem é funcional, mas é renderizada no canvas.
+                            alt=""
                             className={classes.hiddenImage}
-                            // Reseta os controles ao carregar uma nova imagem
-                            onLoad={() => {
-                                resetControls();
-                            }}
+                            onLoad={resetControls}
                         />
                     )}
                 </figure>
 
                 {/* Controles de Zoom */}
                 <div className={classes.zoomSection}>
-                    <label className={classes.zoomControls}> {/* Semântico: Usa <label> para agrupar o controle de zoom */}
-                        {/* Ícone de zoom pequeno (mantido como SVG, mas com aria-hidden) */}
+                    <label className={classes.zoomControls}>
+                        {/* Ícone de zoom pequeno (mantido como SVG) */}
                         <svg className={`${classes.zoomIcon} ${classes.zoomIconSmall}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px' }} aria-hidden="true">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -346,16 +422,16 @@ export default function CropImage({
 
                         <input
                             type="range"
-                            min="1"
-                            max="3"
+                            min={minZoom}
+                            max={maxZoom}
                             step="0.01"
                             value={zoom}
                             onChange={(e) => handleZoomChange(e.target.value)}
                             className={classes.zoomSlider}
-                            aria-label={translate('cropImage.zoomSliderLabel')} // ARIA: Rótulo para leitores de tela
+                            aria-label={translate('cropImage.zoomSliderLabel')}
                         />
 
-                        {/* Ícone de zoom grande (mantido como SVG, mas com aria-hidden) */}
+                        {/* Ícone de zoom grande (mantido como SVG) */}
                         <svg className={`${classes.zoomIcon} ${classes.zoomIconLarge}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '24px', height: '24px' }} aria-hidden="true">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                             <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -368,7 +444,7 @@ export default function CropImage({
                 <canvas ref={canvasRef} className={classes.hiddenCanvas} aria-hidden="true" />
             </section>
 
-            <footer className={classes.footer}> {/* Semântico: Usa <footer> para o rodapé */}
+            <footer className={classes.footer}>
                 <button onClick={resetControls} className={classes.resetButton} base-button-style={"2"} type="button">
                     {translate('util.resetLabel')}
                 </button>
@@ -376,7 +452,7 @@ export default function CropImage({
                     !requireAction && <button onClick={() => closePopup()} className={classes.baseButton}
                         base-button-style={"1"}
                         base-button-no-flex={"true"}
-                        type="button" // Indica que não é o botão principal de ação
+                        type="button"
                     >
                         {translate('util.cancelLabel')}
                     </button>
@@ -384,7 +460,7 @@ export default function CropImage({
                 <button onClick={handleCrop} className={classes.baseButton}
                     autoFocus={true}
                     base-button-no-flex={"true"}
-                    type="submit" // Indica o botão principal de ação (se estivesse dentro de um <form>, o que é recomendado para popups de ação)
+                    type="submit"
                 >
                     {translate('util.applyLabel')}
                 </button>
