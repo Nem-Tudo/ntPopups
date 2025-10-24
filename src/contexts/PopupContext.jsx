@@ -319,9 +319,49 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
 
         let newPopup; // Variável para armazenar o objeto criado antes do setPopups
 
+        // Função para calcular a largura da barra de rolagem
+        function getScrollbarWidth() {
+            // Cria um elemento div temporário
+            const outer = document.createElement('div');
+            outer.style.visibility = 'hidden';
+            outer.style.overflow = 'scroll'; // Força a barra de rolagem
+            // @ts-ignore
+            outer.style.msOverflowStyle = 'scrollbar'; // Para IE
+            document.body.appendChild(outer);
+
+            // Cria um div interno para medir a largura
+            const inner = document.createElement('div');
+            outer.appendChild(inner);
+
+            // Calcula a diferença entre a largura total (outer.offsetWidth) e a largura do conteúdo (inner.offsetWidth)
+            const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+
+            // Remove os elementos temporários
+            outer.parentNode.removeChild(outer);
+
+            return scrollbarWidth;
+        }
+
+        const body = document.querySelector("body");
+        const html = document.querySelector("html");
+
+        // Armazena a largura da barra de rolagem
+        const scrollbarWidth = getScrollbarWidth();
+
         if (!settings.allowPageBodyScroll) {
-            document.querySelector("body").style.overflow = "hidden";
-            document.querySelector("html").style.overflow = "hidden";
+            // 1. Verifica se a página PRECISA de scroll (se o conteúdo excede a altura da janela)
+            // Uma maneira simples de verificar se há uma barra de rolagem vertical presente (no body ou html)
+            const hasVerticalScrollbar = document.documentElement.scrollHeight > window.innerHeight;
+
+            if (hasVerticalScrollbar) {
+                // 2. Compensa a largura da barra de rolagem com padding-right
+                body.style.paddingRight = `${scrollbarWidth}px`;
+            }
+
+            // 3. Desativa o scroll
+            body.style.overflow = "hidden";
+            html.style.overflow = "hidden"; // Opcional, mas boa prática para garantir
+
         }
 
         setPopups(prev => {
@@ -486,6 +526,7 @@ export function NtPopupProvider({ children, config = {}, customPopups = {}, lang
         if (notClosedPopups.length === 0) {
             document.querySelector("html").style.overflow = "";
             document.querySelector("body").style.overflow = "";
+            document.querySelector("body").style.paddingRight = "";
             return;
         }
 
