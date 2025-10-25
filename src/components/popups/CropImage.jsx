@@ -459,6 +459,7 @@ export default function CropImage({
                             className={classes.hiddenImage}
                             onLoad={handleImageLoad}
                             onError={handleImageError} // ⚠️ Handler de erro de carregamento (validação final)
+                            crossOrigin="anonymous"
                         />
                     )}
                 </figure>
