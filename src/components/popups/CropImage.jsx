@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useNtPopups } from "../../contexts/PopupContext.jsx";
 
 /**
  * Utility: Converte o aspect ratio (W:H) para dimensões reais limitadas.
@@ -10,11 +11,11 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 const getCropDimensions = (containerSize, aspectRatioString, maxRatio = 0.8) => {
     const parts = aspectRatioString.split(':').map(Number);
     const [w, h] = parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] > 0 && parts[1] > 0 ? parts : [1, 1];
-    
+
     if (containerSize === 0) return { aspectW: w, aspectH: h, cropWidth: 0, cropHeight: 0 };
 
     const maxDim = containerSize * maxRatio;
-    
+
     let cropWidth = maxDim;
     let cropHeight = (maxDim * h) / w;
 
@@ -57,20 +58,21 @@ export default function CropImage({
     } = {},
 }) {
     const [imageSrc, setImageSrc] = useState(null);
-    // Zoom 1 é agora o zoom mínimo necessário para cobrir a área de corte
     const [zoom, setZoom] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [originalFileName, setOriginalFileName] = useState("cropped-image.png");
-    // Estado para forçar a re-renderização e medir as dimensões em redimensionamento
     const [containerSize, setContainerSize] = useState(500); // Default size for initialization
 
-    const canvasRef = useRef(null); // Canvas oculto para output final
-    const fullCanvasRef = useRef(null); // Canvas principal com imagem e máscara
-    const cropCanvasRef = useRef(null); // Canvas de pré-visualização (visível)
-    const imageRef = useRef(null); // Tag <img> para obter dimensões naturais
-    const containerRef = useRef(null); // Container principal para medir o tamanho
+    const canvasRef = useRef(null);
+    const fullCanvasRef = useRef(null);
+    const cropCanvasRef = useRef(null);
+    const imageRef = useRef(null);
+    const containerRef = useRef(null);
+
+
+    const openPopup = useNtPopups().openPopup;
 
     // --- CÁLCULO DE DIMENSÕES DE CROP E ASPECT RATIO (Ponto 2) ---
     const { cropWidth, cropHeight, aspectW, aspectH } = useMemo(() => {
@@ -101,19 +103,118 @@ export default function CropImage({
         resetButton: `${popupstyles.baseButton} ${popupstyles.resetButton} ntpopups-cropimage-resetbutton`,
     };
 
-    // 2. Lógica de Carregamento da Imagem
-    useEffect(() => {
-        if (!image) return;
+    // Funções de Controle (Movidas para cima para serem usadas nos handlers)
+    const resetControls = () => {
+        setZoom(1);
+        // Garante que a posição inicial (0,0) também é restringida (o que é trivial em zoom=1)
+        setPosition(constrainPosition({ x: 0, y: 0 }, 1));
+    };
 
+    const constrainPosition = useCallback((newPosition, currentZoom) => {
+        if (!imageRef.current || containerSize === 0 || cropWidth === 0 || cropHeight === 0) return newPosition;
+
+        const img = imageRef.current;
+        const imgWidth = img.naturalWidth;
+        const imgHeight = img.naturalHeight;
+
+        // S_min: Escala mínima para a imagem COBRIR a área de corte (cropWidth x cropHeight)
+        const S_min = Math.max(cropWidth / imgWidth, cropHeight / imgHeight);
+        const S_total = S_min * currentZoom;
+
+        const scaledWidth = imgWidth * S_total;
+        const scaledHeight = imgHeight * S_total;
+
+        // Metade da "folga" do lado da imagem que fica fora do crop box
+        const maxBoundX = (scaledWidth - cropWidth) / 2;
+        const maxBoundY = (scaledHeight - cropHeight) / 2;
+
+        const maxX = Math.max(0, maxBoundX);
+        const maxY = Math.max(0, maxBoundY);
+
+        if (currentZoom < 1) {
+            return { x: 0, y: 0 };
+        }
+
+        return {
+            x: Math.max(-maxX, Math.min(maxX, newPosition.x)),
+            y: Math.max(-maxY, Math.min(maxY, newPosition.y))
+        };
+    }, [containerSize, cropWidth, cropHeight]);
+
+
+    // 2. Lógica de Carregamento e VALIDAÇÃO da Imagem
+    useEffect(() => {
+        let objectUrl;
+
+        // 1. Checagem de valor nulo/vazio (invalidez imediata)
+        if (!image || (typeof image === 'string' && image.trim() === '')) {
+            if (image !== null) {
+                console.error("CropImage: Invalid or null input image. Closing pop-up.");
+                closePopup(true);
+                openPopup("generic", {
+                    data: {
+                        title: translate('util.error'),
+                        message: 'CropImage: Invalid or null input image. Closing pop-up.',
+                        icon: "❌",
+                    }
+                })
+            }
+            return;
+        }
+
+        // 2. Preparar o source
         if (image instanceof File) {
+            // Verifica tipo MIME (ex: se é um PDF renomeado para .png)
+            if (!image.type.startsWith('image/')) {
+                console.error(`CropImage: File provided is not a valid image (MIME: ${image.type}). Closing popup.`);
+                closePopup(true);
+                openPopup("generic", {
+                    data: {
+                        title: translate('util.error'),
+                        message: `CropImage: File provided is not a valid image (MIME: ${image.type}). Closing popup.`,
+                        icon: "❌",
+                    }
+                })
+                return;
+            }
             setOriginalFileName(image.name.replace(/\.[^/.]+$/, "") + "-cropped.png");
-            const reader = new FileReader();
-            reader.onload = (e) => setImageSrc(e.target.result);
-            reader.readAsDataURL(image);
+            // Cria URL temporário para o <img>
+            objectUrl = URL.createObjectURL(image);
+            setImageSrc(objectUrl);
         } else if (typeof image === "string") {
+            // URL ou Base64: A validação real é feita pelo <img>.
             setImageSrc(image);
         }
-    }, [image]);
+
+        // Cleanup: Revogar Object URL quando o componente desmontar
+        return () => {
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+            }
+        };
+    }, [image, closePopup]);
+
+
+    // Handler de ERRO: Se a imagem falhar ao carregar no <img> (URL quebrado, Base64 corrompido, etc.)
+    const handleImageError = useCallback(() => {
+        console.error("CropImage: Image loading failed (invalid URL/Base64). Closing popup.");
+        // Autofechamento
+        closePopup(true);
+        openPopup("generic", {
+            data: {
+                title: translate('util.error'),
+                message: `CropImage: Image loading failed (invalid URL/Base64). Closing popup.`,
+                icon: "❌",
+            }
+        })
+    }, [closePopup]);
+
+    // Handler de SUCESSO: Chamado quando o <img> carrega a imagem corretamente
+    const handleImageLoad = () => {
+        // Quando a imagem carrega com sucesso, redefinimos os controles
+        resetControls();
+    };
+
 
     // 3. Resize Observer para responsividade
     useEffect(() => {
@@ -133,46 +234,7 @@ export default function CropImage({
         return () => observer.disconnect();
     }, []);
 
-    // 4. Lógica de Posição (Constrain)
-    const constrainPosition = useCallback((newPosition, currentZoom) => {
-        if (!imageRef.current || containerSize === 0 || cropWidth === 0 || cropHeight === 0) return newPosition;
-
-        const img = imageRef.current;
-        const imgWidth = img.naturalWidth;
-        const imgHeight = img.naturalHeight;
-
-        // S_min: Escala mínima para a imagem COBRIR a área de corte (cropWidth x cropHeight)
-        const S_min = Math.max(cropWidth / imgWidth, cropHeight / imgHeight);
-        const S_total = S_min * currentZoom;
-
-        const scaledWidth = imgWidth * S_total;
-        const scaledHeight = imgHeight * S_total;
-
-        // As bordas (maxX, maxY) representam a distância máxima que o centro da imagem pode se mover
-        // antes que a borda da área de corte encontre a borda da imagem ampliada.
-        // O zoom é limitado para que a imagem ampliada seja sempre maior ou igual à área de corte.
-
-        // Metade da "folga" do lado da imagem que fica fora do crop box
-        const maxBoundX = (scaledWidth - cropWidth) / 2;
-        const maxBoundY = (scaledHeight - cropHeight) / 2;
-
-        // Define a restrição de movimento. Se a imagem for menor que o crop box (só acontece se zoom < 1), maxX/Y será 0.
-        const maxX = Math.max(0, maxBoundX);
-        const maxY = Math.max(0, maxBoundY);
-
-        // Se o zoom for < 1, a imagem não pode ser arrastada (constrained to 0)
-        if (currentZoom < 1) {
-             return { x: 0, y: 0 };
-        }
-
-        return {
-            x: Math.max(-maxX, Math.min(maxX, newPosition.x)),
-            y: Math.max(-maxY, Math.min(maxY, newPosition.y))
-        };
-    }, [containerSize, cropWidth, cropHeight]);
-
-
-    // 5. Lógica de Desenho no Canvas
+    // 4. Lógica de Desenho no Canvas (Inalterada)
     useEffect(() => {
         // Verifica se todas as referências e dimensões críticas estão prontas
         if (!imageRef.current || !fullCanvasRef.current || !cropCanvasRef.current || containerSize === 0 || cropWidth === 0 || cropHeight === 0) return;
@@ -190,7 +252,7 @@ export default function CropImage({
         // Define o tamanho do fullCanvas para o tamanho do container
         fullCanvas.width = fullSize;
         fullCanvas.height = fullSize;
-        
+
         // Define o tamanho do cropCanvas para as dimensões de crop calculadas
         cropCanvas.width = cropWidth;
         cropCanvas.height = cropHeight;
@@ -211,7 +273,7 @@ export default function CropImage({
         // --- Desenho no Full Canvas (Imagem + Máscara) ---
         fullCtx.clearRect(0, 0, fullSize, fullSize);
         fullCtx.save();
-        
+
         // 1. Desenha a imagem na escala total
         fullCtx.drawImage(img, x, y, scaledWidth, scaledHeight);
 
@@ -236,14 +298,14 @@ export default function CropImage({
             // Retângulo/Quadrado
             fullCtx.fillRect(cropXStart, cropYStart, cropWidth, cropHeight);
         }
-        
+
         fullCtx.globalCompositeOperation = 'source-over';
         fullCtx.restore();
-        
+
         // --- Desenho na Pré-visualização do Crop (cropCanvas) ---
         cropCtx.clearRect(0, 0, cropWidth, cropHeight);
         cropCtx.save();
-        
+
         // Aplica o clip circular se necessário
         if (format === "circle") {
             const diameter = Math.min(cropWidth, cropHeight);
@@ -257,20 +319,16 @@ export default function CropImage({
         // Distância do canto superior esquerdo do fullCanvas até o canto superior esquerdo do cropCanvas
         const fullCanvasToCropCanvasX = (fullSize - cropWidth) / 2;
         const fullCanvasToCropCanvasY = (fullSize - cropHeight) / 2;
-        
+
         // O ponto de desenho inicial (x, y) no fullCanvas menos o offset para o cropCanvas (0,0)
         const drawX = x - fullCanvasToCropCanvasX;
         const drawY = y - fullCanvasToCropCanvasY;
 
         cropCtx.drawImage(img, drawX, drawY, scaledWidth, scaledHeight);
         cropCtx.restore();
-
-        // Atualiza a posição da pré-visualização para o círculo (para corresponder ao CSS)
-        // Embora o canvas seja retangular/quadrado, o CSS o posiciona no centro.
-        // O CSS agora precisa lidar com diferentes aspect ratios, o que será feito com transform: scale.
     }, [imageSrc, zoom, position, format, containerSize, cropWidth, cropHeight]); // Dependências cruciais
 
-    // 6. Handlers de Movimento e Zoom
+    // 5. Handlers de Movimento e Zoom
     const handleMouseDown = (e) => {
         setIsDragging(true);
         setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
@@ -322,7 +380,7 @@ export default function CropImage({
         setPosition(oldPosition => constrainPosition(oldPosition, parsedZoom));
     };
 
-    // 7. Lógica de Crop e Callback
+    // 6. Lógica de Crop e Callback
     const handleCrop = () => {
         if (!cropCanvasRef.current) return;
 
@@ -343,12 +401,6 @@ export default function CropImage({
         }, "image/png");
     };
 
-    const resetControls = () => {
-        setZoom(1);
-        // Garante que a posição inicial (0,0) também é restringida (o que é trivial em zoom=1)
-        setPosition(constrainPosition({ x: 0, y: 0 }, 1));
-    };
-    
     // Calcula o estilo para posicionar e dimensionar corretamente a pré-visualização (cropCanvasRef)
     const cropCanvasStyle = {
         width: cropWidth,
@@ -359,12 +411,12 @@ export default function CropImage({
         transform: 'translate(-50%, -50%)',
         // Estilos visuais dinâmicos para suportar retângulos
         borderRadius: format === 'circle' ? '50%' : 'var(--ntpopups-border-radius-sm)',
-        boxShadow: format === 'circle' 
-            ? '0 0 0 3px #fff, 0 0 0 4px rgba(255, 255, 255, 0.3)' 
+        boxShadow: format === 'circle'
+            ? '0 0 0 3px #fff, 0 0 0 4px rgba(255, 255, 255, 0.3)'
             : '0 0 0 3px #fff, 0 0 0 4px rgba(255, 255, 255, 0.3)',
     };
-    
-    // 8. Renderização com Traduções e Classes da Lib
+
+    // 7. Renderização com Traduções e Classes da Lib
     return (
         <>
             <header className={classes.header}>
@@ -399,13 +451,14 @@ export default function CropImage({
                     />
 
                     {imageSrc && (
-                        /* Imagem para cálculo de dimensões */
+                        /* Imagem para cálculo de dimensões e validação assíncrona */
                         <img
                             ref={imageRef}
                             src={imageSrc}
                             alt=""
                             className={classes.hiddenImage}
-                            onLoad={resetControls}
+                            onLoad={handleImageLoad}
+                            onError={handleImageError} // ⚠️ Handler de erro de carregamento (validação final)
                         />
                     )}
                 </figure>

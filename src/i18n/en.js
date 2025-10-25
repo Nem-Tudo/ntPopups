@@ -3,6 +3,7 @@
  */
 export default {
     util: {
+        error: "Error",
         cancelLabel: "Cancel",
         confirmLabel: "Confirm",
         closeLabel: "Close",
