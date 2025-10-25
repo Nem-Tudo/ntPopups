@@ -437,9 +437,9 @@ export default function Form({
         // Itera sobre todos os componentes (achatados)
         for (const component of flattenedComponents) {
             // Se o componente estiver desabilitado, não precisa validar
-            if (component.disabled) {
-                continue;
-            }
+            // if (component.disabled) {
+            //     continue;
+            // }
 
             const componentValue = currentValue[component.id];
 
