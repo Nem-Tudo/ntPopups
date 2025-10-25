@@ -1,6 +1,6 @@
 {
   "name": "ntpopups",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "description": "Ease and powerful popup library for React",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
