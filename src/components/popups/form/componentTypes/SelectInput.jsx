@@ -4,7 +4,7 @@ import React from "react";
  * @param {Object} props
  */
 export default function SelectInput({label, options, ...props}) {
-    return <select {...props} >
+    return <select {...props} ntpopups-css="true">
         <option value="">{label}</option>
         {
             options && options.map((option, index) => {

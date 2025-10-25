@@ -6,5 +6,5 @@ import styles from "../styles/ToggleSwitch.module.css";
  * @param {Object} props - Passagem de propriedades pro componente
  */
 export default function ToggleSwitch(props) {
-    return <input {...props} type="checkbox" className={styles.toggleSwitch} />
+    return <input {...props} type="checkbox" className={styles.toggleSwitch} ntpopups-css="true" />
 }

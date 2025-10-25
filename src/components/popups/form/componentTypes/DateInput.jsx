@@ -5,7 +5,7 @@ import React from "react";
  */
 export default function DateInput({ value, ...props }) {
     const finalValue = value ? typeof value === 'string' ? value : formatDateToInputDate(value) : '';
-    return <input type="date" value={finalValue} {...props} />
+    return <input type="date" value={finalValue} {...props} ntpopups-css="true"/>
 }
 
 function formatDateToInputDate(date) {

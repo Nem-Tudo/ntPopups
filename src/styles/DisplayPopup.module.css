@@ -550,15 +550,15 @@
 }
 
 /* ==================== FORM INPUTS ==================== */
-.popupsOverlay input[type="text"],
-.popupsOverlay textarea,
-.popupsOverlay input[type="date"],
-.popupsOverlay input[type="email"],
-.popupsOverlay input[type="number"],
-.popupsOverlay input[type="password"],
-.popupsOverlay input[type="radio"],
-.popupsOverlay select,
-.popupsOverlay input[type="time"] {
+.ntPopups input[type="text"][ntpopups-css="true"],
+.ntPopups textarea[ntpopups-css="true"],
+.ntPopups input[type="date"][ntpopups-css="true"],
+.ntPopups input[type="email"][ntpopups-css="true"],
+.ntPopups input[type="number"][ntpopups-css="true"],
+.ntPopups input[type="password"][ntpopups-css="true"],
+.ntPopups input[type="radio"][ntpopups-css="true"],
+.ntPopups select[ntpopups-css="true"],
+.ntPopups input[type="time"][ntpopups-css="true"] {
     width: 100%;
     font-family: var(--ntpopups-font-family);
     font-size: var(--ntpopups-font-size-base);
@@ -577,7 +577,7 @@
     box-sizing: border-box;
 }
 
-.popupsOverlay input[type="radio"] {
+.ntPopups input[type="radio"][ntpopups-css="true"] {
     width: auto;
     padding: 0;
     height: auto;
@@ -585,75 +585,75 @@
 }
 
 /* --- Input Inválido (valid="false") --- */
-.popupsOverlay input[valid="false"],
-.popupsOverlay textarea[valid="false"] {
+.ntPopups input[valid="false"][ntpopups-css="true"],
+.ntPopups textarea[valid="false"][ntpopups-css="true"] {
     border-color: var(--ntpopups-color-input-invalid);
 }
 
-.popupsOverlay textarea[noresize="true"] {
+.ntPopups textarea[noresize="true"][ntpopups-css="true"] {
     resize: none;
 }
 
 /* ------------------------------------- */
 
-.popupsOverlay input[type="text"]::placeholder,
-.popupsOverlay textarea::placeholder {
+.ntPopups input[type="text"][ntpopups-css="true"]::placeholder,
+.ntPopups textarea[ntpopups-css="true"]::placeholder {
     color: var(--ntpopups-input-placeholder-color);
     opacity: 1;
 }
 
-.popupsOverlay input[type="text"]:focus,
-.popupsOverlay textarea:focus,
-.popupsOverlay input[type="date"]:focus,
-.popupsOverlay input[type="email"]:focus,
-.popupsOverlay input[type="number"]:focus,
-.popupsOverlay input[type="password"]:focus,
-.popupsOverlay input[type="radio"]:focus,
-.popupsOverlay select:focus,
-.popupsOverlay input[type="time"]:focus {
+.ntPopups input[type="text"][ntpopups-css="true"]:focus,
+.ntPopups textarea[ntpopups-css="true"]:focus,
+.ntPopups input[type="date"][ntpopups-css="true"]:focus,
+.ntPopups input[type="email"][ntpopups-css="true"]:focus,
+.ntPopups input[type="number"][ntpopups-css="true"]:focus,
+.ntPopups input[type="password"][ntpopups-css="true"]:focus,
+.ntPopups input[type="radio"][ntpopups-css="true"]:focus,
+.ntPopups select[ntpopups-css="true"]:focus,
+.ntPopups input[type="time"][ntpopups-css="true"]:focus {
     border-color: var(--ntpopups-input-border-focus);
     box-shadow: 0 0 0 3px rgba(95, 84, 240, 0.1);
 }
 
-.popupsOverlay.nt-popups-dark-theme input[type="text"]:focus,
-.popupsOverlay.nt-popups-dark-theme textarea:focus,
-.popupsOverlay.nt-popups-dark-theme input[type="date"]:focus,
-.popupsOverlay.nt-popups-dark-theme input[type="email"]:focus,
-.popupsOverlay.nt-popups-dark-theme input[type="number"]:focus,
-.popupsOverlay.nt-popups-dark-theme input[type="password"]:focus,
-.popupsOverlay.nt-popups-dark-theme input[type="radio"]:focus,
-.popupsOverlay.nt-popups-dark-theme select:focus,
-.popupsOverlay.nt-popups-dark-theme input[type="time"]:focus {
+.darkTheme input[type="text"][ntpopups-css="true"]:focus,
+.darkTheme textarea[ntpopups-css="true"]:focus,
+.darkTheme input[type="date"][ntpopups-css="true"]:focus,
+.darkTheme input[type="email"][ntpopups-css="true"]:focus,
+.darkTheme input[type="number"][ntpopups-css="true"]:focus,
+.darkTheme input[type="password"][ntpopups-css="true"]:focus,
+.darkTheme input[type="radio"][ntpopups-css="true"]:focus,
+.darkTheme select[ntpopups-css="true"]:focus,
+.darkTheme input[type="time"][ntpopups-css="true"]:focus {
     box-shadow: 0 0 0 3px rgba(122, 112, 255, 0.2);
 }
 
-.popupsOverlay input[type="text"]:disabled,
-.popupsOverlay textarea:disabled,
-.popupsOverlay input[type="date"]:disabled,
-.popupsOverlay input[type="email"]:disabled,
-.popupsOverlay input[type="number"]:disabled,
-.popupsOverlay input[type="password"]:disabled,
-.popupsOverlay input[type="radio"]:disabled,
-.popupsOverlay select:disabled,
-.popupsOverlay input[type="time"]:disabled {
+.ntPopups input[type="text"][ntpopups-css="true"]:disabled,
+.ntPopups textarea[ntpopups-css="true"]:disabled,
+.ntPopups input[type="date"][ntpopups-css="true"]:disabled,
+.ntPopups input[type="email"][ntpopups-css="true"]:disabled,
+.ntPopups input[type="number"][ntpopups-css="true"]:disabled,
+.ntPopups input[type="password"][ntpopups-css="true"]:disabled,
+.ntPopups input[type="radio"][ntpopups-css="true"]:disabled,
+.ntPopups select[ntpopups-css="true"]:disabled,
+.ntPopups input[type="time"][ntpopups-css="true"]:disabled {
     background-color: var(--ntpopups-color-secondary-light);
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-.popupsOverlay textarea {
+.ntPopups textarea[ntpopups-css="true"] {
     min-height: 100px;
     resize: vertical;
 }
 
-.popupsOverlay input[type="date"]::-webkit-calendar-picker-indicator,
-.popupsOverlay input[type="time"]::-webkit-calendar-picker-indicator {
+.ntPopups input[type="date"][ntpopups-css="true"]::-webkit-calendar-picker-indicator,
+.ntPopups input[type="time"][ntpopups-css="true"]::-webkit-calendar-picker-indicator {
     color: var(--ntpopups-input-text-color);
     opacity: 1;
 }
 
 /* ==================== ANCHOR LINKS (<a>) ==================== */
-.body a {
+.ntPopups a[ntpopups-css="true"] {
     color: var(--ntpopups-color-primary);
     /* Usa a cor primária para links */
     text-decoration: none;
@@ -663,15 +663,15 @@
     transition: color var(--ntpopups-transition-duration) var(--ntpopups-transition-easing);
 }
 
-.body a:hover {
+.ntPopups a[ntpopups-css="true"]:hover {
     color: var(--ntpopups-color-primary-hover);
     /* Escurece/ilumina no hover */
     text-decoration: underline;
     /* Adiciona sublinhado no hover para melhor feedback */
 }
 
-.body a:active,
-.body a:focus {
+.ntPopups a[ntpopups-css="true"]:active,
+.ntPopups a[ntpopups-css="true"]:focus {
     color: var(--ntpopups-color-primary-active);
     /* Cor de ativação no clique/foco */
     outline: none;
@@ -680,7 +680,7 @@
     border-radius: var(--ntpopups-border-radius-sm);
 }
 
-.body a:visited {
+.ntPopups a[ntpopups-css="true"]:visited {
     color: var(--ntpopups-color-primary);
     /* Mantém a cor primária para links visitados */
 }

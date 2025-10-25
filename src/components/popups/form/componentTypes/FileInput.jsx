@@ -227,6 +227,7 @@ export default function FileInput(props) {
                 // Sobrescreve o onChange para usar o nosso handler
                 onChange={handleFileChange}
                 className={styles.hidden}
+                ntpopups-css="true"
             />
         </div>
     );

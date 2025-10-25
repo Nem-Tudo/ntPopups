@@ -32,6 +32,7 @@ export default function RadioInput(props) {
                             onChange={onChange}
                             checked={checked}
                             defaultChecked={defaultChecked}
+                            ntpopups-css="true"
                             {...rest}
                         />
                         <span>{optLabel}</span>

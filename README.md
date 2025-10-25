@@ -520,25 +520,118 @@ export default function MyCustomPopup({
 }
 ```
 
-If you are using `baseButton`, you have access to the following properties:
+### 2. Predefined Styling System
+
+#### Using `className={popupstyles.baseButton}`
+
+If you are using `className={popupstyles.baseButton}`, you have access to the following properties:
+
+#### Button Properties
 
 **Boolean as a string** / whether the button expands or not
-
 * `base-button-no-flex`
 
 **Number as a string** / the button style
-
 * `base-button-style`
 
 Values:
-
-* `"0"` = default
+* `"0"` = default (primary)
 * `"1"` = secondary
 * `"2"` = text
-* `"3"` = success
-* `"4"` = danger
+* `"3"` = success (green)
+* `"4"` = danger (red)
 
-### 2. Create the Component
+#### Usage Example:
+```jsx
+<button 
+  className={popupstyles.baseButton}
+  base-button-style="1"
+  base-button-no-flex="true"
+>
+  Secondary Button
+</button>
+```
+
+
+#### Styling System with `ntpopups-css="true"`
+
+The `ntpopups-css="true"` attribute is used to apply the default ntpopups system styles to form elements and links. This attribute works as an "opt-in" for the design system.
+
+### Supported Elements
+
+#### 1. **Input Fields**
+Applicable to the following input types:
+* `<input type="text">`
+* `<input type="email">`
+* `<input type="password">`
+* `<input type="number">`
+* `<input type="date">`
+* `<input type="time">`
+* `<input type="radio">`
+
+#### 2. **Other Form Elements**
+* `<textarea>`
+* `<select>`
+
+#### 3. **Links**
+* `<a>` (anchors)
+
+### Additional Properties
+
+Besides `ntpopups-css="true"`, you can use:
+
+**For inputs and textareas:**
+* `valid="false"` - Applies error/invalid styling (red border)
+
+**For textareas:**
+* `noresize="true"` - Disables resizing
+
+### Usage Examples
+
+#### Text Input
+```jsx
+<input 
+  type="text" 
+  ntpopups-css="true"
+  placeholder="Enter your name"
+/>
+```
+
+#### Invalid Input
+```jsx
+<input 
+  type="email" 
+  ntpopups-css="true"
+  valid="false"
+  placeholder="email@example.com"
+/>
+```
+
+#### Non-resizable Textarea
+```jsx
+<textarea 
+  ntpopups-css="true"
+  noresize="true"
+  placeholder="Enter your message"
+/>
+```
+
+#### Select
+```jsx
+<select ntpopups-css="true">
+  <option>Option 1</option>
+  <option>Option 2</option>
+</select>
+```
+
+#### Link
+```jsx
+<a href="#" ntpopups-css="true">
+  Click here
+</a>
+```
+
+### 3. Create the Component
 
 ```jsx
 // components/popups/MyCustomPopup.jsx
@@ -614,7 +707,7 @@ export default function MyCustomPopup({
 **💡 Tip:**
 When `requireAction = true`, the `closePopup()` function will only take effect if there's an action. (`closePopup(true)`)
 
-### 3. Register in Provider
+### 4. Register in Provider
 
 ```jsx
 import { NtPopupProvider } from 'ntpopups';
@@ -636,7 +729,7 @@ function App() {
 }
 ```
 
-### 4. Use the Custom Popup
+### 5. Use the Custom Popup
 
 ```jsx
 const { openPopup } = useNtPopups();

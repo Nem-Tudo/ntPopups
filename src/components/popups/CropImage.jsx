@@ -483,6 +483,7 @@ export default function CropImage({
                             onChange={(e) => handleZoomChange(e.target.value)}
                             className={classes.zoomSlider}
                             aria-label={translate('cropImage.zoomSliderLabel')}
+                            ntpopups-css="true"
                         />
 
                         {/* Ícone de zoom grande (mantido como SVG) */}
