@@ -449,7 +449,7 @@
 }
 
 .baseButton[base-button-no-flex="true"] {
-    flex: 0;
+    flex: none;
     padding: var(--ntpopups-spacing-sm);
 }
 
