@@ -90,7 +90,7 @@ export default function DisplayPopup({
                             <dialog
                                 open
                                 data-popup-id={popup.id}
-                                className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableOpenAnimation ? ` ${styles.disableOpenAnimation} ` : " "}${popup.isClosing ? ` ${styles.closing} ` : " "}`}
+                                className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableAnimation ? ` ${styles.disableAnimation} ` : " "}${popup.isClosing ? ` ${styles.closing} ` : " "}`}
                                 style={{
                                     ...(popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}),
                                     ...(popup.settings.minWidth ? { minWidth: popup.settings.minWidth } : {})

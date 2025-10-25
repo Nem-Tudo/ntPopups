@@ -303,7 +303,7 @@
     transition: background var(--ntpopups-transition-duration-slow) ease, box-shadow var(--ntpopups-transition-duration-slow) ease;
 }
 
-.popup.disableOpenAnimation {
+.popup.disableAnimation {
     animation: none !important;
 }
 
@@ -341,7 +341,7 @@
 }
 
 .header .icon{
-    
+    display: flex;
 }
 
 /* ==================== BODY ==================== */

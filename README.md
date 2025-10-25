@@ -705,7 +705,7 @@ Applicable to **any popup** (native or custom):
 | `hiddenBackdrop` | boolean | false | Hidden the backdrop |
 | `hiddenHeader` | boolean | false | Hides the header |
 | `hiddenFooter` | boolean | false | Hides the footer |
-| `disableOpenAnimation` | boolean | false | Disables opening animation |
+| `disableAnimation` | boolean | false | Disables opening/closing animation |
 | `maxWidth` | string | - | CSS max width (e.g., '800px') |
 | `minWidth` | string | - | CSS min width (e.g., '100px') |
 | `onOpen` | Function | - | Callback on open: `(id) => {}` |
@@ -725,7 +725,7 @@ openPopup('generic', {
   hiddenBackdrop: true,
   hiddenHeader: true,
   hiddenFooter: true,
-  disableOpenAnimation: true,
+  disableAnimation: true,
   maxWidth: '400px',
   minWidth: '200px',
   onOpen: (id) => console.log('Popup opened:', id),

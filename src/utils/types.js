@@ -40,7 +40,7 @@ import React from "react";
  * @property {boolean} [hiddenBackdrop=false] - CSS utility: Hides the backdrop.
  * @property {boolean} [hiddenHeader=false] - CSS utility: Hides the default popup header area.
  * @property {boolean} [hiddenFooter=false] - CSS utility: Hides the default popup footer area.
- * @property {boolean} [disableOpenAnimation=false] - CSS utility: Disables the opening transition.
+ * @property {boolean} [disableAnimation=false] - CSS utility: Disables the opening/closing transition.
  * @property {string} [maxWidth] - CSS utility: Max popup width
  * @property {string} [minWidth] - CSS utility: Min popup width
  */

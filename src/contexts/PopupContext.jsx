@@ -29,8 +29,8 @@ if (typeof createContext !== "function") {
 const PopupContext = createContext({
     popups: [],
     openPopup: () => null,
-    closePopup: () => {},
-    closeAllPopups: () => {},
+    closePopup: () => { },
+    closeAllPopups: () => { },
     isPopupOpen: () => false,
     getPopup: () => null,
     updatePopup: () => null,
@@ -66,20 +66,13 @@ const findLast = (array, predicate) => {
     return undefined;
 };
 const getScrollbarWidth = () => {
-    const outer = document.createElement("div");
-    outer.style.visibility = "hidden";
-    outer.style.overflow = "scroll";
-    // @ts-expect-error - msOverflowStyle is IE-specific
-    outer.style.msOverflowStyle = "scrollbar";
-    document.body.appendChild(outer);
+    if(!window || !document) return 0;
 
-    const inner = document.createElement("div");
-    outer.appendChild(inner);
+    const windowWidth = window.innerWidth;
 
-    const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
-    outer.parentNode?.removeChild(outer);
+    const contentWidth = document.documentElement.clientWidth;
 
-    return scrollbarWidth;
+    return windowWidth - contentWidth;
 };
 
 /**
@@ -98,11 +91,11 @@ const togglePageScroll = (allowScroll) => {
         body.style.paddingRight = "";
     } else {
         const hasVerticalScrollbar = document.documentElement.scrollHeight > window.innerHeight;
-        
+
         if (hasVerticalScrollbar) {
             body.style.paddingRight = `${getScrollbarWidth()}px`;
         }
-        
+
         body.style.overflow = "hidden";
         html.style.overflow = "hidden";
     }
@@ -129,7 +122,7 @@ const mergePopupSettings = (globalDefaults, typeDefaults, userSettings, popupId)
         hiddenBackdrop: false,
         hiddenHeader: false,
         hiddenFooter: false,
-        disableOpenAnimation: false,
+        disableAnimation: false,
         // Global defaults from config
         ...globalDefaults,
         // Type-specific defaults
@@ -151,12 +144,12 @@ const mergePopupSettings = (globalDefaults, typeDefaults, userSettings, popupId)
  * @param {'en'|'ptbr'} [props.language="en"]
  * @param {'white'|'dark'} [props.theme="white"]
  */
-export function NtPopupProvider({ 
-    children, 
-    config = {}, 
-    customPopups = {}, 
-    language: propLanguage = defaultLanguage, 
-    theme = "white" 
+export function NtPopupProvider({
+    children,
+    config = {},
+    customPopups = {},
+    language: propLanguage = defaultLanguage,
+    theme = "white"
 }) {
     // ========== STATE ==========
     const [popups, setPopups] = useState([]);
@@ -229,7 +222,7 @@ export function NtPopupProvider({
 
     const executeCallback = useCallback((callback, ...args) => {
         if (!callback) return;
-        
+
         try {
             callback(...args);
         } catch (error) {
@@ -338,7 +331,7 @@ export function NtPopupProvider({
             }
 
             const currentPopup = prev[popupIndex];
-            
+
             updatedPopup = {
                 ...currentPopup,
                 settings: {
@@ -410,7 +403,7 @@ export function NtPopupProvider({
         // Update state
         setPopups((prev) => {
             const keepLast = settings.keepLast !== undefined ? settings.keepLast : false;
-            
+
             // Replace last visible popup if keepLast is false
             if (!keepLast && visiblePopups.length > 0) {
                 const lastVisiblePopup = visiblePopups[visiblePopups.length - 1];
@@ -451,7 +444,7 @@ export function NtPopupProvider({
                 });
             });
         }
-        
+
         return openPopupImmediate(popupType, settings);
     }, [openPopupImmediate]);
 
