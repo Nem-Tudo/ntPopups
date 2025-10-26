@@ -95,7 +95,7 @@ import React from "react";
 /**
  * @typedef {object} HtmlPopupData
  * Data specific to the 'html' popup type.
- * @property {React.ReactNode} [html] - [html] The custom HTML content to display.
+ * @property {React.ReactNode | ((params: {closePopup: (hasAction: boolean) => void, popupstyles: object}) => React.ReactNode)} [html] - [html] The custom HTML content to display.
  */
 
 /**

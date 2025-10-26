@@ -7,7 +7,7 @@ import React from "react";
  * @param {Object} [properties.popupstyles]
  * @param {(key: string) => string} properties.translate
  * @param {Object} [properties.data]
- * @param {React.ReactNode} [properties.data.html=""]
+ * @param {React.ReactNode | ((params: {closePopup: (hasAction: boolean) => void, popupstyles: object}) => React.ReactNode)} [properties.data.html=""]
  */
 export default function HtmlPopup({
     closePopup,
@@ -18,10 +18,11 @@ export default function HtmlPopup({
     } = {}
 }) {
 
+    const finalHtml = typeof html === "function" ? html({ closePopup, popupstyles }) : html
 
     return (
         <>
-            {html}
+            {finalHtml}
         </>
     );
 }

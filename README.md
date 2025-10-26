@@ -476,8 +476,22 @@ openPopup('html', {
   }
 });
 ```
+
+or
+
+```jsx
+openPopup('html', {
+  data: {
+    html: ({ closePopup }) => <div>
+      <h1>Hello!</h1>
+      <button onCLick={() => closePopup()}>Close</button>
+    </div>
+  }
+});
+```
+
 **Available props:**
-- `html` (ReactNode): Custom HTML content
+- `html` (ReactNode or Function): Custom HTML content
 
 ## 🎨 Creating Custom Popups
 
