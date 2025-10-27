@@ -48,7 +48,7 @@ export default function FormComponent({ value, data, onValueChange, isInvalid, a
             <span>{data.label}{data.required && <span style={{ color: "var(--ntpopups-color-danger)" }}>*</span>}</span>
             {renderInput()}
             {
-                (isInvalid != null) && <span className={`${styles.componentInvalid} ntpopups-form-component-invalid`}>{isInvalid}</span>
+                (isInvalid != null && isInvalid != translate('validation.required')(data.label || data.id)) && <span className={`${styles.componentInvalid} ntpopups-form-component-invalid`}>{isInvalid}</span>
             }
         </>
     );
