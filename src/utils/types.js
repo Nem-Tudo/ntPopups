@@ -1,5 +1,3 @@
-// ./utils/types.js
-
 import React from "react";
 /**
  * ==============================================================================
@@ -103,15 +101,15 @@ import React from "react";
  *
  * @typedef {object} FormComponentBase
  * @property {string} id - Unique identifier for the field (used as the key in the response object).
- * @property {'text'|'textarea'|'checkbox'|'file'|'email'|'number'|'password'|'radio'|'select'|'date'|'time'} type - Input type
+ * @property {'text'|'textarea'|'checkbox'|'file'|'email'|'number'|'password'|'radio'|'select'|'date'|'time'|(string & {})} type - Input type (including custom types)
  * @property {string} label - Field label displayed to the user.
- * @property {boolean} [disabled=false] - If true, the field is disabled and not validated.
+ * @property {boolean} [disabled=false] - If true, the field is disabled.
+ * @property {boolean} [required=false] - If true, the field is required.
  */
 
 /**
  * @typedef {object} FormTextProps
  * @property {string} [defaultValue=""] - [text] Default value
- * @property {boolean} [required=false] - [text] If true, value must not be empty (after trim).
  * @property {string} [placeholder=""] - [text] Placeholder
  * @property {number} [minLength] - [text] Minimum string length.
  * @property {number} [maxLength] - [text] Maximum string length.
@@ -121,7 +119,6 @@ import React from "react";
 /**
  * @typedef {object} FormTextAreaProps
  * @property {string} [defaultValue=""] - [textarea] Default value
- * @property {boolean} [required=false] - [textarea] If true, value must not be empty (after trim).
  * @property {string} [placeholder=""] - [textarea] Placeholder
  * @property {boolean} [disableResize=false] - [textarea] Disable textarea resize
  * @property {number} [minLength] - [textarea] Minimum string length.
@@ -132,14 +129,12 @@ import React from "react";
 /**
  * @typedef {object} FormEmailProps
  * @property {string} [defaultValue=""] - [email] Default value
- * @property {boolean} [required=false] - [email] If true, value must not be empty (after trim).
  * @property {string} [placeholder=""] - [email] Placeholder
  */
 
 /**
  * @typedef {object} FormNumberProps
  * @property {number} [defaultValue=0] - [number] Default value
- * @property {boolean} [required=false] - [number] If true, value must not be empty (after trim).
  * @property {number} [min] - [number] Minimum value.
  * @property {number} [max] - [number] Maximum value.
  * @property {string} [placeholder=""] - [number] Placeholder
@@ -148,7 +143,6 @@ import React from "react";
 /**
  * @typedef {object} FormPasswordProps
  * @property {string} [defaultValue=""] - [password] Default value
- * @property {boolean} [required=false] - [password] If true, value must not be empty (after trim).
  * @property {number} [minLength] - [password] Minimum string length.
  * @property {number} [maxLength] - [password] Maximum string length.
  * @property {string} [placeholder=""] - [password] Placeholder
@@ -157,7 +151,6 @@ import React from "react";
 /**
  * @typedef {object} FormCheckboxProps
  * @property {boolean} [defaultValue=false] - [checkbox] Default value
- * @property {boolean} [required=false] - [checkbox] If true, the checkbox must be checked.
  */
 
 /**
@@ -171,7 +164,6 @@ import React from "react";
 /**
  * @typedef {object} FormSelectProps
  * @property {string} [defaultValue=""] - [select] Default value
- * @property {boolean} [required=false] - [select] If true, a selection must be made.
  * @property {Array<string|{label: string, value: string}>} options - [select] Array of options.
  * @property {string} label - [select] Field label displayed to the user.
  */
@@ -181,13 +173,11 @@ import React from "react";
  * @property {Date} [defaultValue] - [date] Default value
  * @property {Date} [minDate] - [date] Minimum selectable date.
  * @property {Date} [maxDate] - [date] Maximum selectable date.
- * @property {boolean} [required=false] - [date] If true, a date must be selected.
  */
 
 /**
  * @typedef {object} FormTimeProps
  * @property {string} [defaultValue=""] - [time] Default value
- * @property {boolean} [required=false] - [time] If true, a time must be selected.
  */
 
 /**
@@ -195,7 +185,6 @@ import React from "react";
  * @property {boolean} [defaultValue=[]] - [file] Default value
  * @property {boolean} [accept="*"] - [file] Accepted file types (as per the input 'accept' attribute).
  * @property {boolean} [multiple=false] - [file] If true, allows selecting multiple files.
- * @property {boolean} [required=false] - [file] If true, at least one file must be selected.
  */
 
 /**
@@ -254,7 +243,34 @@ import React from "react";
  */
 
 /**
- * @typedef {FormTextComponent | FormTextAreaComponent | FormEmailComponent | FormNumberComponent | FormPasswordComponent | FormCheckboxComponent | FormRadioComponent | FormSelectComponent | FormDateComponent | FormTimeComponent | FormFileComponent} FormComponent
+ * @typedef {object} CustomComponentRenderProps
+ * Props passed to the custom component's render function.
+ * @property {string} id - Component ID.
+ * @property {any} value - Current component value.
+ * @property {boolean} disabled - If the component is disabled.
+ * @property {boolean} required - If the component is required.
+ * @property {string} [placeholder] - Component placeholder.
+ * @property {(value: any) => void} changeValue - Function to update the form value.
+ * @property {boolean} valid - True if the component is currently valid (based on form validation).
+ * @property {boolean} autoFocus - True if the component should auto-focus.
+ * @property {Object} data - All component configuration data (including custom props).
+ */
+
+/**
+ * @typedef {object} CustomComponentDefinition
+ * Definition for a custom form component.
+ * @property {(value: any, componentData: FormComponentBase & Object) => string | null} [validator] - Custom validation function. Returns an error message (string) if invalid, or null if valid. If not provided, only the 'required' check (if set to true) is performed, falling back to a default validator.
+ * @property {any} [emptyValue=""] - The value used when the component is empty/unselected (e.g., "", 0, false, []). Defaults to `""`.
+ * @property {(props: CustomComponentRenderProps) => React.ReactNode} render - The React component render function.
+ */
+
+/**
+ * @typedef {Object.<string, any>} CustomFormComponent
+ * @property {string} [placeholder] - Optional placeholder.
+ */
+
+/**
+ * @typedef {FormTextComponent | FormTextAreaComponent | FormEmailComponent | FormNumberComponent | FormPasswordComponent | FormCheckboxComponent | FormRadioComponent | FormSelectComponent | FormDateComponent | FormTimeComponent | FormFileComponent | (FormComponentBase & CustomFormComponent)} FormComponent
  * A single component (input field) definition for the 'form' popup.
  */
 
@@ -271,6 +287,7 @@ import React from "react";
  * @property {React.ReactNode} [doneLabel] - [form] Text for the confirmation button. Defaults to i18n key 'util.done'.
  * @property {React.ReactNode} [icon="ⓘ"] - [form] Icon displayed next to the title.
  * @property {FormComponentOrRow[]} [components] - [form] Array defining the fields/layout of the form.
+ * @property {Object.<string, CustomComponentDefinition>} [customComponents] - [form] Map of custom component types (key) to their definitions (validator, emptyValue, render).
  * @property {(values: Object.<string, any>) => void} [onSubmit] - [form] Callback executed upon form submission with all field values.
  * @property {(params: { changedComponentState: { id: string, value: any, isValid: boolean }, formState: { values: Object.<string, any>, isValid: boolean }}) => void} [onChange] - [form] Callback executed whenever any form field changes.
  */

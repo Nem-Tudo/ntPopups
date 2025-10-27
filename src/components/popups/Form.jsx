@@ -1,3 +1,4 @@
+// ./Form.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import FormComponent from "./form/FormComponent.jsx";
 import updateStateKey from "../../utils/updateStateKey.js"; // Presumindo que este util está disponível
@@ -6,8 +7,12 @@ import updateStateKey from "../../utils/updateStateKey.js"; // Presumindo que es
 // 🚀 1. Funções de Validação (Curried com translate)
 // ---------------------------------------------------------------------
 
-
-const createValidator = (translate) => {
+/**
+ * Cria o objeto de função de validação, incluindo o suporte a componentes customizados.
+ * @param {Object.<string, import("../../utils/types.js").CustomComponentDefinition>} customComponents Definições de componentes customizados.
+ * @returns {(value: any, componentData: Object) => string | null} Função principal para validar qualquer componente.
+ */
+const createValidator = (translate, customComponents = {}) => {
 
     /**
      * Verifica a validade de componentes de texto (text/textarea/password).
@@ -285,6 +290,26 @@ const createValidator = (translate) => {
         return null; // Válido
     };
 
+    /**
+     * Validador genérico para componentes customizados (ou sem validador específico).
+     * Verifica apenas o 'required' usando o emptyValue.
+     * @param {any} value O valor atual do campo.
+     * @param {Object} componentData O objeto de configuração do componente.
+     * @param {any} emptyValue O valor considerado 'vazio' para este tipo de componente.
+     * @returns {string | null} Mensagem de erro se inválido, null se válido.
+     */
+    const validateCustom = (value, componentData, emptyValue) => {
+        const { required, label } = componentData;
+        const fieldName = label || componentData.id;
+
+        // Se obrigatório E o valor for igual ao valor nulo/vazio
+        if (required === true && (value == null || value === emptyValue)) {
+            return translate('validation.required')(fieldName);
+        }
+
+        return null; // Válido
+    };
+
     const validationFunctions = {
         'text': validateTextComponent,
         'textarea': validateTextComponent,
@@ -306,10 +331,37 @@ const createValidator = (translate) => {
      * @returns {string | null} Mensagem de erro se inválido, null se válido.
      */
     return (value, componentData) => {
-        const validator = validationFunctions[componentData.type];
-        if (validator) {
-            return validator(value, componentData);
+        const { type } = componentData;
+
+        // 1. Tenta o validador Nativo
+        const nativeValidator = validationFunctions[type];
+        if (nativeValidator) {
+            return nativeValidator(value, componentData);
         }
+
+        // 2. Tenta o validador Customizado
+        const customComponent = customComponents[type];
+        if (customComponent) {
+            const emptyValue = customComponent.emptyValue ?? "";
+
+            const customValidation = validateCustom(value, componentData, emptyValue);
+            if (customValidation) {
+                return customValidation;
+            }
+
+            // Se houver um validador customizado, execute-o
+            if (customComponent.validator) {
+                const customValidation = customComponent.validator(value, componentData);
+                // Se o validador customizado retornar uma string (erro), retorne-a
+                if (customValidation) {
+                    return customValidation;
+                }
+            }
+
+            // Passou na validação customizada
+            return null;
+        }
+
 
         // Assume que componentes sem validador específico são válidos.
         return null;
@@ -329,14 +381,7 @@ const createValidator = (translate) => {
  * @param {Object} [properties.popupstyles] Estilos CSS.
  * @param {(key: string, ...args: (string|number)[]) => string} properties.translate Função de tradução.
  * @param {Boolean} properties.requireAction Se uma ação (OK/Done) é requerida.
- * @param {Object} [properties.data] Dados de configuração do formulário.
- * @param {React.ReactNode} [properties.data.message=""] Mensagem de cabeçalho.
- * @param {React.ReactNode} [properties.data.title="Title"] Título do formulário.
- * @param {React.ReactNode} [properties.data.doneLabel="Done"] Rótulo do botão principal.
- * @param {Array<Object | Array<Object>>} [properties.data.components] Array de configurações de componentes.
- * @param {React.ReactNode} [properties.data.icon="ⓘ"] Ícone de cabeçalho.
- * @param {(arg0: object) => void} [properties.data.onSubmit=() => {}] Callback ao submeter.
- * @param {(arg0: object) => void} [properties.data.onChange=() => {}] Callback ao alterar um valor.
+ * @param {import("../../utils/types.js").FormPopupData} [properties.data] Dados de configuração do formulário.
  * @returns {React.JSX.Element}
  */
 export default function Form({
@@ -349,13 +394,15 @@ export default function Form({
         icon = "ⓘ",
         message = "",
         doneLabel,
-        components = [{ id: "text01", type: "text", label: "Text", defaultValue: "", disabled: false }],
+        components = [{ id: "text01", type: "text", label: "Text", defaultValue: "", disabled: false, required: false }],
         onSubmit = () => { },
         onChange = () => { },
+        customComponents = {},
     } = {}
 }) {
 
-    const validateComponent = useMemo(() => createValidator(translate), [translate]);
+    // 🚀 NOVO: Passa customComponents para o createValidator
+    const validateComponent = useMemo(() => createValidator(translate, customComponents), [translate, customComponents]);
 
 
     /**
@@ -404,7 +451,20 @@ export default function Form({
             } else {
                 idSet.add(component.id);
             }
-            initialValue[component.id] = component.defaultValue ?? falsyByType[component.type];
+
+            // 🚀 NOVO: Lógica para pegar o emptyValue do custom component
+            const customComponentDef = customComponents[component.type];
+            let emptyValue;
+
+            if (customComponentDef) {
+                // Usa emptyValue do custom component, senão usa ""
+                emptyValue = customComponentDef.emptyValue ?? "";
+            } else {
+                // Usa default nativo, senão usa ""
+                emptyValue = falsyByType[component.type] ?? "";
+            }
+
+            initialValue[component.id] = component.defaultValue ?? emptyValue;
         };
 
         for (const componentOrArray of components) {
@@ -438,7 +498,7 @@ export default function Form({
         for (const component of flattenedComponents) {
             // Se o componente estiver desabilitado, não precisa validar
             // if (component.disabled) {
-            //     continue;
+            //     continue;
             // }
 
             const componentValue = currentValue[component.id];
@@ -521,11 +581,13 @@ export default function Form({
                                                 autoFocus={index === 0}
                                                 data={component}
                                                 value={values[component.id]}
-                                                // 🚀 isInvalid: string (erro) ou null (válido)
                                                 isInvalid={invalidReason}
+                                                customComponents={customComponents}
                                                 onValueChange={(inputvalue) => {
-                                                    setLastChangedComponent(component.id);
-                                                    updateStateKey(setValues, values, [component.id, inputvalue])
+                                                    if (!component.disabled) {
+                                                        setLastChangedComponent(component.id);
+                                                        updateStateKey(setValues, values, [component.id, inputvalue])
+                                                    }
                                                 }}
                                             />
                                         </div>
@@ -543,11 +605,13 @@ export default function Form({
                                     autoFocus={index === 0}
                                     data={component}
                                     value={values[component.id]}
-                                    // 🚀 isInvalid: string (erro) ou null (válido)
                                     isInvalid={invalidReason}
+                                    customComponents={customComponents}
                                     onValueChange={(inputvalue) => {
-                                        setLastChangedComponent(component.id);
-                                        updateStateKey(setValues, values, [component.id, inputvalue]);
+                                        if (!component.disabled) {
+                                            setLastChangedComponent(component.id);
+                                            updateStateKey(setValues, values, [component.id, inputvalue]);
+                                        }
                                     }}
                                 />
                             </div>
