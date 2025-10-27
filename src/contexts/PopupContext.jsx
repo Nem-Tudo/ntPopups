@@ -66,7 +66,7 @@ const findLast = (array, predicate) => {
     return undefined;
 };
 const getScrollbarWidth = () => {
-    if(!window || !document) return 0;
+    if (!window || !document) return 0;
 
     const windowWidth = window.innerWidth;
 
@@ -78,8 +78,9 @@ const getScrollbarWidth = () => {
 /**
  * Desabilita o scroll da página e previne o "jump" visual
  * @param {boolean} allowScroll
+ * @param {boolean} updatePadding
  */
-const togglePageScroll = (allowScroll) => {
+const togglePageScroll = (allowScroll, updatePadding) => {
     const body = document.querySelector("body");
     const html = document.querySelector("html");
 
@@ -88,12 +89,12 @@ const togglePageScroll = (allowScroll) => {
     if (allowScroll) {
         html.style.overflow = "";
         body.style.overflow = "";
-        body.style.paddingRight = "";
+        if (updatePadding) body.style.paddingRight = "";
     } else {
         const hasVerticalScrollbar = document.documentElement.scrollHeight > window.innerHeight;
 
         if (hasVerticalScrollbar) {
-            body.style.paddingRight = `${getScrollbarWidth()}px`;
+            if (updatePadding) body.style.paddingRight = `${getScrollbarWidth()}px`;
         }
 
         body.style.overflow = "hidden";
@@ -394,7 +395,7 @@ export function NtPopupProvider({
         // Toggle page scroll
         try {
             if (!settings.allowPageBodyScroll) {
-                togglePageScroll(false);
+                togglePageScroll(false, currentPopupsRef.current.length === 0);
             }
         } catch (error) {
             console.warn("ntPopups Warning: Failed to disable page scroll.", error);
@@ -489,7 +490,7 @@ export function NtPopupProvider({
 
         // Restore scroll if no popups
         if (notClosedPopups.length === 0) {
-            togglePageScroll(true);
+            togglePageScroll(true, true);
             return;
         }
 
@@ -531,7 +532,7 @@ export function NtPopupProvider({
             timeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
             timeoutsRef.current.clear();
             callbacksRef.current.clear();
-            togglePageScroll(true);
+            togglePageScroll(true, true);
         };
     }, []);
 
