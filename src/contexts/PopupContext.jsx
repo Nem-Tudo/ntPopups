@@ -395,7 +395,7 @@ export function NtPopupProvider({
         // Toggle page scroll
         try {
             if (!settings.allowPageBodyScroll) {
-                togglePageScroll(false, currentPopupsRef.current.length === 0);
+                togglePageScroll(false, visiblePopups.length === 0);
             }
         } catch (error) {
             console.warn("ntPopups Warning: Failed to disable page scroll.", error);
