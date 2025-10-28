@@ -39,8 +39,12 @@ import React from "react";
  * @property {boolean} [hiddenHeader=false] - CSS utility: Hides the default popup header area.
  * @property {boolean} [hiddenFooter=false] - CSS utility: Hides the default popup footer area.
  * @property {boolean} [disableAnimation=false] - CSS utility: Disables the opening/closing transition.
+ * @property {string} [width] - CSS utility: Popup width
  * @property {string} [maxWidth] - CSS utility: Max popup width
  * @property {string} [minWidth] - CSS utility: Min popup width
+ * @property {string} [height] - CSS utility: Popup height
+ * @property {string} [maxHeight] - CSS utility: Max popup height
+ * @property {string} [minHeight] - CSS utility: Min popup height
  */
 
 /**

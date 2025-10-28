@@ -962,8 +962,12 @@ Settings applicable to **any popup** (built-in or custom):
 | `hiddenHeader` | boolean | false | Hide header |
 | `hiddenFooter` | boolean | false | Hide footer |
 | `disableAnimation` | boolean | false | Disable open/close animation |
+| `width` | string | - | CSS width (e.g., '400px') |
 | `maxWidth` | string | - | CSS max-width (e.g., '800px') |
 | `minWidth` | string | - | CSS min-width (e.g., '200px') |
+| `height` | string | - | CSS height (e.g., '50dvh') |
+| `maxHeight` | string | - | CSS max-height (e.g., '80dvh') |
+| `minHeight` | string | - | CSS min-height (e.g., '20dvh') |
 | `onOpen` | `(id: string) => void` | - | Callback on open |
 | `onClose` | `(hasAction: boolean, id: string) => void` | - | Callback on close |
 

@@ -82,9 +82,9 @@ export default function DisplayPopup({
                             data-interactive={String(popup.settings.interactiveBackdrop)}
                             data-hidden={String(popup.settings.hiddenBackdrop)}
                             data-closing={String(!!popup.isClosing)}
-                            className={`${styles.popupsOverlay}${popup.isClosing ? ` ${styles.closingOverlay} ` : ' '}ntpopups-overlay${popup.isClosing ? ' ntpopups-overlay-closing ' : ' '}`} 
+                            className={`${styles.popupsOverlay}${popup.isClosing ? ` ${styles.closingOverlay} ` : ' '}ntpopups-overlay${popup.isClosing ? ' ntpopups-overlay-closing ' : ' '}`}
                             style={{ zIndex: popup.zIndex }}
-                            role="presentation" 
+                            role="presentation"
                         >
                             {/* POPUP CONTAINER */}
                             <dialog
@@ -92,8 +92,12 @@ export default function DisplayPopup({
                                 data-popup-id={popup.id}
                                 className={`${styles.popup} ntpopups-container${popup.settings.hiddenHeader ? ` ${styles.hiddenHeader} ` : " "}${popup.settings.hiddenFooter ? ` ${styles.hiddenFooter} ` : " "}${popup.settings.disableAnimation ? ` ${styles.disableAnimation} ` : " "}${popup.isClosing ? ` ${styles.closing} ` : " "}`}
                                 style={{
+                                    ...(popup.settings.width ? { width: popup.settings.width } : {}),
                                     ...(popup.settings.maxWidth ? { maxWidth: popup.settings.maxWidth } : {}),
-                                    ...(popup.settings.minWidth ? { minWidth: popup.settings.minWidth } : {})
+                                    ...(popup.settings.minWidth ? { minWidth: popup.settings.minWidth } : {}),
+                                    ...(popup.settings.height ? { height: popup.settings.height } : {}),
+                                    ...(popup.settings.maxHeight ? { maxHeight: popup.settings.maxHeight } : {}),
+                                    ...(popup.settings.minHeight ? { minHeight: popup.settings.minHeight } : {}),
                                 }}
                             >
                                 {getPopupComponent(popup)}
