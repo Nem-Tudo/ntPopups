@@ -486,9 +486,10 @@ export function NtPopupProvider({
     // ========== EVENT LISTENERS ==========
     useEffect(() => {
         const visiblePopups = popups.filter((p) => !p.hidden && !p.isClosing);
+        const notClosedPopups = popups.filter((p) => !p.isClosing);
 
         // Restore scroll if no popups
-        if (popups.length === 0) {
+        if (notClosedPopups.length === 0) {
             togglePageScroll(true, true);
             return;
         }
