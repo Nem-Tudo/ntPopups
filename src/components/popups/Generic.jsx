@@ -46,7 +46,7 @@ export default function Generic({
             </header>
 
             <section className={classes.body}>
-                <p>{finalMessage}</p>
+                {finalMessage}
             </section>
 
             <footer className={classes.footer}>
