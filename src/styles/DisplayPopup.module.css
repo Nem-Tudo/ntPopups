@@ -482,8 +482,6 @@
     background-color: var(--ntpopups-button-style-2-bg) !important;
     color: var(--ntpopups-color-text);
     box-shadow: none;
-    width: var(--ntpopups-button-style-2-size);
-    height: var(--ntpopups-button-style-2-size);
     min-width: var(--ntpopups-button-style-2-size);
     padding: 0;
     /* Transição para cores */
