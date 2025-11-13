@@ -177,7 +177,12 @@ export function NtPopupProvider({
 
     // ========== INITIALIZATION ==========
     useEffect(() => {
-        console.log(`Loaded ntPopups https://www.npmjs.com/package/ntpopups`);
+        console.log(
+            "Loaded %cntPopups%c for popups: %chttps://ntpopups.nemtudo.me/demo",
+            "font-weight: bold;",
+            "",
+            "color: blue; cursor: pointer;"
+        );
     }, []);
 
     // ========== STATE SYNCHRONIZATION ==========
